@@ -1,5 +1,5 @@
 {
-  "name": "khatabook-frontend",
+  "name": "accountly-frontend",
   "version": "2.1.0",
   "private": true,
   "dependencies": {
@@ -31,6 +31,7 @@
     "@react-pdf/renderer": "^3.1.9",
     "@reduxjs/toolkit": "^1.9.5",
     "@svgr/webpack": "^7.0.0",
+    "@tabler/icons": "^3.34.1",
     "@testing-library/react": "^14.0.0",
     "amazon-cognito-identity-js": "^6.2.0",
     "apexcharts": "^3.40.0",

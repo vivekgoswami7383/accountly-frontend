@@ -1,3 +1,3 @@
-# mantis-react-ts
+# accountly-react-ts
 
-Web theme with name as 'Mantis'. Its name of insect but we derived it from two popular UI framework, Material-UI and Ant Design (M-Ant-is). It provides best features from each. Follows design principle of AntDesign and uses the Component of Material-UI.
+Web theme with name as 'Accountly'. A modern accounting and business management system built with React and TypeScript. It provides best features from Material-UI and Ant Design frameworks. Follows design principle of AntDesign and uses the Component of Material-UI.

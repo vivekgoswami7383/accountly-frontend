@@ -4,6 +4,20 @@ const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || '
 
 // ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
 
+// Add request interceptor to include token in every request
+axiosServices.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('serviceToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 axiosServices.interceptors.response.use(
   (response) => response,
   (error) => {

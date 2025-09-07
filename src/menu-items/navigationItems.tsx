@@ -1,10 +1,11 @@
 import { FormattedMessage } from 'react-intl';
-import { UserOutlined, DashboardOutlined, CustomerServiceOutlined } from '@ant-design/icons';
+import { DashboardOutlined, CustomerServiceOutlined, ShopOutlined, TransactionOutlined } from '@ant-design/icons';
 
 const icons = {
-  UserOutlined,
   DashboardOutlined,
-  CustomerServiceOutlined
+  CustomerServiceOutlined,
+  ShopOutlined,
+  TransactionOutlined
 };
 
 export const NavigationItems = [
@@ -13,13 +14,31 @@ export const NavigationItems = [
     title: <FormattedMessage id="dashboard" />,
     type: 'item',
     url: '/dashboard',
-    icon: icons.DashboardOutlined
+    icon: icons.DashboardOutlined,
+    allowedRoles: ['super_admin', 'owner', 'admin', 'staff']
+  },
+  {
+    id: 'business',
+    title: <FormattedMessage id="business" />,
+    type: 'item',
+    url: '/business',
+    icon: icons.ShopOutlined,
+    allowedRoles: ['super_admin'] // Only super admin can manage businesses
   },
   {
     id: 'customer',
     title: <FormattedMessage id="customer" />,
     type: 'item',
     url: '/customer',
-    icon: icons.CustomerServiceOutlined
+    icon: icons.CustomerServiceOutlined,
+    allowedRoles: ['owner', 'admin', 'staff'] // Owner, admin, staff can manage customers
+  },
+  {
+    id: 'transaction',
+    title: <FormattedMessage id="transaction" />,
+    type: 'item',
+    url: '/transaction',
+    icon: icons.TransactionOutlined,
+    allowedRoles: ['owner', 'admin', 'staff'] // Owner, admin, staff can manage transactions
   }
 ];

@@ -15,9 +15,9 @@ interface Props {
   handleClose: (status: boolean) => void;
 }
 
-// ==============================|| CUSTOMER - DELETE ||============================== //
+// ==============================|| TRANSACTION - DELETE ||============================== //
 
-export default function AlertCustomerDelete({ title, open, handleClose }: Props) {
+export default function AlertTransactionDelete({ title, open, handleClose }: Props) {
   return (
     <Dialog
       open={open}
@@ -25,8 +25,8 @@ export default function AlertCustomerDelete({ title, open, handleClose }: Props)
       keepMounted
       TransitionComponent={PopupTransition}
       maxWidth="xs"
-      aria-labelledby="customer-delete-title"
-      aria-describedby="customer-delete-description"
+      aria-labelledby="transaction-delete-title"
+      aria-describedby="transaction-delete-description"
     >
       <DialogContent sx={{ mt: 2, my: 1 }}>
         <Stack alignItems="center" spacing={3.5}>
@@ -43,7 +43,7 @@ export default function AlertCustomerDelete({ title, open, handleClose }: Props)
                 {' '}
                 "{title}"{' '}
               </Typography>
-              customer, all associated data will also be deleted.
+              transaction, this action cannot be undone.
             </Typography>
           </Stack>
 

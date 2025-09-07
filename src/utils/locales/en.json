@@ -39,6 +39,8 @@
   "custom": "Custom",
   "customer": "Customer",
   "dashboard": "Dashboard",
+  "business": "Business",
+  "transaction": "Transaction",
   "data": "Data",
   "data-display": "Data Display",
   "datatable": "Datatable",

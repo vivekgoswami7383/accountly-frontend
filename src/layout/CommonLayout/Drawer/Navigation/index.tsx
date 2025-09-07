@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 
 // project import
 import NavGroup from './NavGroup';
-import menuItem from 'menu-items/components';
+import menuItem from 'menu-items';
 
 // types
 import { NavItemType } from 'types/menu';
@@ -15,9 +15,9 @@ const Navigation = ({ searchValue }: { searchValue?: string }) => {
 
   // if no value searched, we will render all menu items
   if (searchValue === null || searchValue === undefined || searchValue === '') {
-    filteredMenuItems = menuItem;
+    filteredMenuItems = menuItem.items;
   } else {
-    menuItem.forEach((parentMenu) => {
+    menuItem.items.forEach((parentMenu) => {
       const matchedChildren: any[] = [];
 
       parentMenu.children?.forEach((child) => {

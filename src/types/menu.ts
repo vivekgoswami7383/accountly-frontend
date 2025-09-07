@@ -8,6 +8,7 @@ import { GenericCardProps } from './root';
 // ==============================|| MENU TYPES  ||============================== //
 
 export type NavItemType = {
+  allowedRoles?: string[];
   breadcrumbs?: boolean;
   caption?: ReactNode | string;
   children?: NavItemType[];

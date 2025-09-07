@@ -1,26 +1,26 @@
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, Button, Container, CardMedia, Divider, Grid, Link, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Divider, Grid, Link, Stack, Typography } from '@mui/material';
 
 // third party
 import { motion } from 'framer-motion';
 
 // project import
-import useConfig from 'hooks/useConfig';
+// import useConfig from 'hooks/useConfig';
 
 // assets
 import { SendOutlined } from '@ant-design/icons';
 
-import imgfooterlogo from 'assets/images/landing/codedthemes-logo.svg';
-import imgfootersoc1 from 'assets/images/landing/img-soc1.svg';
-import imgfootersoc2 from 'assets/images/landing/img-soc2.svg';
-import imgfootersoc3 from 'assets/images/landing/img-soc3.svg';
+// import imgfooterlogo from 'assets/images/landing/codedthemes-logo.svg';
+// import imgfootersoc1 from 'assets/images/landing/img-soc1.svg';
+// import imgfootersoc2 from 'assets/images/landing/img-soc2.svg';
+// import imgfootersoc3 from 'assets/images/landing/img-soc3.svg';
 import AnimateButton from 'components/@extended/AnimateButton';
 
 // types
 import { ThemeDirection, ThemeMode } from 'types/config';
 
-const dashImage = require.context('assets/images/landing', true);
+// const dashImage = require.context('assets/images/landing', true);
 
 // link - custom style
 const FooterLink = styled(Link)(({ theme }) => ({
@@ -41,37 +41,25 @@ type showProps = {
 
 const FooterBlock = ({ isFull }: showProps) => {
   const theme = useTheme();
-  const { presetColor } = useConfig();
   const textColor = theme.palette.mode === ThemeMode.DARK ? 'text.primary' : 'background.paper';
 
-  const linkSX = {
-    color: theme.palette.common.white,
-    fontSize: '0.875rem',
-    fontWeight: 400,
-    opacity: '0.6',
-    cursor: 'pointer',
-    '&:hover': {
-      opacity: '1'
-    }
-  };
-
   const frameworks = [
-    { title: 'CodeIgniter', link: 'https://codedthemes.com/item/mantis-codeigniter-admin-template/' },
+    { title: 'CodeIgniter', link: 'https://codedthemes.com/item/accountly-codeigniter-admin-template/' },
     {
       title: 'React MUI',
-      link: 'https://mui.com/store/items/mantis-react-admin-dashboard-template/'
+      link: 'https://mui.com/store/items/accountly-react-admin-dashboard-template/'
     },
     {
       title: 'Angular',
-      link: 'https://codedthemes.com/item/mantis-angular-admin-template/'
+      link: 'https://codedthemes.com/item/accountly-angular-admin-template/'
     },
     {
       title: 'Bootstrap 5',
-      link: 'https://codedthemes.com/item/mantis-bootstrap-admin-dashboard/'
+      link: 'https://codedthemes.com/item/accountly-bootstrap-admin-dashboard/'
     },
     {
       title: '.Net',
-      link: 'https://codedthemes.com/item/mantis-dotnet-bootstrap-dashboard-template/'
+      link: 'https://codedthemes.com/item/accountly-dotnet-bootstrap-dashboard-template/'
     }
   ];
 
@@ -100,7 +88,7 @@ const FooterBlock = ({ isFull }: showProps) => {
             }
           }}
         >
-          <CardMedia
+          {/* <CardMedia
             component="img"
             image={dashImage(`./img-footer-${presetColor}.png`)}
             sx={{
@@ -115,7 +103,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                 float: 'none'
               })
             }}
-          />
+          /> */}
           <Container>
             <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
               <Grid item xs={12} md={6} sx={{ position: 'relative', zIndex: 1 }}>
@@ -148,7 +136,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1" sx={{ color: theme.palette.common.white }}>
-                      What is next? Checkout the Upcoming release of Mantis React.
+                      What is next? Checkout the Upcoming release of Accountly React.
                     </Typography>
                   </Grid>
                   <Grid item xs={12} sx={{ my: 2 }}>
@@ -159,7 +147,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                           variant="contained"
                           endIcon={<SendOutlined />}
                           component={Link}
-                          href="https://codedthemes.gitbook.io/mantis/roadmap"
+                          href="https://codedthemes.gitbook.io/accountly/roadmap"
                           target="_blank"
                         >
                           Roadmap
@@ -189,11 +177,11 @@ const FooterBlock = ({ isFull }: showProps) => {
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <CardMedia component="img" image={imgfooterlogo} sx={{ width: 'auto' }} />
+                    {/* <CardMedia component="img" image={imgfooterlogo} sx={{ width: 'auto' }} /> */}
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 400, color: theme.palette.common.white }}>
-                      Since 2017, More than 50K+ Developers trust the CodedThemes Digital Product. Mantis React is Manage under their
+                      Since 2017, More than 50K+ Developers trust the CodedThemes Digital Product. Accountly React is Manage under their
                       Experienced Team Players.
                     </Typography>
                   </Grid>
@@ -208,13 +196,13 @@ const FooterBlock = ({ isFull }: showProps) => {
                       Help
                     </Typography>
                     <Stack spacing={{ xs: 1.5, md: 2.5 }}>
-                      <FooterLink href="https://blog.mantisdashboard.io/" target="_blank" underline="none">
+                      <FooterLink href="https://blog.accountlydashboard.io/" target="_blank" underline="none">
                         Blog
                       </FooterLink>
-                      <FooterLink href="https://codedthemes.gitbook.io/mantis/" target="_blank" underline="none">
+                      <FooterLink href="https://codedthemes.gitbook.io/accountly/" target="_blank" underline="none">
                         Documentation
                       </FooterLink>
-                      <FooterLink href="https://codedthemes.gitbook.io/mantis/changelog" target="_blank" underline="none">
+                      <FooterLink href="https://codedthemes.gitbook.io/accountly/changelog" target="_blank" underline="none">
                         Change Log
                       </FooterLink>
                       <FooterLink href="https://codedthemes.support-hub.io/" target="_blank" underline="none">
@@ -248,7 +236,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                 <Grid item xs={6} sm={3}>
                   <Stack spacing={{ xs: 3, md: 5 }}>
                     <Typography variant="h5" color={textColor} sx={{ fontWeight: 500 }}>
-                      Mantis Eco-System
+                      Accountly Eco-System
                     </Typography>
                     <Stack spacing={{ xs: 1.5, md: 2.5 }}>
                       {frameworks.map((item, index) => (
@@ -272,8 +260,12 @@ const FooterBlock = ({ isFull }: showProps) => {
                       <FooterLink href="https://mui.com/store/previews/berry-react-material-admin-free/" target="_blank" underline="none">
                         Free Berry React
                       </FooterLink>
-                      <FooterLink href="https://github.com/codedthemes/mantis-free-react-admin-template" target="_blank" underline="none">
-                        Free Mantis React
+                      <FooterLink
+                        href="https://github.com/codedthemes/accountly-free-react-admin-template"
+                        target="_blank"
+                        underline="none"
+                      >
+                        Free Accountly React
                       </FooterLink>
                     </Stack>
                   </Stack>
@@ -299,7 +291,7 @@ const FooterBlock = ({ isFull }: showProps) => {
             </Grid>
             <Grid item xs={12} sm={4}>
               <Grid container spacing={2} alignItems="center" sx={{ justifyContent: 'flex-end' }}>
-                <Grid item>
+                {/* <Grid item>
                   <Link underline="none" sx={linkSX}>
                     <CardMedia component="img" image={imgfootersoc1} />
                   </Link>
@@ -313,7 +305,7 @@ const FooterBlock = ({ isFull }: showProps) => {
                   <Link underline="none" sx={linkSX}>
                     <CardMedia component="img" image={imgfootersoc3} />
                   </Link>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Grid>
           </Grid>

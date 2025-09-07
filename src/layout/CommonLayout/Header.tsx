@@ -27,7 +27,6 @@ import {
 import { APP_DEFAULT_PATH } from 'config';
 import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
-import Logo from 'components/logo';
 
 // assets
 import { MenuOutlined, LineOutlined } from '@ant-design/icons';
@@ -82,8 +81,17 @@ const Header = ({ handleDrawerOpen, layout = 'landing', ...others }: Props) => {
         <Container disableGutters={matchDownMd}>
           <Toolbar sx={{ px: { xs: 1.5, md: 0, lg: 0 }, py: 2 }}>
             <Stack direction="row" sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }} alignItems="center">
-              <Typography component="div" sx={{ textAlign: 'left', display: 'inline-block' }}>
-                <Logo reverse to="/" />
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{
+                  textAlign: 'left',
+                  display: 'inline-block',
+                  fontWeight: 600,
+                  color: theme.palette.primary.main
+                }}
+              >
+                Accountly
               </Typography>
               <Chip
                 label={process.env.REACT_APP_VERSION}
@@ -138,8 +146,17 @@ const Header = ({ handleDrawerOpen, layout = 'landing', ...others }: Props) => {
                 display: { xs: 'flex', md: 'none' }
               }}
             >
-              <Typography component="div" sx={{ textAlign: 'left', display: 'inline-block' }}>
-                <Logo reverse to="/" />
+              <Typography
+                variant="h5"
+                component="div"
+                sx={{
+                  textAlign: 'left',
+                  display: 'inline-block',
+                  fontWeight: 600,
+                  color: theme.palette.primary.main
+                }}
+              >
+                Accountly
               </Typography>
               <Stack direction="row" spacing={2}>
                 {layout === 'component' && (

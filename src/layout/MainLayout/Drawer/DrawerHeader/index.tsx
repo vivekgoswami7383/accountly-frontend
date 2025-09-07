@@ -1,10 +1,9 @@
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery, Typography } from '@mui/material';
 
 // project import
 import DrawerHeaderStyled from './DrawerHeaderStyled';
-import Logo from 'components/logo';
 import useConfig from 'hooks/useConfig';
 
 // types
@@ -35,7 +34,17 @@ const DrawerHeader = ({ open }: Props) => {
         paddingLeft: isHorizontal ? { xs: '24px', lg: '0' } : open ? '24px' : 0
       }}
     >
-      <Logo isIcon={!open} sx={{ width: open ? 'auto' : 35, height: 35 }} />
+      <Typography
+        variant={open ? 'h5' : 'h6'}
+        sx={{
+          fontWeight: 600,
+          color: theme.palette.primary.main,
+          textAlign: 'center',
+          width: '100%'
+        }}
+      >
+        {open ? 'Accountly' : 'A'}
+      </Typography>
     </DrawerHeaderStyled>
   );
 };

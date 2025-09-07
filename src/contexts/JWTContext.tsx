@@ -30,10 +30,8 @@ const verifyToken: (st: string) => boolean = (serviceToken) => {
 const setSession = (serviceToken?: string | null) => {
   if (serviceToken) {
     localStorage.setItem('serviceToken', serviceToken);
-    axios.defaults.headers.common.Authorization = `Bearer ${serviceToken}`;
   } else {
     localStorage.removeItem('serviceToken');
-    delete axios.defaults.headers.common.Authorization;
   }
 };
 
@@ -49,7 +47,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         if (serviceToken && verifyToken(serviceToken)) {
           setSession(serviceToken);
           const response = await axios.get('/api/auth/me');
-          const { user } = response.data;
+          const { user } = response.data.data;
           dispatch({
             type: LOGIN,
             payload: {
@@ -74,21 +72,36 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   }, []);
 
   const login = async (phone: string, password: string) => {
-    const response = await axios.post('/api/auth/login', { phone, password });
-    console.log('response', response.data);
+    try {
+      const response = await axios.post('/api/auth/login', { phone, password });
+      const { token } = response.data;
 
-    const { token, user } = response.data;
-
-    console.log('token', token);
-
-    setSession(token);
-    dispatch({
-      type: LOGIN,
-      payload: {
-        isLoggedIn: true,
-        user
+      if (!token) {
+        throw new Error('No token received from server');
       }
-    });
+
+      // Set token first
+      setSession(token);
+
+      // Get user data after setting token
+      const userResponse = await axios.get('/api/auth/me');
+      const { user } = userResponse.data.data;
+
+      if (!user) {
+        throw new Error('No user data received from server');
+      }
+
+      dispatch({
+        type: LOGIN,
+        payload: {
+          isLoggedIn: true,
+          user
+        }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {

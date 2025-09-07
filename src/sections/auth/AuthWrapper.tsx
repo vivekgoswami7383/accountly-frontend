@@ -1,11 +1,10 @@
 import { ReactNode } from 'react';
 
 // material-ui
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 // project import
 import AuthFooter from 'components/cards/AuthFooter';
-import Logo from 'components/logo';
 import AuthCard from './AuthCard';
 
 // assets
@@ -29,7 +28,15 @@ const AuthWrapper = ({ children }: Props) => (
       }}
     >
       <Grid item xs={12} sx={{ ml: 3, mt: 3 }}>
-        <Logo />
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 600,
+            color: 'primary.main'
+          }}
+        >
+          Accountly
+        </Typography>
       </Grid>
       <Grid item xs={12}>
         <Grid
