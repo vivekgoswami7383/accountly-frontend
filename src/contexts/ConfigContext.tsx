@@ -29,7 +29,10 @@ type ConfigProviderProps = {
 };
 
 function ConfigProvider({ children }: ConfigProviderProps) {
-  const [config, setConfig] = useLocalStorage('mantis-react-ts-config', initialState);
+  const [config, setConfig] = useLocalStorage('mantis-react-ts-config', {
+    ...initialState,
+    themeDirection: 'ltr' // Force LTR for Accountly
+  });
 
   const onChangeContainer = () => {
     setConfig({

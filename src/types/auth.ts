@@ -15,8 +15,15 @@ export type UserProfile = {
   avatar?: string;
   image?: string;
   name?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
   role?: string;
   tier?: string;
+  business?: {
+    _id?: string;
+    business_name?: string;
+  };
 };
 
 export interface AuthProps {

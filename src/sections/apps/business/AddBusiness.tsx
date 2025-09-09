@@ -1,6 +1,4 @@
 import { useEffect, useState, ChangeEvent } from 'react';
-
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -25,20 +23,13 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-
-// project imports
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
-
-// assets
 import { CameraOutlined, DeleteFilled, ShopOutlined } from '@ant-design/icons';
-
-// types
 import { ThemeMode } from 'types/config';
 
 const avatarImage = require.context('assets/images/users', true);
 
-// constant
 const getInitialValues = (business: any | null) => {
   const newBusiness = {
     business_name: '',
@@ -77,8 +68,6 @@ const businessTypes = [
   { value: 'other', label: 'Other' }
 ];
 
-// ==============================|| BUSINESS ADD / EDIT ||============================== //
-
 export interface Props {
   open: boolean;
   business?: any;
@@ -105,7 +94,6 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
     }
   }, [selectedImage]);
 
-  // Clear errors when dialog opens/closes
   useEffect(() => {
     if (open) {
       setErrors({});
@@ -116,12 +104,10 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
   const validateForm = () => {
     const newErrors: any = {};
 
-    // Business Name validation
     if (!formData.business_name.trim()) {
       newErrors.business_name = 'Business Name is required';
     }
 
-    // Owner Information validation
     if (!formData.user.first_name.trim()) {
       newErrors['user.first_name'] = 'First Name is required';
     }
@@ -134,7 +120,6 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
       newErrors['user.phone'] = 'Phone Number is required';
     }
 
-    // Password validation (only for new businesses)
     if (!isEdit && !formData.user.password.trim()) {
       newErrors['user.password'] = 'Password is required';
     }
@@ -144,7 +129,6 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
   };
 
   const handleChange = (field: string) => (event: any) => {
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
@@ -240,7 +224,6 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
           </Grid>
           <Grid item xs={12} md={9}>
             <Grid container spacing={3}>
-              {/* Business Information */}
               <Grid item xs={12}>
                 <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
                   Business Information
@@ -314,7 +297,6 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
                 </Stack>
               </Grid>
 
-              {/* Owner Information */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
@@ -389,7 +371,6 @@ const AddBusiness = ({ open, business, onCancel, onSave, isEdit = false }: Props
                 </Grid>
               )}
 
-              {/* Additional Settings */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>

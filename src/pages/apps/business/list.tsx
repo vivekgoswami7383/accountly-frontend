@@ -37,11 +37,11 @@ const BusinessList = () => {
 
   const getStatusColor = (status: number) => {
     switch (status) {
-      case 1: // ACTIVE
+      case 1:
         return 'success';
-      case 2: // INACTIVE
+      case 2:
         return 'warning';
-      case 0: // DELETED
+      case 0:
         return 'error';
       default:
         return 'default';
@@ -50,11 +50,11 @@ const BusinessList = () => {
 
   const getStatusLabel = (status: number) => {
     switch (status) {
-      case 1: // ACTIVE
+      case 1:
         return 'Active';
-      case 2: // INACTIVE
+      case 2:
         return 'Inactive';
-      case 0: // DELETED
+      case 0:
         return 'Deleted';
       default:
         return 'Unknown';
@@ -88,7 +88,6 @@ const BusinessList = () => {
     }
   };
 
-  // Filter businesses based on search term
   useEffect(() => {
     if (searchTerm) {
       const filtered = businesses.filter(
@@ -166,7 +165,6 @@ const BusinessList = () => {
     <MainCard content={false}>
       <ScrollX>
         <Stack spacing={3}>
-          {/* Header with Search and Actions */}
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1}

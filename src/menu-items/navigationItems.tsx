@@ -21,7 +21,7 @@ export const NavigationItems = [
     id: 'business',
     title: <FormattedMessage id="business" />,
     type: 'item',
-    url: '/business',
+    url: '/app/business',
     icon: icons.ShopOutlined,
     allowedRoles: ['super_admin'] // Only super admin can manage businesses
   },
@@ -29,7 +29,7 @@ export const NavigationItems = [
     id: 'customer',
     title: <FormattedMessage id="customer" />,
     type: 'item',
-    url: '/customer',
+    url: '/app/customer',
     icon: icons.CustomerServiceOutlined,
     allowedRoles: ['owner', 'admin', 'staff'] // Owner, admin, staff can manage customers
   },
@@ -37,7 +37,7 @@ export const NavigationItems = [
     id: 'transaction',
     title: <FormattedMessage id="transaction" />,
     type: 'item',
-    url: '/transaction',
+    url: '/app/transaction',
     icon: icons.TransactionOutlined,
     allowedRoles: ['owner', 'admin', 'staff'] // Owner, admin, staff can manage transactions
   }

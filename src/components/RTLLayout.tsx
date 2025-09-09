@@ -2,7 +2,6 @@ import { useEffect, ReactNode } from 'react';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import useConfig from 'hooks/useConfig';
-import { ThemeDirection } from 'types/config';
 
 interface Props {
   children: ReactNode;
@@ -12,11 +11,17 @@ const RTLLayout = ({ children }: Props) => {
   const { themeDirection } = useConfig();
 
   useEffect(() => {
-    document.dir = themeDirection;
+    // Force LTR direction for Accountly
+    document.dir = 'ltr';
+    // Clear any cached RTL settings
+    if (themeDirection === 'rtl') {
+      localStorage.removeItem('mantis-react-ts-config');
+      window.location.reload();
+    }
   }, [themeDirection]);
 
   const cacheRtl = createCache({
-    key: themeDirection === ThemeDirection.RTL ? 'rtl' : 'css',
+    key: 'css', // Always use LTR cache
     prepend: true
   });
 

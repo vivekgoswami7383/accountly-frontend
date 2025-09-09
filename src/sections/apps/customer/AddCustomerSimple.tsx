@@ -1,6 +1,5 @@
 import { useEffect, useState, ChangeEvent } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -10,22 +9,16 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
-  FormControlLabel,
   FormLabel,
   Grid,
   InputLabel,
-  ListItemText,
-  MenuItem,
-  OutlinedInput,
-  Select,
   Stack,
-  Switch,
   TextField,
   Tooltip,
   Typography,
-  RadioGroup,
-  Radio
+  Select,
+  MenuItem,
+  FormHelperText
 } from '@mui/material';
 
 // project imports
@@ -37,6 +30,7 @@ import { CameraOutlined, DeleteFilled, UserOutlined } from '@ant-design/icons';
 
 // types
 import { ThemeMode } from 'types/config';
+import countries from 'data/countries';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -46,16 +40,9 @@ const getInitialValues = (customer: any | null) => {
     first_name: '',
     last_name: '',
     phone: '',
-    email: '',
+    country_code: '+91', // Default to India
     address: '',
-    balance: 0,
-    status: 1,
-    gender: 'male',
-    age: 18,
-    business: {
-      _id: '',
-      business_name: ''
-    }
+    balance: 0
   };
 
   if (customer) {
@@ -67,17 +54,6 @@ const getInitialValues = (customer: any | null) => {
 
   return newCustomer;
 };
-
-const statusOptions = [
-  { value: 1, label: 'Active' },
-  { value: 2, label: 'Inactive' }
-];
-
-const genderOptions = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' }
-];
 
 // ==============================|| CUSTOMER ADD / EDIT ||============================== //
 
@@ -121,20 +97,24 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
     // Required field validations
     if (!formData.first_name.trim()) {
       newErrors.first_name = 'First Name is required';
+    } else if (formData.first_name.trim().length < 2) {
+      newErrors.first_name = 'First Name must be at least 2 characters';
     }
 
     if (!formData.last_name.trim()) {
       newErrors.last_name = 'Last Name is required';
+    } else if (formData.last_name.trim().length < 2) {
+      newErrors.last_name = 'Last Name must be at least 2 characters';
     }
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone Number is required';
+    } else if (!/^\d{10}$/.test(formData.phone.trim())) {
+      newErrors.phone = 'Phone Number must be exactly 10 digits';
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (formData.balance && (!/^\d+$/.test(formData.balance.toString()) || isNaN(Number(formData.balance)))) {
+      newErrors.balance = 'Balance must be a valid whole number';
     }
 
     setErrors(newErrors);
@@ -227,13 +207,6 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
           </Grid>
           <Grid item xs={12} md={9}>
             <Grid container spacing={3}>
-              {/* Personal Information */}
-              <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
-                  Personal Information
-                </Typography>
-              </Grid>
-
               <Grid item xs={12} sm={6}>
                 <Stack spacing={1.25}>
                   <InputLabel htmlFor="customer-first-name">First Name</InputLabel>
@@ -268,49 +241,49 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
 
               <Grid item xs={12} sm={6}>
                 <Stack spacing={1.25}>
-                  <InputLabel htmlFor="customer-email">Email</InputLabel>
-                  <TextField
-                    fullWidth
-                    id="customer-email"
-                    placeholder="Enter Customer Email"
-                    value={formData.email}
-                    onChange={handleChange('email')}
-                    type="email"
-                    error={!!errors.email}
-                    helperText={errors.email}
-                    required
-                  />
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Stack spacing={1.25}>
                   <InputLabel htmlFor="customer-phone">Phone</InputLabel>
-                  <TextField
-                    fullWidth
-                    id="customer-phone"
-                    placeholder="Enter Phone Number"
-                    value={formData.phone}
-                    onChange={handleChange('phone')}
-                    error={!!errors.phone}
-                    helperText={errors.phone}
-                    required
-                  />
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Stack spacing={1.25}>
-                  <InputLabel htmlFor="customer-age">Age</InputLabel>
-                  <TextField
-                    fullWidth
-                    id="customer-age"
-                    placeholder="Enter Age"
-                    value={formData.age}
-                    onChange={handleChange('age')}
-                    type="number"
-                    inputProps={{ min: 1, max: 120 }}
-                  />
+                  <Stack direction="row" spacing={1} alignItems="flex-start">
+                    <Select
+                      value={formData.country_code}
+                      name="country_code"
+                      onChange={handleChange('country_code')}
+                      error={!!errors.country_code}
+                      sx={{ minWidth: 120 }}
+                    >
+                      {countries.map((country) => (
+                        <MenuItem key={country.code} value={country.phone}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2">{country.code}</Typography>
+                            <Typography variant="body2">{country.phone}</Typography>
+                          </Box>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <TextField
+                      fullWidth
+                      id="customer-phone"
+                      type="tel"
+                      placeholder="Enter phone number"
+                      value={formData.phone}
+                      onChange={handleChange('phone')}
+                      error={!!errors.phone}
+                      required
+                      inputProps={{
+                        maxLength: 10,
+                        pattern: '[0-9]*'
+                      }}
+                    />
+                  </Stack>
+                  {errors.country_code && (
+                    <FormHelperText error id="standard-weight-helper-text-country-customer">
+                      {errors.country_code}
+                    </FormHelperText>
+                  )}
+                  {errors.phone && (
+                    <FormHelperText error id="standard-weight-helper-text-phone-customer">
+                      {errors.phone}
+                    </FormHelperText>
+                  )}
                 </Stack>
               </Grid>
 
@@ -324,43 +297,28 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
                     value={formData.balance}
                     onChange={handleChange('balance')}
                     type="number"
-                    inputProps={{ min: 0, step: 0.01 }}
+                    inputProps={{
+                      min: 0,
+                      step: 1,
+                      pattern: '[0-9]*',
+                      inputMode: 'numeric'
+                    }}
+                    onKeyDown={(e) => {
+                      // Prevent decimal point, minus sign, and other non-numeric characters
+                      if (e.key === '.' || e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E') {
+                        e.preventDefault();
+                      }
+                    }}
+                    onInput={(e) => {
+                      // Remove any non-numeric characters
+                      const target = e.target as HTMLInputElement;
+                      target.value = target.value.replace(/[^0-9]/g, '');
+                    }}
+                    onWheel={(e) => {
+                      // Disable scroll to prevent value increment/decrement
+                      e.currentTarget.blur();
+                    }}
                   />
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Stack spacing={1.25}>
-                  <InputLabel htmlFor="customer-status">Status</InputLabel>
-                  <FormControl fullWidth>
-                    <Select
-                      id="customer-status"
-                      value={formData.status}
-                      onChange={handleChange('status')}
-                      input={<OutlinedInput id="select-customer-status" />}
-                      renderValue={(selected) => {
-                        const option = statusOptions.find((opt) => opt.value === selected);
-                        return <Typography variant="subtitle2">{option?.label || selected}</Typography>;
-                      }}
-                    >
-                      {statusOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          <ListItemText primary={option.label} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Stack spacing={1.25}>
-                  <InputLabel htmlFor="customer-gender">Gender</InputLabel>
-                  <RadioGroup row value={formData.gender} onChange={handleChange('gender')} sx={{ ml: 1 }}>
-                    {genderOptions.map((option) => (
-                      <FormControlLabel key={option.value} value={option.value} control={<Radio />} label={option.label} />
-                    ))}
-                  </RadioGroup>
                 </Stack>
               </Grid>
 
@@ -374,38 +332,6 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
                     value={formData.address}
                     onChange={handleChange('address')}
                   />
-                </Stack>
-              </Grid>
-
-              {/* Additional Settings */}
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
-                  Additional Settings
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                  <Stack spacing={0.5}>
-                    <Typography variant="subtitle1">Enable Notifications</Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      Send notifications for orders, payments, and updates
-                    </Typography>
-                  </Stack>
-                  <FormControlLabel control={<Switch defaultChecked sx={{ mt: 0 }} />} label="" labelPlacement="start" />
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                  <Stack spacing={0.5}>
-                    <Typography variant="subtitle1">VIP Customer</Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      Mark as VIP customer for special treatment and discounts
-                    </Typography>
-                  </Stack>
-                  <FormControlLabel control={<Switch sx={{ mt: 0 }} />} label="" labelPlacement="start" />
                 </Stack>
               </Grid>
             </Grid>

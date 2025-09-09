@@ -4,7 +4,7 @@ import { SnackbarProps } from 'types/snackbar';
 const initialState: SnackbarProps = {
   action: false,
   open: false,
-  message: 'Note archived',
+  message: '',
   anchorOrigin: {
     vertical: 'bottom',
     horizontal: 'right'

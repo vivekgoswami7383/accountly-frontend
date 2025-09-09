@@ -7,9 +7,6 @@ import { Box, Grid, Typography } from '@mui/material';
 import AuthFooter from 'components/cards/AuthFooter';
 import AuthCard from './AuthCard';
 
-// assets
-import AuthBackground from 'assets/images/auth/AuthBackground';
-
 interface Props {
   children: ReactNode;
 }
@@ -18,7 +15,6 @@ interface Props {
 
 const AuthWrapper = ({ children }: Props) => (
   <Box sx={{ minHeight: '100vh' }}>
-    <AuthBackground />
     <Grid
       container
       direction="column"

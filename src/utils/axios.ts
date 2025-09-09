@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'http://localhost:9000/' });
+const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'http://localhost:9001/' });
 
-// ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
-
-// Add request interceptor to include token in every request
 axiosServices.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('serviceToken');

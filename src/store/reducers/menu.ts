@@ -20,8 +20,26 @@ const initialState: MenuProps = {
 // ==============================|| SLICE - MENU ||============================== //
 
 export const fetchMenu = createAsyncThunk('', async () => {
-  const response = await axios.get('/api/menu/dashboard');
-  return response.data;
+  try {
+    const response = await axios.get('/api/menu/dashboard');
+    return response.data;
+  } catch (error) {
+    // Return default menu structure if API fails
+    return {
+      id: 'group-dashboard',
+      title: 'dashboard',
+      type: 'group',
+      children: [
+        {
+          id: 'dashboard',
+          title: 'dashboard',
+          type: 'item',
+          url: '/dashboard',
+          icon: 'dashboard'
+        }
+      ]
+    };
+  }
 });
 
 const menu = createSlice({

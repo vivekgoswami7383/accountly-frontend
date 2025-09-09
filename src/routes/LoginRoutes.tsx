@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 import GuestGuard from 'utils/route-guard/GuestGuard';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
@@ -21,6 +22,10 @@ const LoginRoutes = {
         </GuestGuard>
       ),
       children: [
+        {
+          index: true,
+          element: <Navigate to="/login" replace />
+        },
         {
           path: 'login',
           element: <AuthLogin />

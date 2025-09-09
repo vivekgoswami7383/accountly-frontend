@@ -14,8 +14,12 @@ const AuthGuard = ({ children }: GuardProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // For development/testing - allow access to admin panel without login
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const bypassAuth = isDevelopment && location.pathname.startsWith('/app');
+
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && !bypassAuth) {
       navigate('login', {
         state: {
           from: location.pathname
@@ -23,7 +27,7 @@ const AuthGuard = ({ children }: GuardProps) => {
         replace: true
       });
     }
-  }, [isLoggedIn, navigate, location]);
+  }, [isLoggedIn, navigate, location, bypassAuth]);
 
   return children;
 };

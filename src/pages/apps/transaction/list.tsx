@@ -67,7 +67,6 @@ const TransactionList = () => {
     }).format(amount);
   };
 
-  // Fetch transactions from API
   const fetchTransactions = async () => {
     try {
       setLoading(true);
@@ -84,7 +83,6 @@ const TransactionList = () => {
     }
   };
 
-  // Fetch customers from API
   const fetchCustomers = async () => {
     try {
       const response = await customerAPI.getAll();
@@ -94,7 +92,6 @@ const TransactionList = () => {
     }
   };
 
-  // Filter transactions based on search term
   useEffect(() => {
     if (searchTerm) {
       const filtered = transactions.filter(
@@ -110,8 +107,6 @@ const TransactionList = () => {
       setFilteredTransactions(transactions);
     }
   }, [searchTerm, transactions]);
-
-  // Load data on component mount
   useEffect(() => {
     fetchTransactions();
     fetchCustomers();
@@ -131,10 +126,8 @@ const TransactionList = () => {
     try {
       setLoading(true);
       if (editingTransaction) {
-        // Update existing transaction
         await transactionAPI.update(editingTransaction._id, transactionData);
       } else {
-        // Add new transaction
         await transactionAPI.create(transactionData);
       }
       // Refresh the list
@@ -175,7 +168,6 @@ const TransactionList = () => {
     <MainCard content={false}>
       <ScrollX>
         <Stack spacing={3}>
-          {/* Header with Search and Actions */}
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1}
