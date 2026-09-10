@@ -1,10 +1,6 @@
-// material-ui
 import { Box, Grid, Link, Stack, Typography } from '@mui/material';
 
-// assets
 import { GlobalOutlined, NodeExpandOutlined } from '@ant-design/icons';
-
-// ==============================|| COMPONENTS - BREADCRUMBS  ||============================== //
 
 interface Props {
   title: string;

@@ -1,9 +1,6 @@
-// types
 import { PaletteThemeProps } from 'types/theme';
 import { PalettesProps } from '@ant-design/colors';
 import { PaletteColorOptions } from '@mui/material/styles';
-
-// ==============================|| PRESET THEME - DEFAULT ||============================== //
 
 const Default = (colors: PalettesProps): PaletteThemeProps => {
   const { blue, red, gold, cyan, green, grey } = colors;

@@ -1,7 +1,4 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
-
-// ==============================|| OVERRIDES - ALERT TITLE ||============================== //
 
 export default function AccordionDetails(theme: Theme) {
   return {

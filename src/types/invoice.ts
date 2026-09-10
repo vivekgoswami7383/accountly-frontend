@@ -1,5 +1,3 @@
-// ==============================|| INVOICE - SLICE ||============================== //
-
 export interface InfoType {
   name: string;
   address: string;

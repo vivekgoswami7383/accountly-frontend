@@ -1,12 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-
-// project import
 import axios from 'utils/axios';
-
-// types
 import { MenuProps } from 'types/menu';
 
-// initial state
 const initialState: MenuProps = {
   openItem: ['dashboard'],
   openComponent: 'buttons',
@@ -17,14 +12,11 @@ const initialState: MenuProps = {
   error: null
 };
 
-// ==============================|| SLICE - MENU ||============================== //
-
 export const fetchMenu = createAsyncThunk('', async () => {
   try {
     const response = await axios.get('/api/menu/dashboard');
     return response.data;
   } catch (error) {
-    // Return default menu structure if API fails
     return {
       id: 'group-dashboard',
       title: 'dashboard',

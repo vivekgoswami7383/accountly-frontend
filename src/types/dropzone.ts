@@ -1,11 +1,7 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { SxProps } from '@mui/material';
 
-//third-party
 import { DropzoneOptions } from 'react-dropzone';
-
-// ==============================|| TYPES - DROPZONE  ||============================== //
 
 export enum DropzopType {
   default = 'DEFAULT',

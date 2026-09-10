@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-// material-ui
 import { Theme } from '@mui/material/styles';
 import {
   useMediaQuery,
@@ -22,11 +21,9 @@ import {
   Tooltip
 } from '@mui/material';
 
-// third-party
 import { PatternFormat } from 'react-number-format';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 
-// project import
 import AddCustomer from './AddCustomer';
 import AlertCustomerDelete from './AlertCustomerDelete';
 import MainCard from 'components/MainCard';
@@ -36,15 +33,11 @@ import SimpleBar from 'components/third-party/SimpleBar';
 import { PopupTransition } from 'components/@extended/Transitions';
 import ListCard from './exportpdf/ListCard';
 
-// types
 import { UserCardProps } from 'types/user-profile';
 
-// assets
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 
 const avatarImage = require.context('assets/images/users', true);
-
-// ==============================|| CUSTOMER - CARD PREVIEW ||============================== //
 
 export default function CustomerPreview({ customer, open, onClose }: { customer: UserCardProps; open: boolean; onClose: () => void }) {
   const matchDownMD = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
@@ -280,7 +273,6 @@ export default function CustomerPreview({ customer, open, onClose }: { customer:
         </Box>
       </Dialog>
 
-      {/* edit customer dialog */}
       <Dialog
         maxWidth="sm"
         fullWidth

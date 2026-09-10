@@ -1,12 +1,8 @@
-// material-ui
 import { Grid, Stack, Typography } from '@mui/material';
 
-// project imports
 import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
 import { GenericCardProps } from 'types/root';
-
-// ============================|| ROUND ICON CARD ||============================ //
 
 interface Props {
   primary: string;

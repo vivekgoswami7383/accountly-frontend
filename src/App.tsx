@@ -1,46 +1,42 @@
-import { useEffect, useState } from 'react';
+import { GlobalStyles } from '@mui/material';
 import Routes from 'routes';
 import ThemeCustomization from 'themes';
-import Loader from 'components/Loader';
 import Locales from 'components/Locales';
 import RTLLayout from 'components/RTLLayout';
 import ScrollTop from 'components/ScrollTop';
 import Snackbar from 'components/@extended/Snackbar';
 import Notistack from 'components/third-party/Notistack';
-import { dispatch } from 'store';
-import { fetchMenu } from 'store/reducers/menu';
 
 import { JWTProvider as AuthProvider } from 'contexts/JWTContext';
 
-const App = () => {
-  const [loading, setLoading] = useState<boolean>(true);
+const overflowGuard = (
+  <GlobalStyles
+    styles={{
+      'html, body': { overflowX: 'hidden' },
+      '#root': { overflowX: 'hidden', width: '100%' },
+      'img, svg, video, canvas': { maxWidth: '100%' }
+    }}
+  />
+);
 
-  useEffect(() => {
-    dispatch(fetchMenu()).then(() => {
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) return <Loader />;
-
-  return (
-    <ThemeCustomization>
-      <RTLLayout>
-        <Locales>
-          <ScrollTop>
-            <AuthProvider>
-              <>
-                <Notistack>
-                  <Routes />
-                  <Snackbar />
-                </Notistack>
-              </>
-            </AuthProvider>
-          </ScrollTop>
-        </Locales>
-      </RTLLayout>
-    </ThemeCustomization>
-  );
-};
+const App = () => (
+  <ThemeCustomization>
+    {overflowGuard}
+    <RTLLayout>
+      <Locales>
+        <ScrollTop>
+          <AuthProvider>
+            <>
+              <Notistack>
+                <Routes />
+                <Snackbar />
+              </Notistack>
+            </>
+          </AuthProvider>
+        </ScrollTop>
+      </Locales>
+    </RTLLayout>
+  </ThemeCustomization>
+);
 
 export default App;

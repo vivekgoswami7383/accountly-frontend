@@ -21,26 +21,22 @@ import {
   FormHelperText
 } from '@mui/material';
 
-// project imports
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
 
-// assets
 import { CameraOutlined, DeleteFilled, UserOutlined } from '@ant-design/icons';
 
-// types
 import { ThemeMode } from 'types/config';
 import countries from 'data/countries';
 
 const avatarImage = require.context('assets/images/users', true);
 
-// constant
 const getInitialValues = (customer: any | null) => {
   const newCustomer = {
     first_name: '',
     last_name: '',
     phone: '',
-    country_code: '+91', // Default to India
+    country_code: '+91',
     address: '',
     balance: 0
   };
@@ -54,8 +50,6 @@ const getInitialValues = (customer: any | null) => {
 
   return newCustomer;
 };
-
-// ==============================|| CUSTOMER ADD / EDIT ||============================== //
 
 export interface Props {
   open: boolean;
@@ -83,7 +77,6 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
     }
   }, [selectedImage]);
 
-  // Clear errors when dialog opens/closes
   useEffect(() => {
     if (open) {
       setErrors({});
@@ -94,7 +87,6 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
   const validateForm = () => {
     const newErrors: any = {};
 
-    // Required field validations
     if (!formData.first_name.trim()) {
       newErrors.first_name = 'First Name is required';
     } else if (formData.first_name.trim().length < 2) {
@@ -122,7 +114,6 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
   };
 
   const handleChange = (field: string) => (event: any) => {
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
@@ -304,18 +295,15 @@ const AddCustomerSimple = ({ open, customer, onCancel, onSave, isEdit = false }:
                       inputMode: 'numeric'
                     }}
                     onKeyDown={(e) => {
-                      // Prevent decimal point, minus sign, and other non-numeric characters
                       if (e.key === '.' || e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E') {
                         e.preventDefault();
                       }
                     }}
                     onInput={(e) => {
-                      // Remove any non-numeric characters
                       const target = e.target as HTMLInputElement;
                       target.value = target.value.replace(/[^0-9]/g, '');
                     }}
                     onWheel={(e) => {
-                      // Disable scroll to prevent value increment/decrement
                       e.currentTarget.blur();
                     }}
                   />

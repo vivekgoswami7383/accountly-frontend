@@ -1,19 +1,14 @@
 import { forwardRef, ReactNode, Ref } from 'react';
 
-// material-ui
 import MuiLoadingButton from '@mui/lab/LoadingButton';
 import { alpha, styled, useTheme } from '@mui/material/styles';
 import { ButtonProps } from '@mui/material';
 import { LoadingButtonProps } from '@mui/lab';
 
-// project imports
 import getColors from 'utils/getColors';
 import getShadow from 'utils/getShadow';
 
-// types
 import { ButtonVariantProps, ExtendedStyleProps, IconButtonShapeProps } from 'types/extended';
-
-// ==============================|| LOADING BUTTON - COLOR STYLE ||============================== //
 
 interface LoadingButtonStyleProps extends ExtendedStyleProps {
   variant: ButtonVariantProps;
@@ -129,8 +124,6 @@ function getColorStyle({ variant, theme, color, loadingPosition }: LoadingButton
   }
 }
 
-// ==============================|| STYLED - LOADING BUTTON ||============================== //
-
 interface StyleProps extends LoadingButtonStyleProps {
   shape?: IconButtonShapeProps;
   loading: LoadingButtonProps['loading'];
@@ -211,8 +204,6 @@ const LoadingButtonStyle = styled(MuiLoadingButton, { shouldForwardProp: (prop) 
     }
   })
 );
-
-// ==============================|| EXTENDED - LOADING BUTTON ||============================== //
 
 interface Props extends LoadingButtonProps {
   color?: ButtonProps['color'];

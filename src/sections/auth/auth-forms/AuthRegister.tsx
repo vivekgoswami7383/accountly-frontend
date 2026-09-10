@@ -1,7 +1,6 @@
 import { useEffect, useState, SyntheticEvent } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
-// material-ui
 import {
   Box,
   Button,
@@ -16,11 +15,9 @@ import {
   Typography
 } from '@mui/material';
 
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project import
 import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
 
@@ -30,13 +27,9 @@ import { dispatch } from 'store';
 import { openSnackbar } from 'store/reducers/snackbar';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
-// types
 import { StringColorProps } from 'types/password';
 
-// assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-
-// ============================|| JWT - REGISTER ||============================ //
 
 const AuthRegister = () => {
   const { register } = useAuth();

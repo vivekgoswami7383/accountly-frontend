@@ -1,7 +1,4 @@
-// material-ui
 import { Box, CircularProgress, CircularProgressProps, Typography, circularProgressClasses } from '@mui/material';
-
-// ==============================|| PROGRESS - CIRCULAR PATH ||============================== //
 
 interface Props extends CircularProgressProps {
   showLabel?: boolean;

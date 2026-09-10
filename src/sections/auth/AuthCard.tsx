@@ -1,11 +1,7 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 
-// project import
 import MainCard, { MainCardProps } from 'components/MainCard';
-
-// ==============================|| AUTHENTICATION - CARD WRAPPER ||============================== //
 
 const AuthCard = ({ children, ...other }: MainCardProps) => (
   <MainCard

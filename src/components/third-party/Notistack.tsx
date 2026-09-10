@@ -1,16 +1,11 @@
-//material-ui
 import { styled } from '@mui/material/styles';
 
-// third-party
 import { SnackbarProvider } from 'notistack';
 
-// project import
 import { useSelector } from 'store';
 
-// assets
 import { CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
 
-// custom styles
 const StyledSnackbarProvider = styled(SnackbarProvider)(({ theme }) => ({
   '&.notistack-MuiContent-default': {
     backgroundColor: theme.palette.primary.main
@@ -28,8 +23,6 @@ const StyledSnackbarProvider = styled(SnackbarProvider)(({ theme }) => ({
     backgroundColor: theme.palette.warning.main
   }
 }));
-
-// ===========================|| SNACKBAR - NOTISTACK ||=========================== //
 
 const Notistack = ({ children }: any) => {
   const snackbar = useSelector((state) => state.snackbar);

@@ -1,145 +1,42 @@
 import { lazy } from 'react';
-import { Navigate } from 'react-router-dom';
-import MainLayout from 'layout/MainLayout';
-import MobileLayout from 'layout/MobileLayout';
+import AppLayout from 'layout/AppLayout';
 import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
-import RouteProtection from 'components/RouteProtection';
-import RoleBasedLayout from 'components/RoleBasedLayout';
 
-const Landing = Loadable(lazy(() => import('pages/Landing')));
-const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
-const MobileDashboard = Loadable(lazy(() => import('pages/dashboard/mobile-dashboard')));
-const AppCustomerList = Loadable(lazy(() => import('pages/apps/customer/simple-list')));
-const MobileCustomerList = Loadable(lazy(() => import('pages/apps/customer/mobile-customer-list')));
-const AppBusinessList = Loadable(lazy(() => import('pages/apps/business/list')));
-const AppTransactionList = Loadable(lazy(() => import('pages/apps/transaction/list')));
-const MobileTransactionList = Loadable(lazy(() => import('pages/apps/transaction/mobile-transaction-list')));
-const MobileMore = Loadable(lazy(() => import('pages/apps/more/mobile-more')));
-const ProfilePage = Loadable(lazy(() => import('pages/apps/profile')));
-const SettingsPage = Loadable(lazy(() => import('pages/apps/settings')));
+const Dashboard = Loadable(lazy(() => import('pages/accountly/Dashboard')));
+const Customers = Loadable(lazy(() => import('pages/accountly/Customers')));
+const AddCustomer = Loadable(lazy(() => import('pages/accountly/AddCustomer')));
+const CustomerDetail = Loadable(lazy(() => import('pages/accountly/CustomerDetail')));
+const EditCustomer = Loadable(lazy(() => import('pages/accountly/EditCustomer')));
+const CustomerSettings = Loadable(lazy(() => import('pages/accountly/CustomerSettings')));
+const Transactions = Loadable(lazy(() => import('pages/accountly/Transactions')));
+const Payment = Loadable(lazy(() => import('pages/accountly/Payment')));
+const More = Loadable(lazy(() => import('pages/accountly/More')));
+const Profile = Loadable(lazy(() => import('pages/accountly/Profile')));
+const Settings = Loadable(lazy(() => import('pages/accountly/Settings')));
+const Reports = Loadable(lazy(() => import('pages/accountly/Reports')));
 
 const MainRoutes = {
   path: '/',
+  element: (
+    <AuthGuard>
+      <AppLayout />
+    </AuthGuard>
+  ),
   children: [
-    {
-      path: '/',
-      element: <Landing />
-    },
-    {
-      path: '/business',
-      element: <Navigate to="/app/business" replace />
-    },
-    {
-      path: '/customer',
-      element: <Navigate to="/app/customer" replace />
-    },
-    {
-      path: '/transaction',
-      element: <Navigate to="/app/transaction" replace />
-    },
-    {
-      path: '/dashboard',
-      element: (
-        <AuthGuard>
-          <MainLayout />
-        </AuthGuard>
-      ),
-      children: [
-        {
-          index: true,
-          element: (
-            <RoleBasedLayout superAdminRoles={['super_admin']}>
-              <DashboardDefault />
-            </RoleBasedLayout>
-          )
-        }
-      ]
-    },
-    {
-      path: '/app',
-      element: (
-        <AuthGuard>
-          <MainLayout />
-        </AuthGuard>
-      ),
-      children: [
-        {
-          path: 'dashboard',
-          element: (
-            <RouteProtection allowedRoles={['super_admin', 'owner', 'admin', 'staff']}>
-              <DashboardDefault />
-            </RouteProtection>
-          )
-        },
-        {
-          path: 'business',
-          element: (
-            <RouteProtection allowedRoles={['super_admin']}>
-              <AppBusinessList />
-            </RouteProtection>
-          )
-        },
-        {
-          path: 'customer',
-          element: (
-            <RouteProtection allowedRoles={['owner', 'admin', 'staff']}>
-              <AppCustomerList />
-            </RouteProtection>
-          )
-        },
-        {
-          path: 'transaction',
-          element: (
-            <RouteProtection allowedRoles={['owner', 'admin', 'staff']}>
-              <AppTransactionList />
-            </RouteProtection>
-          )
-        }
-      ]
-    },
-    {
-      path: '/mobile',
-      element: (
-        <AuthGuard>
-          <MobileLayout />
-        </AuthGuard>
-      ),
-      children: [
-        {
-          path: 'dashboard',
-          element: <MobileDashboard />
-        },
-        {
-          path: 'customer',
-          element: <MobileCustomerList />
-        },
-        {
-          path: 'transaction',
-          element: <MobileTransactionList />
-        },
-        {
-          path: 'more',
-          element: <MobileMore />
-        },
-        {
-          path: 'profile',
-          element: (
-            <RouteProtection allowedRoles={['super_admin', 'owner', 'admin', 'staff']}>
-              <ProfilePage />
-            </RouteProtection>
-          )
-        },
-        {
-          path: 'settings',
-          element: (
-            <RouteProtection allowedRoles={['super_admin', 'owner', 'admin', 'staff']}>
-              <SettingsPage />
-            </RouteProtection>
-          )
-        }
-      ]
-    }
+    { index: true, element: <Dashboard /> },
+    { path: 'customer', element: <Customers /> },
+    { path: 'customer/add', element: <AddCustomer /> },
+    { path: 'customer/:id', element: <CustomerDetail /> },
+    { path: 'customer/:id/edit', element: <EditCustomer /> },
+    { path: 'customer/:id/settings', element: <CustomerSettings /> },
+    { path: 'transaction', element: <Transactions /> },
+    { path: 'transaction/new', element: <Payment /> },
+    { path: 'transaction/:id', element: <Payment /> },
+    { path: 'more', element: <More /> },
+    { path: 'profile', element: <Profile /> },
+    { path: 'settings', element: <Settings /> },
+    { path: 'reports', element: <Reports /> }
   ]
 };
 

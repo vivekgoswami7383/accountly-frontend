@@ -1,13 +1,8 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 
-// project import
 import getColors from 'utils/getColors';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| OVERRIDES - TAB ||============================== //
 
 function getColorStyle({ color, theme }: ExtendedStyleProps) {
   const colors = getColors(theme, color);

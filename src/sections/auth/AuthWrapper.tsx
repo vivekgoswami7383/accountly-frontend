@@ -1,17 +1,13 @@
 import { ReactNode } from 'react';
 
-// material-ui
 import { Box, Grid, Typography } from '@mui/material';
 
-// project import
 import AuthFooter from 'components/cards/AuthFooter';
 import AuthCard from './AuthCard';
 
 interface Props {
   children: ReactNode;
 }
-
-// ==============================|| AUTHENTICATION - WRAPPER ||============================== //
 
 const AuthWrapper = ({ children }: Props) => (
   <Box sx={{ minHeight: '100vh' }}>

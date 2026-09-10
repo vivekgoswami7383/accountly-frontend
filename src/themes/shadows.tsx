@@ -1,16 +1,8 @@
-// material-ui
 import { alpha, Theme } from '@mui/material/styles';
-
-// types
 import { ThemeMode } from 'types/config';
-
-// types
 import { CustomShadowProps } from 'types/theme';
 
-// ==============================|| DEFAULT THEME - CUSTOM SHADOWS  ||============================== //
-
 const CustomShadows = (theme: Theme): CustomShadowProps => ({
-  // z1: `0px 2px 8px rgba(0, 0, 0, 0.15)`,
   button: theme.palette.mode === ThemeMode.DARK ? `0 2px 0 rgb(0 0 0 / 5%)` : `0 2px #0000000b`,
   text: `0 -1px 0 rgb(0 0 0 / 12%)`,
   z1:

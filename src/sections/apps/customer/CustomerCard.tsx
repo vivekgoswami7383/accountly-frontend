@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-// material-ui
 import {
   Box,
   Button,
@@ -21,11 +20,9 @@ import {
   Typography
 } from '@mui/material';
 
-// third-party
 import { PatternFormat } from 'react-number-format';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 
-// project import
 import CustomerPreview from './CustomerPreview';
 import AlertCustomerDelete from './AlertCustomerDelete';
 import AddCustomer from 'sections/apps/customer/AddCustomer';
@@ -35,15 +32,11 @@ import IconButton from 'components/@extended/IconButton';
 import { PopupTransition } from 'components/@extended/Transitions';
 import ListSmallCard from './exportpdf/ListSmallCard';
 
-// assets
 import { EnvironmentOutlined, LinkOutlined, MailOutlined, MoreOutlined, PhoneOutlined } from '@ant-design/icons';
 
-// types
 import { UserCardProps } from 'types/user-profile';
 
 const avatarImage = require.context('assets/images/users', true);
-
-// ==============================|| CUSTOMER - CARD ||============================== //
 
 const CustomerCard = ({ customer }: { customer: UserCardProps }) => {
   const [open, setOpen] = useState(false);
@@ -223,7 +216,6 @@ const CustomerCard = ({ customer }: { customer: UserCardProps }) => {
         </Stack>
       </MainCard>
 
-      {/* edit customer dialog */}
       <Dialog
         maxWidth="sm"
         fullWidth

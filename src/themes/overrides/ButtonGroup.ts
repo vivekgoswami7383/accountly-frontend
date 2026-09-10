@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - BUTTON ||============================== //
-
 export default function ButtonGroup() {
   return {
     MuiButtonGroup: {

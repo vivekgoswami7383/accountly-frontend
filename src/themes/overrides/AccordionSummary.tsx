@@ -1,10 +1,6 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 
-// assets
 import { RightOutlined } from '@ant-design/icons';
-
-// ==============================|| OVERRIDES - ALERT TITLE ||============================== //
 
 export default function AccordionSummary(theme: Theme) {
   const { palette, spacing } = theme;

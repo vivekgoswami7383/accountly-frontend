@@ -1,10 +1,6 @@
-// material-ui
 import { CardContent, Grid, Skeleton, Stack } from '@mui/material';
 
-// project import
 import MainCard from 'components/MainCard';
-
-// ===========================|| SKELETON - PRODUCT CARD ||=========================== //
 
 const ProductPlaceholder = () => (
   <MainCard content={false} boxShadow>

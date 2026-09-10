@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - AUTOCOMPLETE ||============================== //
-
 export default function Autocomplete() {
   return {
     MuiAutocomplete: {

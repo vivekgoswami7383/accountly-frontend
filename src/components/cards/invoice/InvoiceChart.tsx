@@ -1,24 +1,17 @@
 import { useState, useEffect } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 
-// third-party
 import ReactApexChart, { Props as ChartProps } from 'react-apexcharts';
 
-// project import
 import useConfig from 'hooks/useConfig';
 
-// types
 import { ThemeMode } from 'types/config';
-
-// ==============================|| INVOICE - CHART ||============================== //
 
 const InvoiceChart = ({ color, data }: any) => {
   const theme = useTheme();
   const { mode } = useConfig();
 
-  // chart options
   const areaChartOptions = {
     chart: {
       id: 'new-stack-chart',

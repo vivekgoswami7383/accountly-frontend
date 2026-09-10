@@ -1,13 +1,8 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 
-// project import
 import getColors from 'utils/getColors';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| CHIP - COLORS ||============================== //
 
 function getColor({ color, theme }: ExtendedStyleProps) {
   const colors = getColors(theme, color);
@@ -37,8 +32,6 @@ function getColorStyle({ color, theme }: ExtendedStyleProps) {
     }
   };
 }
-
-// ==============================|| OVERRIDES - CHIP ||============================== //
 
 export default function Chip(theme: Theme) {
   const defaultLightChip = getColorStyle({ color: 'secondary', theme });

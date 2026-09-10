@@ -1,7 +1,4 @@
-// material-ui
 import { AlertProps, SnackbarOrigin } from '@mui/material';
-
-// ==============================|| SNACKBAR TYPES  ||============================== //
 
 export type SnackbarActionProps = {
   payload?: SnackbarProps;

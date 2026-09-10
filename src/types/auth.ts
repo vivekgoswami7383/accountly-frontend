@@ -1,9 +1,6 @@
 import { ReactElement } from 'react';
 
-// third-party
 import firebase from 'firebase/compat/app';
-
-// ==============================|| AUTH TYPES  ||============================== //
 
 export type GuardProps = {
   children: ReactElement | null;
@@ -11,6 +8,7 @@ export type GuardProps = {
 
 export type UserProfile = {
   id?: string;
+  _id?: string;
   email?: string;
   avatar?: string;
   image?: string;
@@ -20,6 +18,8 @@ export type UserProfile = {
   phone?: string;
   role?: string;
   tier?: string;
+  theme?: 'light' | 'dark';
+  permissions?: string[];
   business?: {
     _id?: string;
     business_name?: string;
@@ -80,10 +80,10 @@ export type JWTContextType = {
   isInitialized?: boolean;
   user?: UserProfile | null | undefined;
   logout: () => void;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  login: (phone: string, password: string) => Promise<void>;
+  register: (businessName: string, name: string, phone: string, password: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  updateProfile: VoidFunction;
+  updateProfile: (payload?: Record<string, any>) => Promise<void>;
 };
 
 export type Auth0ContextType = {

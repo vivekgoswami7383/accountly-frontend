@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 
-// third-party
 import ReactApexChart, { Props as ChartProps } from 'react-apexcharts';
 
-// project import
 import useConfig from 'hooks/useConfig';
 
-// types
 import { ThemeMode } from 'types/config';
 
-// chart options
 const areaChartOptions = {
   chart: {
     height: 340,
@@ -62,8 +57,6 @@ const areaChartOptions = {
     }
   }
 };
-
-// ==============================|| REPORT AREA CHART ||============================== //
 
 const ReportAreaChart = () => {
   const theme = useTheme();

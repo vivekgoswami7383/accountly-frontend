@@ -1,5 +1,3 @@
-// ==============================|| AUTOCOMPLETE - DATA ||============================== //
-
 const movies = [
   { label: 'The Shawshank Redemption', year: 1994 },
   { label: 'The Godfather', year: 1972 },

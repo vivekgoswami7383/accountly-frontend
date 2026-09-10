@@ -1,14 +1,9 @@
-// third-party
 import { createSlice } from '@reduxjs/toolkit';
 
-// project imports
 import axios from 'utils/axios';
 import { dispatch } from '../index';
 
-// types
 import { ChatStateProps } from 'types/chat';
-
-// ----------------------------------------------------------------------
 
 const initialState: ChatStateProps = {
   error: null,
@@ -21,32 +16,25 @@ const chat = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    // HAS ERROR
     hasError(state, action) {
       state.error = action.payload;
     },
 
-    // GET USER
     getUserSuccess(state, action) {
       state.user = action.payload;
     },
 
-    // GET USER CHATS
     getUserChatsSuccess(state, action) {
       state.chats = action.payload;
     },
 
-    // GET USERS
     getUsersSuccess(state, action) {
       state.users = action.payload;
     }
   }
 });
 
-// Reducer
 export default chat.reducer;
-
-// ----------------------------------------------------------------------
 
 export function getUser(id: number) {
   return async () => {

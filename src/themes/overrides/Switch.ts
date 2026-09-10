@@ -1,8 +1,5 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { SwitchProps } from '@mui/material/Switch';
-
-// ==============================|| SWITCH - SIZE STYLE ||============================== //
 
 interface SwitchSizeProps {
   width: number;
@@ -46,8 +43,6 @@ function switchStyle(theme: Theme, size?: SwitchProps['size']) {
   };
 }
 
-// ==============================|| OVERRIDES - TAB ||============================== //
-
 export default function Switch(theme: Theme) {
   return {
     MuiSwitch: {
@@ -79,10 +74,6 @@ export default function Switch(theme: Theme) {
               opacity: 0.3
             }
           }
-          // '&.Mui-focusVisible': {
-          //   outline: `2px solid #000`,
-          //   outlineOffset: -2
-          // }
         },
         root: {
           color: theme.palette.text.primary,

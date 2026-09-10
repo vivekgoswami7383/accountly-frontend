@@ -1,4 +1,3 @@
-// material-ui
 // eslint-disable-next-line
 import * as Color from '@mui/material';
 

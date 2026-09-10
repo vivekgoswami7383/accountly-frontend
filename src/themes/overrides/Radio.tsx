@@ -1,14 +1,9 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { Box, CheckboxProps } from '@mui/material';
 
-// project import
 import getColors from 'utils/getColors';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| RADIO - COLORS ||============================== //
 
 function getColorStyle({ color, theme }: ExtendedStyleProps) {
   const colors = getColors(theme, color);
@@ -28,8 +23,6 @@ function getColorStyle({ color, theme }: ExtendedStyleProps) {
   };
 }
 
-// ==============================|| CHECKBOX - SIZE STYLE ||============================== //
-
 interface RadioSizeProps {
   size: number;
   dotSize: number;
@@ -48,8 +41,6 @@ function getSizeStyle(size?: CheckboxProps['size']): RadioSizeProps {
   }
 }
 
-// ==============================|| CHECKBOX - STYLE ||============================== //
-
 function radioStyle(size?: CheckboxProps['size']) {
   const sizes: RadioSizeProps = getSizeStyle(size);
 
@@ -66,8 +57,6 @@ function radioStyle(size?: CheckboxProps['size']) {
     }
   };
 }
-
-// ==============================|| OVERRIDES - CHECKBOX ||============================== //
 
 export default function Radio(theme: Theme) {
   const { palette } = theme;

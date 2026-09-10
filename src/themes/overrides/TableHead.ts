@@ -1,7 +1,4 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
-
-// ==============================|| OVERRIDES - TABLE CELL ||============================== //
 
 export default function TableHead(theme: Theme) {
   return {

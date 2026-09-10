@@ -1,19 +1,14 @@
 import { forwardRef, useEffect, ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Link } from 'react-router-dom';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery, Avatar, Chip, ListItemButton, ListItemText, Typography } from '@mui/material';
 
-// project import
 import { dispatch, useSelector } from 'store';
 import { activeComponent, openComponentDrawer } from 'store/reducers/menu';
 
-// types
 import { LinkTarget, NavItemType } from 'types/menu';
 import { ThemeMode } from 'types/config';
-
-// ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
 interface Props {
   item: NavItemType;
@@ -46,7 +41,6 @@ const NavItem = ({ item, level }: Props) => {
     matchesMD && dispatch(openComponentDrawer({ componentDrawerOpen: false }));
   };
 
-  // active menu item on page load
   useEffect(() => {
     const currentIndex = document.location.pathname
       .toString()

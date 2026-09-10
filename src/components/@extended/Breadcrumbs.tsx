@@ -1,22 +1,16 @@
 import { CSSProperties, ReactElement, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Divider, Grid, Typography } from '@mui/material';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 
-// project import
 import MainCard from 'components/MainCard';
 
-// assets
 import { ApartmentOutlined, HomeOutlined, HomeFilled } from '@ant-design/icons';
 
-// types
 import { OverrideIcon } from 'types/root';
 import { NavItemType } from 'types/menu';
-
-// ==============================|| BREADCRUMBS ||============================== //
 
 export interface BreadCrumbSxProps extends CSSProperties {
   mb?: string;
@@ -75,7 +69,6 @@ const Breadcrumbs = ({
 
   let customLocation = location.pathname;
 
-  // only used for component demo breadcrumbs
   if (customLocation.includes('/components-overview/breadcrumbs')) {
     customLocation = '/apps/kanban/board';
   }
@@ -90,7 +83,6 @@ const Breadcrumbs = ({
     }
   }, [item, customLocation]);
 
-  // set active item state
   const getCollapse = (menu: NavItemType) => {
     if (menu.children) {
       menu.children.filter((collapse: NavItemType) => {
@@ -111,7 +103,6 @@ const Breadcrumbs = ({
     }
   };
 
-  // item separator
   const SeparatorIcon = separator!;
   const separatorIcon = separator ? <SeparatorIcon style={{ fontSize: '0.75rem', marginTop: 2 }} /> : '/';
 
@@ -122,7 +113,6 @@ const Breadcrumbs = ({
   let CollapseIcon;
   let ItemIcon;
 
-  // collapse item
   if (main && main.type === 'collapse' && main.breadcrumbs === true) {
     CollapseIcon = main.icon ? main.icon : ApartmentOutlined;
     mainContent = (
@@ -167,7 +157,6 @@ const Breadcrumbs = ({
     );
   }
 
-  // items
   if (item && item.type === 'item') {
     itemTitle = item.title;
 
@@ -179,7 +168,6 @@ const Breadcrumbs = ({
       </Typography>
     );
 
-    // main
     if (item.breadcrumbs !== false) {
       breadcrumbContent = (
         <MainCard

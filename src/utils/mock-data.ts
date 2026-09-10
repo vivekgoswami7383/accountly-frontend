@@ -1,4 +1,3 @@
-// third-party
 import { sub } from 'date-fns';
 import { Chance } from 'chance';
 import lodash from 'lodash';

@@ -1,14 +1,9 @@
-// material-ui
 import { alpha, Theme } from '@mui/material/styles';
 
-// project import
 import getColors from 'utils/getColors';
 import getShadow from 'utils/getShadow';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| BUTTON - COLORS ||============================== //
 
 function getColorStyle({ color, theme }: ExtendedStyleProps) {
   const colors = getColors(theme, color);
@@ -39,8 +34,6 @@ function getColorStyle({ color, theme }: ExtendedStyleProps) {
     }
   };
 }
-
-// ==============================|| OVERRIDES - BUTTON ||============================== //
 
 export default function Button(theme: Theme) {
   return {

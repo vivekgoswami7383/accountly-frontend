@@ -1,13 +1,8 @@
-// material-ui
 import { alpha, Theme } from '@mui/material/styles';
 
-// project import
 import getColors from 'utils/getColors';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| ALERT - COLORS ||============================== //
 
 function getColorStyle({ color, theme }: ExtendedStyleProps) {
   const colors = getColors(theme, color);
@@ -21,8 +16,6 @@ function getColorStyle({ color, theme }: ExtendedStyleProps) {
     }
   };
 }
-
-// ==============================|| OVERRIDES - ALERT ||============================== //
 
 export default function Alert(theme: Theme) {
   const primaryDashed = getColorStyle({ color: 'primary', theme });

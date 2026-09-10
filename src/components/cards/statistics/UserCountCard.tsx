@@ -1,11 +1,8 @@
-// material-ui
 import { styled } from '@mui/material/styles';
 import { Card, CardContent, Grid, Typography } from '@mui/material';
 
-// types
 import { GenericCardProps } from 'types/root';
 
-// styles
 const IconWrapper = styled('div')({
   position: 'absolute',
   left: '-17px',
@@ -25,8 +22,6 @@ interface UserCountCardProps {
   iconPrimary: GenericCardProps['iconPrimary'];
   color: string;
 }
-
-// =============================|| USER NUM CARD ||============================= //
 
 const UserCountCard = ({ primary, secondary, iconPrimary, color }: UserCountCardProps) => {
   const IconPrimary = iconPrimary!;

@@ -1,9 +1,7 @@
-// third-party
 import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-// project import
 import chat from './chat';
 import calendar from './calendar';
 import menu from './menu';
@@ -12,14 +10,18 @@ import productReducer from './product';
 import cartReducer from './cart';
 import kanban from './kanban';
 import invoice from './invoice';
-
-// ==============================|| COMBINE REDUCERS ||============================== //
+import customers from './accountly/customers';
+import transactions from './accountly/transactions';
+import dashboard from './accountly/dashboard';
 
 const reducers = combineReducers({
   chat,
   calendar,
   menu,
   snackbar,
+  customers,
+  transactions,
+  dashboard,
   cart: persistReducer(
     {
       key: 'cart',

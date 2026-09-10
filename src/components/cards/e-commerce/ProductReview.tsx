@@ -1,16 +1,11 @@
-// material-ui
 import { Grid, Rating, Stack, Typography } from '@mui/material';
 
-// project imports
 import Avatar from 'components/@extended/Avatar';
 
-// assets
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { ReactNode } from 'react';
 
 const avatarImage = require.context('assets/images/users', true);
-
-// ==============================|| PRODUCT DETAILS - REVIEW ||============================== //
 
 interface ReviewProps {
   avatar: string;

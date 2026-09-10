@@ -1,17 +1,12 @@
-// material-ui
 import { alpha, styled, useTheme } from '@mui/material/styles';
 import { Stack, Typography } from '@mui/material';
 
-// third-party
 import { useDropzone } from 'react-dropzone';
 
-// project import
 import RejectionFiles from './RejectionFiles';
 
-// assets
 import { CameraOutlined } from '@ant-design/icons';
 
-// types
 import { CustomFile, UploadProps } from 'types/dropzone';
 
 const RootWrapper = styled('div')(({ theme }) => ({
@@ -55,8 +50,6 @@ const PlaceholderWrapper = styled('div')(({ theme }) => ({
   }),
   '&:hover': { opacity: 0.85 }
 }));
-
-// ==============================|| UPLOAD - AVATAR ||============================== //
 
 const AvatarUpload = ({ error, file, setFieldValue, sx, ...other }: UploadProps) => {
   const theme = useTheme();

@@ -1,12 +1,8 @@
-// material-ui
 import { CameraOutlined } from '@ant-design/icons';
 import { Typography, Stack, CardMedia } from '@mui/material';
 
-// assets
 import UploadCover from 'assets/images/upload/upload.svg';
 import { DropzopType } from 'types/dropzone';
-
-// ==============================|| UPLOAD - PLACEHOLDER ||============================== //
 
 export default function PlaceholderContent({ type }: { type?: string }) {
   return (

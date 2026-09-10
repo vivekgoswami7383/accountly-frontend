@@ -1,12 +1,7 @@
-//material-ui
 import { useTheme } from '@mui/material/styles';
 
-// third-party
 import { Page, View, Document, StyleSheet, Image, Text, Link } from '@react-pdf/renderer';
 
-// project import
-
-// types
 import { UserCardProps } from 'types/user-profile';
 
 const textPrimary = '#262626';

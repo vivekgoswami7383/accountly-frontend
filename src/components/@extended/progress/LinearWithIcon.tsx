@@ -1,9 +1,6 @@
 import { ReactNode } from 'react';
 
-// material-ui
 import { Box, LinearProgress, LinearProgressProps } from '@mui/material';
-
-// ==============================|| PROGRESS - LINEAR ICON ||============================== //
 
 export default function LinearWithIcon({ icon, value, ...others }: LinearProgressProps & { icon: ReactNode }) {
   return (

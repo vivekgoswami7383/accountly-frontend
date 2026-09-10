@@ -1,17 +1,14 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
-// material-ui
 import { styled, useTheme, Theme } from '@mui/material/styles';
 import { useMediaQuery, Box } from '@mui/material';
 
-// project import
 import Drawer from './Drawer';
 import { DRAWER_WIDTH } from 'config';
 import { dispatch } from 'store';
 import { openComponentDrawer } from 'store/reducers/menu';
 
-// components content
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }: { theme: Theme; open: boolean }) => ({
   minHeight: `calc(100vh - 188px)`,
   width: `calc(100% - ${DRAWER_WIDTH}px)`,
@@ -30,8 +27,6 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
     })
   })
 }));
-
-// ==============================|| COMPONENTS LAYOUT ||============================== //
 
 interface Props {
   handleDrawerOpen: () => void;

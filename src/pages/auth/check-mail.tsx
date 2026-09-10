@@ -1,15 +1,11 @@
 import { Link } from 'react-router-dom';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Box, Button, Grid, Divider, Typography, useMediaQuery } from '@mui/material';
 
-// project import
 import useAuth from 'hooks/useAuth';
 import AnimateButton from 'components/@extended/AnimateButton';
 import AuthWrapper from 'sections/auth/AuthWrapper';
-
-// ================================|| CHECK MAIL ||================================ //
 
 const CheckMail = () => {
   const theme = useTheme();

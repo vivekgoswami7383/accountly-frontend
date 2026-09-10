@@ -1,13 +1,8 @@
-// material-ui
 import { CardContent, Grid, Skeleton, Stack, Avatar } from '@mui/material';
 
-// project import
 import MainCard from 'components/MainCard';
 
-// assets
 import { ContactsOutlined } from '@ant-design/icons';
-
-// ===========================|| SKELETON - USER EMPTY CARD ||=========================== //
 
 const UserCard = () => {
   return (

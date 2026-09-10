@@ -1,20 +1,14 @@
 import { sum } from 'lodash';
 import { Link } from 'react-router-dom';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Fab, Badge } from '@mui/material';
 
-// types
 import { CartProductStateProps } from 'types/cart';
 
-// project import
 import { useSelector } from 'store';
 
-// assets
 import { ShoppingCartOutlined } from '@ant-design/icons';
-
-// ==============================|| CART ITEMS - FLOATING BUTTON ||============================== //
 
 const FloatingCart = () => {
   const theme = useTheme();

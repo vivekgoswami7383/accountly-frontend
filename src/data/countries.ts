@@ -5,8 +5,6 @@ export interface CountryType {
   suggested?: boolean;
 }
 
-// ==============================|| DATA - COUNTRIES ||============================== //
-
 const countries: readonly CountryType[] = [
   { code: 'AD', label: 'Andorra', phone: '+376' },
   {

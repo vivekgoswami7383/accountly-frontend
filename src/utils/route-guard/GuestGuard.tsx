@@ -1,14 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-// project import
 import { APP_DEFAULT_PATH } from 'config';
 import useAuth from 'hooks/useAuth';
 
-// types
 import { GuardProps } from 'types/auth';
-
-// ==============================|| GUEST GUARD ||============================== //
 
 const GuestGuard = ({ children }: GuardProps) => {
   const { isLoggedIn } = useAuth();

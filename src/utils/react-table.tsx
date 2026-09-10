@@ -1,19 +1,15 @@
 import { useMemo, useState } from 'react';
 
-// material-ui
 import { FormControl, MenuItem, OutlinedInput, OutlinedInputProps, Select, Slider, Stack, TextField, Tooltip } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-// third-party
 import { useAsyncDebounce, Row, TableState, MetaBase } from 'react-table';
 import { matchSorter } from 'match-sorter';
 import { format } from 'date-fns';
 
-// project import
 import IconButton from 'components/@extended/IconButton';
 
-// assets
 import { CloseOutlined, LineOutlined, SearchOutlined } from '@ant-design/icons';
 
 interface GlobalFilterProps extends OutlinedInputProps {

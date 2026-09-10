@@ -1,18 +1,14 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 
-// third-party
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
-// action - state management
 import { LOGIN, LOGOUT } from 'store/reducers/actions';
 import authReducer from 'store/reducers/auth';
 
-// project import
 import Loader from 'components/Loader';
 import { AuthProps, FirebaseContextType } from 'types/auth';
 
-// firebase initialize
 if (!firebase.apps.length) {
   firebase.initializeApp({
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -25,14 +21,11 @@ if (!firebase.apps.length) {
   });
 }
 
-// const
 const initialState: AuthProps = {
   isLoggedIn: false,
   isInitialized: false,
   user: null
 };
-
-// ==============================|| FIREBASE CONTEXT & PROVIDER ||============================== //
 
 const FirebaseContext = createContext<FirebaseContextType | null>(null);
 

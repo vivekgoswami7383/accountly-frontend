@@ -1,20 +1,13 @@
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { List, ListItemText, ListItem } from '@mui/material';
 
-// project import
 import IconButton from 'components/@extended/IconButton';
 
-// utils
 import getDropzoneData from 'utils/getDropzoneData';
 
-// type
 import { DropzopType, FilePreviewProps } from 'types/dropzone';
 
-// assets
 import { CloseCircleFilled, FileFilled } from '@ant-design/icons';
-
-// ==============================|| MULTI UPLOAD - PREVIEW ||============================== //
 
 export default function FilesPreview({ showList = false, files, onRemove, type }: FilePreviewProps) {
   const theme = useTheme();

@@ -1,13 +1,10 @@
 import { createContext, ReactNode } from 'react';
 
-// project import
 import config from 'config';
 import useLocalStorage from 'hooks/useLocalStorage';
 
-// types
 import { CustomizationProps, FontFamily, I18n, MenuOrientation, PresetColor, ThemeDirection, ThemeMode } from 'types/config';
 
-// initial state
 const initialState: CustomizationProps = {
   ...config,
   onChangeContainer: () => {},
@@ -20,8 +17,6 @@ const initialState: CustomizationProps = {
   onChangeFontFamily: (fontFamily: FontFamily) => {}
 };
 
-// ==============================|| CONFIG CONTEXT & PROVIDER ||============================== //
-
 const ConfigContext = createContext(initialState);
 
 type ConfigProviderProps = {
@@ -29,9 +24,9 @@ type ConfigProviderProps = {
 };
 
 function ConfigProvider({ children }: ConfigProviderProps) {
-  const [config, setConfig] = useLocalStorage('mantis-react-ts-config', {
+  const [config, setConfig] = useLocalStorage('accountly-config', {
     ...initialState,
-    themeDirection: 'ltr' // Force LTR for Accountly
+    themeDirection: 'ltr'
   });
 
   const onChangeContainer = () => {

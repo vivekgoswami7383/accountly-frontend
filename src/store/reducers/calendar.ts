@@ -1,13 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// third-party
 import { EventInput } from '@fullcalendar/common';
 
-// project import
 import axios from 'utils/axios';
 import { dispatch } from 'store';
 
-// types
 import { CalendarProps } from 'types/calendar';
 
 const initialState: CalendarProps = {
@@ -20,56 +17,46 @@ const initialState: CalendarProps = {
   selectedRange: null
 };
 
-// ==============================|| CALENDAR - SLICE ||============================== //
-
 const calendar = createSlice({
   name: 'calendar',
   initialState,
   reducers: {
-    // loader
     loading(state) {
       state.isLoader = true;
     },
 
-    // error
     hasError(state, action) {
       state.isLoader = false;
       state.error = action.payload;
     },
 
-    // event list
     setEvents(state, action) {
       state.isLoader = false;
       state.events = action.payload;
     },
 
-    // update calendar view
     updateCalendarView(state, action) {
       state.calendarView = action.payload;
     },
 
-    // select event
     selectEvent(state, action) {
       const eventId = action.payload;
       state.isModalOpen = true;
       state.selectedEventId = eventId;
     },
 
-    // create event
     createEvent(state, action) {
       state.isLoader = false;
       state.isModalOpen = false;
       state.events = action.payload;
     },
 
-    // update event
     updateEvent(state, action) {
       state.isLoader = false;
       state.isModalOpen = false;
       state.events = action.payload;
     },
 
-    // delete event
     deleteEvent(state, action) {
       const { eventId } = action.payload;
       state.isModalOpen = false;
@@ -77,14 +64,12 @@ const calendar = createSlice({
       state.events = deleteEvent;
     },
 
-    // select date range
     selectRange(state, action) {
       const { start, end } = action.payload;
       state.isModalOpen = true;
       state.selectedRange = { start, end };
     },
 
-    // modal toggle
     toggleModal(state) {
       state.isModalOpen = !state.isModalOpen;
       if (state.isModalOpen === false) {

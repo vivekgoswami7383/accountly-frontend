@@ -1,5 +1,4 @@
 import { lazy } from 'react';
-import { Navigate } from 'react-router-dom';
 import GuestGuard from 'utils/route-guard/GuestGuard';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
@@ -13,45 +12,18 @@ const AuthCodeVerification = Loadable(lazy(() => import('pages/auth/code-verific
 
 const LoginRoutes = {
   path: '/',
+  element: (
+    <GuestGuard>
+      <CommonLayout />
+    </GuestGuard>
+  ),
   children: [
-    {
-      path: '/',
-      element: (
-        <GuestGuard>
-          <CommonLayout />
-        </GuestGuard>
-      ),
-      children: [
-        {
-          index: true,
-          element: <Navigate to="/login" replace />
-        },
-        {
-          path: 'login',
-          element: <AuthLogin />
-        },
-        {
-          path: 'register',
-          element: <AuthRegister />
-        },
-        {
-          path: 'forgot-password',
-          element: <AuthForgotPassword />
-        },
-        {
-          path: 'check-mail',
-          element: <AuthCheckMail />
-        },
-        {
-          path: 'reset-password',
-          element: <AuthResetPassword />
-        },
-        {
-          path: 'code-verification',
-          element: <AuthCodeVerification />
-        }
-      ]
-    }
+    { path: 'login', element: <AuthLogin /> },
+    { path: 'register', element: <AuthRegister /> },
+    { path: 'forgot-password', element: <AuthForgotPassword /> },
+    { path: 'check-mail', element: <AuthCheckMail /> },
+    { path: 'reset-password', element: <AuthResetPassword /> },
+    { path: 'code-verification', element: <AuthCodeVerification /> }
   ]
 };
 

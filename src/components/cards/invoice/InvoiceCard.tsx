@@ -1,10 +1,6 @@
-// material-ui
 import { Box, Grid, Stack, Typography } from '@mui/material';
 
-// assets
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-
-// ==============================|| INVOICE - CARD  ||============================== //
 
 interface Props {
   title: string;
