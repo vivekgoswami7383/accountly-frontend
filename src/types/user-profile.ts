@@ -21,10 +21,8 @@ export type UserProfile = {
   location?: string;
   online_status?: string;
   unReadChatCount?: number;
-  // groups?: Group[];
   time?: string;
   tier?: string;
-  // Progress?: ProfileProgress;
 };
 
 export type UserCardProps = {

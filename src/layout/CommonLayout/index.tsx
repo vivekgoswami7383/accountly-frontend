@@ -1,22 +1,17 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
-// material-ui
-import { Container, Toolbar } from '@mui/material';
+import { Container, Toolbar, Box } from '@mui/material';
 
-// project import
 import ComponentLayout from './ComponentLayout';
 import { dispatch, useSelector } from 'store';
 import { openComponentDrawer } from 'store/reducers/menu';
 
-// material-ui
 import { styled } from '@mui/material/styles';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 
 const Header = lazy(() => import('./Header'));
 const FooterBlock = lazy(() => import('./FooterBlock'));
-
-// ==============================|| Loader ||============================== //
 
 const LoaderWrapper = styled('div')(({ theme }) => ({
   position: 'fixed',
@@ -36,8 +31,6 @@ const Loader = () => (
     <LinearProgress color="primary" />
   </LoaderWrapper>
 );
-
-// ==============================|| MINIMAL LAYOUT ||============================== //
 
 const CommonLayout = ({ layout = 'blank' }: { layout?: string }) => {
   const menu = useSelector((state) => state.menu);
@@ -61,7 +54,9 @@ const CommonLayout = ({ layout = 'blank' }: { layout?: string }) => {
           <Container maxWidth="lg" sx={{ px: { xs: 0, sm: 2 } }}>
             <Header handleDrawerOpen={handleDrawerOpen} layout="component" />
             <Toolbar sx={{ my: 2 }} />
-            <ComponentLayout handleDrawerOpen={handleDrawerOpen} componentDrawerOpen={componentDrawerOpen} />
+            <Box sx={{ mt: 2 }}>
+              <ComponentLayout handleDrawerOpen={handleDrawerOpen} componentDrawerOpen={componentDrawerOpen} />
+            </Box>
           </Container>
         </Suspense>
       )}

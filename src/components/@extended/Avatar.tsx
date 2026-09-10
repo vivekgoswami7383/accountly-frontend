@@ -1,17 +1,12 @@
 import { ReactNode } from 'react';
 
-// material-ui
 import { styled, useTheme, Theme } from '@mui/material/styles';
 import MuiAvatar from '@mui/material/Avatar';
 import { AvatarProps } from '@mui/material';
 
-// project import
 import getColors from 'utils/getColors';
 
-// types
 import { AvatarTypeProps, ColorProps, ExtendedStyleProps, SizeProps } from 'types/extended';
-
-// ==============================|| AVATAR - COLOR STYLE ||============================== //
 
 interface AvatarStyleProps extends ExtendedStyleProps {
   variant?: AvatarProps['variant'];
@@ -49,8 +44,6 @@ function getColorStyle({ variant, theme, color, type }: AvatarStyleProps) {
       };
   }
 }
-
-// ==============================|| AVATAR - SIZE STYLE ||============================== //
 
 function getSizeStyle(size?: SizeProps) {
   switch (size) {
@@ -95,8 +88,6 @@ function getSizeStyle(size?: SizeProps) {
   }
 }
 
-// ==============================|| STYLED - AVATAR ||============================== //
-
 interface StyleProps {
   color: ColorProps;
   variant?: AvatarProps['variant'];
@@ -114,8 +105,6 @@ const AvatarStyle = styled(MuiAvatar, { shouldForwardProp: (prop) => prop !== 'c
     })
   })
 );
-
-// ==============================|| EXTENDED - AVATAR ||============================== //
 
 export interface Props extends AvatarProps {
   color?: ColorProps;

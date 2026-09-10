@@ -1,18 +1,14 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 
-// third-party
 import { Auth0Client } from '@auth0/auth0-spa-js';
 
-// reducer - state management
 import { LOGIN, LOGOUT } from 'store/reducers/actions';
 import authReducer from 'store/reducers/auth';
 
-// project import
 import Loader from 'components/Loader';
 import { KeyedObject } from 'types/root';
 import { Auth0ContextType, AuthProps } from 'types/auth';
 
-// constant
 let auth0Client: Auth0Client;
 
 const initialState: AuthProps = {
@@ -20,8 +16,6 @@ const initialState: AuthProps = {
   isInitialized: false,
   user: null
 };
-
-// ==============================|| AUTH0 CONTEXT & PROVIDER ||============================== //
 
 const Auth0Context = createContext<Auth0ContextType | null>(null);
 

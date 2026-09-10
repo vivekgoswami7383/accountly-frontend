@@ -1,6 +1,5 @@
 import { useEffect, useState, ChangeEvent } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -30,12 +29,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-// third-party
 import _ from 'lodash';
 import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider, FormikValues } from 'formik';
 
-// project imports
 import AlertCustomerDelete from './AlertCustomerDelete';
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
@@ -43,15 +40,12 @@ import IconButton from 'components/@extended/IconButton';
 import { dispatch } from 'store';
 import { openSnackbar } from 'store/reducers/snackbar';
 
-// assets
 import { CameraOutlined, DeleteFilled } from '@ant-design/icons';
 
-// types
 import { ThemeMode } from 'types/config';
 
 const avatarImage = require.context('assets/images/users', true);
 
-// constant
 const getInitialValues = (customer: FormikValues | null) => {
   const newCustomer = {
     name: '',
@@ -70,8 +64,6 @@ const getInitialValues = (customer: FormikValues | null) => {
 };
 
 const allStatus = ['Complicated', 'Single', 'Relationship'];
-
-// ==============================|| CUSTOMER ADD / EDIT ||============================== //
 
 export interface Props {
   customer?: any;
@@ -112,15 +104,8 @@ const AddCustomer = ({ customer, onCancel }: Props) => {
     validationSchema: CustomerSchema,
     onSubmit: (values, { setSubmitting }) => {
       try {
-        // const newCustomer = {
-        //   name: values.name,
-        //   email: values.email,
-        //   location: values.location,
-        //   orderStatus: values.orderStatus
-        // };
 
         if (customer) {
-          // dispatch(updateCustomer(customer.id, newCustomer)); - update
           dispatch(
             openSnackbar({
               open: true,
@@ -133,7 +118,6 @@ const AddCustomer = ({ customer, onCancel }: Props) => {
             })
           );
         } else {
-          // dispatch(createCustomer(newCustomer)); - add
           dispatch(
             openSnackbar({
               open: true,

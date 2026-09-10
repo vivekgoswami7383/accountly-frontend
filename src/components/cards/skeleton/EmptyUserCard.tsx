@@ -1,14 +1,10 @@
-// material-ui
 import { Box, Grid, Stack, Typography } from '@mui/material';
 
-// project import
 import UserCard from './UserCard';
 
 interface Props {
   title: string;
 }
-
-// ==============================|| EMPTY STATE ||============================== //
 
 const EmptyUserCard = ({ title }: Props) => {
   return (

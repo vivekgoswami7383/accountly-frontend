@@ -1,7 +1,4 @@
-// material-ui
 import { Box, LinearProgress, LinearProgressProps, Typography } from '@mui/material';
-
-// ==============================|| PROGRESS - LINEAR WITH LABEL ||============================== //
 
 export default function LinearWithLabel({ value, ...others }: LinearProgressProps) {
   return (

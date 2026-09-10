@@ -1,7 +1,6 @@
 import { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// material-ui
 import {
   Box,
   Button,
@@ -15,11 +14,9 @@ import {
   Typography
 } from '@mui/material';
 
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project import
 import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import IconButton from 'components/@extended/IconButton';
@@ -29,13 +26,9 @@ import { dispatch } from 'store';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { openSnackbar } from 'store/reducers/snackbar';
 
-// types
 import { StringColorProps } from 'types/password';
 
-// assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-
-// ============================|| STATIC - RESET PASSWORD ||============================ //
 
 const AuthResetPassword = () => {
   const scriptedRef = useScriptRef();
@@ -77,7 +70,6 @@ const AuthResetPassword = () => {
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-          // password reset
           if (scriptedRef.current) {
             setStatus({ success: true });
             setSubmitting(false);

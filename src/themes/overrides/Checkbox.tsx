@@ -1,17 +1,11 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { Box, CheckboxProps } from '@mui/material';
 
-// project import
 import getColors from 'utils/getColors';
 
-// assets
 import { CheckSquareFilled, MinusSquareFilled } from '@ant-design/icons';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| RADIO - COLORS ||============================== //
 
 function getColorStyle({ color, theme }: ExtendedStyleProps) {
   const colors = getColors(theme, color);
@@ -31,8 +25,6 @@ function getColorStyle({ color, theme }: ExtendedStyleProps) {
   };
 }
 
-// ==============================|| CHECKBOX - SIZE STYLE ||============================== //
-
 interface CheckboxSizeProps {
   size: number;
   fontSize: number;
@@ -51,8 +43,6 @@ function getSizeStyle(size?: CheckboxProps['size']): CheckboxSizeProps {
   }
 }
 
-// ==============================|| CHECKBOX - STYLE ||============================== //
-
 function checkboxStyle(size?: CheckboxProps['size']) {
   const sizes: CheckboxSizeProps = getSizeStyle(size);
 
@@ -68,8 +58,6 @@ function checkboxStyle(size?: CheckboxProps['size']) {
     }
   };
 }
-
-// ==============================|| OVERRIDES - CHECKBOX ||============================== //
 
 export default function Checkbox(theme: Theme) {
   const { palette } = theme;

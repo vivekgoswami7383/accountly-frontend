@@ -1,11 +1,8 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 
-// project import
 import getColors from 'utils/getColors';
 import getShadow from 'utils/getShadow';
 
-// types
 import { ThemeMode } from 'types/config';
 import { ColorProps } from 'types/extended';
 
@@ -13,8 +10,6 @@ interface Props {
   variant: ColorProps;
   theme: Theme;
 }
-
-// ==============================|| OVERRIDES - INPUT BORDER & SHADOWS ||============================== //
 
 function getColor({ variant, theme }: Props) {
   const colors = getColors(theme, variant);
@@ -34,8 +29,6 @@ function getColor({ variant, theme }: Props) {
     }
   };
 }
-
-// ==============================|| OVERRIDES - OUTLINED INPUT ||============================== //
 
 export default function OutlinedInput(theme: Theme) {
   return {

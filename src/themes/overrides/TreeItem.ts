@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - TREE ITEM ||============================== //
-
 export default function TreeItem() {
   return {
     MuiTreeItem: {

@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-// material-ui
 import { Box, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 
-// third-party
 import { NumericFormat } from 'react-number-format';
 
-// project import
 import Dot from 'components/@extended/Dot';
 
-// assets
 import { ColorProps } from 'types/extended';
 
-// types
 interface Data {
   name: string;
   carbs: number;
@@ -70,8 +65,6 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-// ==============================|| ORDER TABLE - HEADER CELL ||============================== //
-
 interface HeadCell {
   disablePadding: boolean;
   id: keyof Data;
@@ -113,8 +106,6 @@ const headCells: readonly HeadCell[] = [
   }
 ];
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
-
 interface OrderTableHeadProps {
   order: Order;
   orderBy: string;
@@ -138,8 +129,6 @@ function OrderTableHead({ order, orderBy }: OrderTableHeadProps) {
     </TableHead>
   );
 }
-
-// ==============================|| ORDER TABLE - STATUS ||============================== //
 
 interface Props {
   status: number;
@@ -174,8 +163,6 @@ const OrderStatus = ({ status }: Props) => {
     </Stack>
   );
 };
-
-// ==============================|| ORDER TABLE ||============================== //
 
 export default function OrderTable() {
   const [order] = useState<Order>('asc');

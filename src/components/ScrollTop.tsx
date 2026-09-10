@@ -1,8 +1,6 @@
 import { ReactElement, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// ==============================|| NAVIGATION - SCROLL TO TOP ||============================== //
-
 const ScrollTop = ({ children }: { children: ReactElement | null }) => {
   const location = useLocation();
   const { pathname } = location;

@@ -1,21 +1,15 @@
-// material-ui
 import { Button, Dialog, DialogContent, Stack, Typography } from '@mui/material';
 
-// project import
 import Avatar from 'components/@extended/Avatar';
 import { PopupTransition } from 'components/@extended/Transitions';
 
-// assets
 import { DeleteFilled } from '@ant-design/icons';
 
-// types
 interface Props {
   title: string;
   open: boolean;
   handleClose: (status: boolean) => void;
 }
-
-// ==============================|| CUSTOMER - DELETE ||============================== //
 
 export default function AlertCustomerDelete({ title, open, handleClose }: Props) {
   return (

@@ -1,28 +1,14 @@
-// material-ui
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Button, Container, Divider, Grid, Link, Stack, Typography } from '@mui/material';
 
-// third party
 import { motion } from 'framer-motion';
 
-// project import
-// import useConfig from 'hooks/useConfig';
-
-// assets
 import { SendOutlined } from '@ant-design/icons';
 
-// import imgfooterlogo from 'assets/images/landing/codedthemes-logo.svg';
-// import imgfootersoc1 from 'assets/images/landing/img-soc1.svg';
-// import imgfootersoc2 from 'assets/images/landing/img-soc2.svg';
-// import imgfootersoc3 from 'assets/images/landing/img-soc3.svg';
 import AnimateButton from 'components/@extended/AnimateButton';
 
-// types
 import { ThemeDirection, ThemeMode } from 'types/config';
 
-// const dashImage = require.context('assets/images/landing', true);
-
-// link - custom style
 const FooterLink = styled(Link)(({ theme }) => ({
   color: theme.palette.text.secondary,
   '&:hover': {
@@ -32,8 +18,6 @@ const FooterLink = styled(Link)(({ theme }) => ({
     color: theme.palette.primary.main
   }
 }));
-
-// ==============================|| LANDING - FOOTER PAGE ||============================== //
 
 type showProps = {
   isFull?: boolean;
@@ -88,22 +72,6 @@ const FooterBlock = ({ isFull }: showProps) => {
             }
           }}
         >
-          {/* <CardMedia
-            component="img"
-            image={dashImage(`./img-footer-${presetColor}.png`)}
-            sx={{
-              display: { xs: 'none', md: 'block' },
-              width: '55%',
-              maxWidth: 700,
-              position: 'absolute',
-              top: '-28%',
-              right: 0,
-              ...(theme.direction === ThemeDirection.RTL && {
-                transform: 'scaleX(-1)',
-                float: 'none'
-              })
-            }}
-          /> */}
           <Container>
             <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
               <Grid item xs={12} md={6} sx={{ position: 'relative', zIndex: 1 }}>
@@ -177,9 +145,6 @@ const FooterBlock = ({ isFull }: showProps) => {
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    {/* <CardMedia component="img" image={imgfooterlogo} sx={{ width: 'auto' }} /> */}
-                  </Grid>
-                  <Grid item xs={12}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 400, color: theme.palette.common.white }}>
                       Since 2017, More than 50K+ Developers trust the CodedThemes Digital Product. Accountly React is Manage under their
                       Experienced Team Players.
@@ -242,7 +207,6 @@ const FooterBlock = ({ isFull }: showProps) => {
                       {frameworks.map((item, index) => (
                         <FooterLink href={item.link} target="_blank" underline="none" key={index}>
                           {item.title}
-                          {/* {item.isUpcoming && <Chip variant="outlined" size="small" label="Upcoming" sx={{ ml: 0.5 }} />} */}
                         </FooterLink>
                       ))}
                     </Stack>
@@ -290,23 +254,7 @@ const FooterBlock = ({ isFull }: showProps) => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Grid container spacing={2} alignItems="center" sx={{ justifyContent: 'flex-end' }}>
-                {/* <Grid item>
-                  <Link underline="none" sx={linkSX}>
-                    <CardMedia component="img" image={imgfootersoc1} />
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link underline="none" sx={linkSX}>
-                    <CardMedia component="img" image={imgfootersoc2} />
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link underline="none" sx={linkSX}>
-                    <CardMedia component="img" image={imgfootersoc3} />
-                  </Link>
-                </Grid> */}
-              </Grid>
+              <Grid container spacing={2} alignItems="center" sx={{ justifyContent: 'flex-end' }} />
             </Grid>
           </Grid>
         </Container>

@@ -1,19 +1,13 @@
 import { useState } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Button, Grid, Stack, Typography } from '@mui/material';
 
-// third-party
 import OtpInput from 'react18-input-otp';
 
-// project import
 import AnimateButton from 'components/@extended/AnimateButton';
 
-// types
 import { ThemeMode } from 'types/config';
-
-// ============================|| STATIC - CODE VERIFICATION ||============================ //
 
 const AuthCodeVerification = () => {
   const theme = useTheme();

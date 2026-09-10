@@ -11,9 +11,7 @@ const RTLLayout = ({ children }: Props) => {
   const { themeDirection } = useConfig();
 
   useEffect(() => {
-    // Force LTR direction for Accountly
     document.dir = 'ltr';
-    // Clear any cached RTL settings
     if (themeDirection === 'rtl') {
       localStorage.removeItem('mantis-react-ts-config');
       window.location.reload();
@@ -21,7 +19,7 @@ const RTLLayout = ({ children }: Props) => {
   }, [themeDirection]);
 
   const cacheRtl = createCache({
-    key: 'css', // Always use LTR cache
+    key: 'css',
     prepend: true
   });
 

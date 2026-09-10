@@ -1,14 +1,9 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { PaginationProps } from '@mui/material';
 
-// project import
 import getColors from 'utils/getColors';
 
-// types
 import { ExtendedStyleProps } from 'types/extended';
-
-// ==============================|| PAGINATION ITEM - COLORS ||============================== //
 
 interface PaginationStyleProps extends ExtendedStyleProps {
   variant: PaginationProps['variant'];
@@ -60,8 +55,6 @@ function getColorStyle({ variant, color, theme }: PaginationStyleProps) {
       };
   }
 }
-
-// ==============================|| OVERRIDES - PAGINATION ITEM ||============================== //
 
 export default function PaginationItem(theme: Theme) {
   return {

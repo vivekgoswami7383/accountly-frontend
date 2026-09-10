@@ -28,11 +28,11 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
 
   const getStatusColor = (status: number) => {
     switch (status) {
-      case 1: // ACTIVE
+      case 1:
         return 'success';
-      case 2: // INACTIVE
+      case 2:
         return 'warning';
-      case 0: // DELETED
+      case 0:
         return 'error';
       default:
         return 'default';
@@ -41,11 +41,11 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
 
   const getStatusLabel = (status: number) => {
     switch (status) {
-      case 1: // ACTIVE
+      case 1:
         return 'Active';
-      case 2: // INACTIVE
+      case 2:
         return 'Inactive';
-      case 0: // DELETED
+      case 0:
         return 'Deleted';
       default:
         return 'Unknown';
@@ -65,12 +65,10 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
       <Divider />
       <DialogContent sx={{ p: 2.5 }}>
         <Grid container spacing={3}>
-          {/* Left Column - Customer Profile Card */}
           <Grid item xs={12} md={4}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Stack spacing={3} alignItems="center" sx={{ textAlign: 'center' }}>
-                  {/* Status Chip */}
                   <Box sx={{ alignSelf: 'flex-end' }}>
                     <Chip
                       label={getStatusLabel(customer.status)}
@@ -80,7 +78,6 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
                     />
                   </Box>
 
-                  {/* Customer Avatar */}
                   <Avatar
                     alt="Customer Avatar"
                     sx={{
@@ -93,7 +90,6 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
                     <UserOutlined />
                   </Avatar>
 
-                  {/* Customer Name and Info */}
                   <Stack spacing={1}>
                     <Typography variant="h5" fontWeight="bold">
                       {customer.first_name} {customer.last_name}
@@ -103,7 +99,6 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
                     </Typography>
                   </Stack>
 
-                  {/* Statistics */}
                   <Grid container spacing={2}>
                     <Grid item xs={4}>
                       <Stack spacing={0.5} alignItems="center">
@@ -137,7 +132,6 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
                     </Grid>
                   </Grid>
 
-                  {/* Contact Details */}
                   <Stack spacing={2} sx={{ width: '100%' }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
                       <MailOutlined style={{ color: theme.palette.primary.main }} />
@@ -172,10 +166,8 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
             </Card>
           </Grid>
 
-          {/* Right Column - Detailed Information */}
           <Grid item xs={12} md={8}>
             <Stack spacing={3}>
-              {/* Personal Details */}
               <Card>
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
@@ -249,7 +241,6 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
                 </CardContent>
               </Card>
 
-              {/* Contact Information */}
               <Card>
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
@@ -300,7 +291,6 @@ const ViewCustomer = ({ open, customer, onClose }: Props) => {
                 </CardContent>
               </Card>
 
-              {/* About Section */}
               <Card>
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>

@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - TABLE ROW ||============================== //
-
 export default function TableRow() {
   return {
     MuiTableRow: {

@@ -1,13 +1,8 @@
-// material-ui
 import { Box, Chip, ChipProps, Grid, Stack, Typography } from '@mui/material';
 
-// project import
 import MainCard from 'components/MainCard';
 
-// assets
 import { RiseOutlined, FallOutlined } from '@ant-design/icons';
-
-// ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
 interface Props {
   title: string;

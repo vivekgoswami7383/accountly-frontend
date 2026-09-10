@@ -1,0 +1,60 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Box } from '@mui/material';
+import { useDispatch, useSelector } from 'store';
+import { fetchCustomers, updateCustomer } from 'store/reducers/accountly/customers';
+import useSnackbar from 'hooks/useSnackbar';
+import ScreenHeader from 'components/accountly/ScreenHeader';
+import CustomerForm from 'sections/accountly/CustomerForm';
+import countries, { CountryType } from 'data/countries';
+import { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
+
+const splitPhone = (full: string): { country: CountryType; local: string } => {
+  const match = [...countries]
+    .filter((c) => full.startsWith(c.phone))
+    .sort((a, b) => b.phone.length - a.phone.length)[0];
+  if (match) return { country: match, local: full.slice(match.phone.length) };
+  return { country: DEFAULT_COUNTRY, local: full.replace(/^\+/, '') };
+};
+
+const EditCustomer = () => {
+  const { id = '' } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { showSnackbar } = useSnackbar();
+  const { customers, loading } = useSelector((s) => s.customers);
+  const [submitting, setSubmitting] = useState(false);
+
+  const customer = customers.find((c) => c.id === id);
+
+  useEffect(() => {
+    if (customers.length === 0) dispatch(fetchCustomers());
+  }, [dispatch, customers.length]);
+
+  const initial = useMemo(() => {
+    if (!customer) return undefined;
+    const { country, local } = splitPhone(customer.phone || '');
+    return { name: customer.name, phone: local, address: customer.address, country };
+  }, [customer]);
+
+  const handleSubmit = async (values: { name: string; phone: string; address: string }) => {
+    if (!customer) return;
+    setSubmitting(true);
+    const result = await dispatch(updateCustomer({ id: customer.id, data: values }));
+    setSubmitting(false);
+    if (updateCustomer.fulfilled.match(result)) {
+      navigate(-1);
+    } else {
+      showSnackbar({ message: (result.payload as string) || 'Failed to update customer', type: 'error' });
+    }
+  };
+
+  return (
+    <Box sx={{ maxWidth: 560, mx: 'auto' }}>
+      <ScreenHeader title="Customer Profile" />
+      {initial && <CustomerForm initial={initial} submitLabel="Update Customer" loading={loading || submitting} onSubmit={handleSubmit} />}
+    </Box>
+  );
+};
+
+export default EditCustomer;

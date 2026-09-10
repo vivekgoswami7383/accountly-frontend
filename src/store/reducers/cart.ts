@@ -1,14 +1,9 @@
-// third-party
 import { createSlice } from '@reduxjs/toolkit';
 
-// project imports
 import axios from 'utils/axios';
 import { dispatch } from '../index';
 
-// types
 import { Address, DefaultRootStateProps, ProductCardProps } from 'types/cart';
-
-// ----------------------------------------------------------------------
 
 const initialState: DefaultRootStateProps['cart'] = {
   error: null,
@@ -32,53 +27,44 @@ const slice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    // HAS ERROR
     hasError(state, action) {
       state.error = action.payload;
     },
 
-    // ADD PRODUCT
     addProductSuccess(state, action) {
       state.checkout.products = action.payload.products;
       state.checkout.subtotal += action.payload.subtotal;
       state.checkout.total += action.payload.subtotal;
     },
 
-    // REMOVE PRODUCT
     removeProductSuccess(state, action) {
       state.checkout.products = action.payload.products;
       state.checkout.subtotal += -action.payload.subtotal;
       state.checkout.total += -action.payload.subtotal;
     },
 
-    // UPDATE PRODUCT
     updateProductSuccess(state, action) {
       state.checkout.products = action.payload.products;
       state.checkout.subtotal = state.checkout.subtotal - action.payload.oldSubTotal + action.payload.subtotal;
       state.checkout.total = state.checkout.total - action.payload.oldSubTotal + action.payload.subtotal;
     },
 
-    // SET STEP
     setStepSuccess(state, action) {
       state.checkout.step = action.payload;
     },
 
-    // SET NEXT STEP
     setNextStepSuccess(state, action) {
       state.checkout.step += 1;
     },
 
-    // SET BACK STEP
     setBackStepSuccess(state, action) {
       state.checkout.step -= 1;
     },
 
-    // SET BILLING ADDRESS
     setBillingAddressSuccess(state, action) {
       state.checkout.billing = action.payload.billing;
     },
 
-    // SET DISCOUNT
     setDiscountSuccess(state, action) {
       let difference = 0;
       if (state.checkout.discount > 0) {
@@ -89,7 +75,6 @@ const slice = createSlice({
       state.checkout.total = state.checkout.total + difference - action.payload.amount;
     },
 
-    // SET SHIPPING CHARGE
     setShippingChargeSuccess(state, action) {
       state.checkout.shipping = action.payload.shipping;
       state.checkout.total += action.payload.newShipping;
@@ -99,7 +84,6 @@ const slice = createSlice({
       };
     },
 
-    // SET PAYMENT METHOD
     setPaymentMethodSuccess(state, action) {
       state.checkout.payment = {
         ...state.checkout.payment,
@@ -107,7 +91,6 @@ const slice = createSlice({
       };
     },
 
-    // SET PAYMENT CARD
     setPaymentCardSuccess(state, action) {
       state.checkout.payment = {
         ...state.checkout.payment,
@@ -115,17 +98,13 @@ const slice = createSlice({
       };
     },
 
-    // RESET CART
     resetCardSuccess(state, action) {
       state.checkout = initialState.checkout;
     }
   }
 });
 
-// Reducer
 export default slice.reducer;
-
-// ----------------------------------------------------------------------
 
 export function addProduct(product: ProductCardProps, products: ProductCardProps[]) {
   return async () => {

@@ -1,7 +1,4 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
-
-// ==============================|| CUSTOM FUNCTION - COLOR SHADOWS ||============================== //
 
 const getShadow = (theme: Theme, shadow: string) => {
   switch (shadow) {

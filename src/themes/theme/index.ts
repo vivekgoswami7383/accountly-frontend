@@ -1,4 +1,3 @@
-// project import
 import Default from './default';
 import Theme1 from './theme1';
 import Theme2 from './theme2';
@@ -9,12 +8,9 @@ import Theme6 from './theme6';
 import Theme7 from './theme7';
 import Theme8 from './theme8';
 
-// types
 import { PaletteThemeProps } from 'types/theme';
 import { PalettesProps } from '@ant-design/colors';
 import { ThemeMode, PresetColor } from 'types/config';
-
-// ==============================|| PRESET THEME - THEME SELECTOR ||============================== //
 
 const Theme = (colors: PalettesProps, presetColor: PresetColor, mode: ThemeMode): PaletteThemeProps => {
   switch (presetColor) {

@@ -1,8 +1,5 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 import { useMediaQuery, Container, Link, Typography, Stack } from '@mui/material';
-
-// ==============================|| FOOTER - AUTHENTICATION ||============================== //
 
 const AuthFooter = () => {
   const matchDownSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));

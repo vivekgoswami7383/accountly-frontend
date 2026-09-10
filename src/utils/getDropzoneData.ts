@@ -1,7 +1,4 @@
-// components
 import { CustomFile } from 'types/dropzone';
-
-// ----------------------------------------------------------------------
 
 export default function getDropzoneData(file: CustomFile | string, index?: number) {
   if (typeof file === 'string') {

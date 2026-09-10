@@ -1,19 +1,13 @@
-// material-ui
 import { Box, Typography } from '@mui/material';
 
-// project import
 import NavGroup from './NavGroup';
 import menuItem from 'menu-items';
 
-// types
 import { NavItemType } from 'types/menu';
-
-// ==============================|| DRAWER - NAVIGATION ||============================== //
 
 const Navigation = ({ searchValue }: { searchValue?: string }) => {
   let filteredMenuItems: NavItemType[] = [];
 
-  // if no value searched, we will render all menu items
   if (searchValue === null || searchValue === undefined || searchValue === '') {
     filteredMenuItems = menuItem.items;
   } else {
@@ -22,15 +16,13 @@ const Navigation = ({ searchValue }: { searchValue?: string }) => {
 
       parentMenu.children?.forEach((child) => {
         if (child.search?.trim().toLowerCase().includes(searchValue!)) {
-          // todo: consider other filed then id
-          // if match
-          matchedChildren.push(child); // get the filter menuitem and push it to children
+          matchedChildren.push(child);
         }
       });
 
-      const parent = filteredMenuItems.filter((xx) => xx === parentMenu); // get the parent menu item/header
+      const parent = filteredMenuItems.filter((xx) => xx === parentMenu);
       if (parent.length === 0 && matchedChildren.length > 0) {
-        const clonedParent = { ...parentMenu }; // clone children as we dont want entire children but just filtered
+        const clonedParent = { ...parentMenu };
         clonedParent.children = matchedChildren;
         filteredMenuItems.push(clonedParent);
       }

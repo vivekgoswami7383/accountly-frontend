@@ -1,19 +1,13 @@
 import { useState } from 'react';
 
-// material-ui
 import { Box, CardActions, Collapse, Divider, Tooltip } from '@mui/material';
 
-// third-party
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-// project import
 import SyntaxHighlight from 'utils/SyntaxHighlight';
 import IconButton from 'components/@extended/IconButton';
 
-// assets
 import { CodeOutlined, CopyOutlined } from '@ant-design/icons';
-
-// ==============================|| CLIPBOARD & HIGHLIGHTER   ||============================== //
 
 interface Props {
   codeString: string;

@@ -1,11 +1,8 @@
-// project import
 import axios from 'utils/axios';
 import { dispatch } from 'store';
 
-// third-party
 import { createSlice } from '@reduxjs/toolkit';
 
-// types
 import { CountryType, InvoiceList, InvoiceProps } from 'types/invoice';
 
 const countries: CountryType[] = [
@@ -27,28 +24,22 @@ const initialState: InvoiceProps = {
   alertPopup: false
 };
 
-// ==============================|| INVOICE - SLICE ||============================== //
-
 const invoice = createSlice({
   name: 'invoice',
   initialState,
   reducers: {
-    // review invoice popup
     reviewInvoicePopup(state, action) {
       state.isOpen = action.payload.isOpen;
     },
 
-    // is customer open
     customerPopup(state, action) {
       state.isCustomerOpen = action.payload.isCustomerOpen;
     },
 
-    // handler customer form popup
     toggleCustomerPopup(state, action) {
       state.open = action.payload.open;
     },
 
-    // handler customer form popup
     selectCountry(state, action) {
       state.country = action.payload.country;
     },
@@ -57,22 +48,18 @@ const invoice = createSlice({
       state.error = action.payload.error;
     },
 
-    // get all invoice list
     getLists(state, action) {
       state.lists = action.payload;
     },
 
-    // get invoice details
     getSingleList(state, action) {
       state.list = action.payload;
     },
 
-    // create invoice
     createInvoice(state, action) {
       state.lists = [...state.lists, action.payload];
     },
 
-    // update invoice
     UpdateInvoice(state, action) {
       const { NewInvoice } = action.payload;
       const InvoiceUpdate = state.lists.map((item) => {
@@ -84,14 +71,12 @@ const invoice = createSlice({
       state.lists = InvoiceUpdate;
     },
 
-    // delete invoice
     deleteInvoice(state, action) {
       const { invoiceId } = action.payload;
       const deleteInvoice = state.lists.filter((list) => list.id !== invoiceId);
       state.lists = deleteInvoice;
     },
 
-    //alert popup
     alertPopupToggle(state, action) {
       state.alertPopup = action.payload.alertToggle;
     }

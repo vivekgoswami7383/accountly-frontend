@@ -1,10 +1,7 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
 
-// third-party
 import { merge } from 'lodash';
 
-// project import
 import Accordion from './Accordion';
 import AccordionDetails from './AccordionDetails';
 import AccordionSummary from './AccordionSummary';
@@ -49,8 +46,6 @@ import ToggleButton from './ToggleButton';
 import Tooltip from './Tooltip';
 import TreeItem from './TreeItem';
 import Typography from './Typography';
-
-// ==============================|| OVERRIDES - MAIN ||============================== //
 
 export default function ComponentsOverrides(theme: Theme) {
   return merge(

@@ -1,14 +1,9 @@
-// material-ui
 import { styled, useTheme, Theme } from '@mui/material/styles';
 import { Box, tooltipClasses, Tooltip as MuiTooltip, TooltipProps } from '@mui/material';
 
-// project import
 import getColors from 'utils/getColors';
 
-// type
 import { ColorProps } from 'types/extended';
-
-// ==============================|| TOOLTIP - VARIANT ||============================== //
 
 interface TooltipStyleProps {
   color?: ColorProps | string;
@@ -45,8 +40,6 @@ function getVariantStyle({ color, theme, labelColor }: TooltipStyleProps) {
   }
 }
 
-// ==============================|| STYLED - TOOLTIP COLOR ||============================== //
-
 interface StyleProps {
   theme: Theme;
   arrow: TooltipProps['arrow'];
@@ -59,8 +52,6 @@ const TooltipStyle = styled(({ className, ...props }: TooltipProps) => <MuiToolt
 })(({ theme, color, labelColor }: StyleProps) => ({
   ...(color && getVariantStyle({ color, theme, labelColor }))
 }));
-
-// ==============================|| EXTENDED - TOOLTIP ||============================== //
 
 interface Props extends TooltipProps {
   color?: ColorProps | string;

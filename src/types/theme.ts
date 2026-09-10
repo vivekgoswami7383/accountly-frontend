@@ -1,7 +1,4 @@
-// material-ui
 import { SimplePaletteColorOptions, PaletteColorOptions } from '@mui/material/styles';
-
-// ==============================|| DEFAULT THEME - TYPES  ||============================== //
 
 export type PaletteThemeProps = {
   primary: SimplePaletteColorOptions;

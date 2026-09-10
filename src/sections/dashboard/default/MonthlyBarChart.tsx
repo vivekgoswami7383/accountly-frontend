@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 
-// third-party
 import ReactApexChart, { Props as ChartProps } from 'react-apexcharts';
 
-// project import
 import useConfig from 'hooks/useConfig';
 
-// types
 import { ThemeMode } from 'types/config';
 
-// chart options
 const barChartOptions = {
   chart: {
     type: 'bar',
@@ -47,8 +42,6 @@ const barChartOptions = {
     show: false
   }
 };
-
-// ==============================|| MONTHLY BAR CHART ||============================== //
 
 const MonthlyBarChart = () => {
   const theme = useTheme();

@@ -1,17 +1,13 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 
-// third-party
 import { CognitoUser, CognitoUserPool, CognitoUserSession, CognitoUserAttribute, AuthenticationDetails } from 'amazon-cognito-identity-js';
 
-// project imports
 import Loader from 'components/Loader';
 import { LOGIN, LOGOUT } from 'store/reducers/actions';
 import authReducer from 'store/reducers/auth';
 
-// types
 import { AWSCognitoContextType, InitialLoginContextProps } from 'types/auth';
 
-// constant
 const initialState: InitialLoginContextProps = {
   isLoggedIn: false,
   isInitialized: false,
@@ -30,8 +26,6 @@ const setSession = (serviceToken?: string | null) => {
     localStorage.removeItem('serviceToken');
   }
 };
-
-// ==============================|| AWS COGNITO - CONTEXT & PROVIDER ||============================== //
 
 const AWSCognitoContext = createContext<AWSCognitoContextType | null>(null);
 
@@ -97,15 +91,6 @@ export const AWSCognitoProvider = ({ children }: { children: React.ReactElement 
       },
       onFailure: (_err) => {},
       newPasswordRequired: () => {
-        // // User was signed up by an admin and must provide new
-        // // password and required attributes, if any, to complete
-        // // authentication.
-        // // the api doesn't accept this field back
-        // delete userAttributes.email_verified;
-        // // unsure about this field, but I don't send this back
-        // delete userAttributes.phone_number_verified;
-        // // Get these details and call
-        // usr.completeNewPasswordChallenge(password, userAttributes, requiredAttributes);
       }
     });
   };

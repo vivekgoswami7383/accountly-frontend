@@ -1,4 +1,3 @@
-// product shop list
 export type Products = {
   id: string | number | undefined;
   image: string;
@@ -22,7 +21,6 @@ export type Products = {
   new?: number;
 };
 
-// checkout-cart billing address
 export type Address = {
   id?: string | number | undefined;
   name: string;
@@ -37,7 +35,6 @@ export type Address = {
   isDefault: boolean;
 };
 
-// product reviews list
 export type Reviews = {
   id: string | number | undefined;
   rating: number;
@@ -50,7 +47,6 @@ export type Reviews = {
   };
 };
 
-// product shop filter
 export type ProductsFilter = {
   length?: number;
   search: string;
@@ -62,13 +58,11 @@ export type ProductsFilter = {
   rating: number;
 };
 
-// product shop filter - sort options
 export type SortOptionsProps = {
   value: string;
   label: string;
 };
 
-// product shop filter - colors options
 export type ColorsOptionsProps = {
   label: string;
   value: string;

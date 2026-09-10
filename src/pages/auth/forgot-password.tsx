@@ -1,14 +1,10 @@
 import { Link } from 'react-router-dom';
 
-// material-ui
 import { Grid, Stack, Typography } from '@mui/material';
 
-// project import
 import useAuth from 'hooks/useAuth';
 import AuthWrapper from 'sections/auth/AuthWrapper';
 import AuthForgotPassword from 'sections/auth/auth-forms/AuthForgotPassword';
-
-// ================================|| FORGOT PASSWORD ||================================ //
 
 const ForgotPassword = () => {
   const { isLoggedIn } = useAuth();

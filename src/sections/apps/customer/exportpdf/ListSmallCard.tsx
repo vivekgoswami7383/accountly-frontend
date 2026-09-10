@@ -1,15 +1,9 @@
-//material-ui
 import { useTheme } from '@mui/material/styles';
 
-// third-party
 import { Page, View, Document, StyleSheet, Image, Text, Link } from '@react-pdf/renderer';
 
-// project import
-
-// types
 import { UserCardProps } from 'types/user-profile';
 
-//asset
 import LinkIcon from 'assets/images/icons/link.png';
 import Mail from 'assets/images/icons/mail.png';
 import Maps from 'assets/images/icons/map.png';
@@ -59,7 +53,6 @@ const styles = StyleSheet.create({
   hr: {
     borderBottom: `1px solid ${border}`,
     paddingTop: 18
-    // paddingBottom: 18
   },
   about: {
     paddingTop: 18,

@@ -1,20 +1,15 @@
 import { useEffect, useState, ChangeEvent } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, Stack, Typography, useMediaQuery } from '@mui/material';
 
-// project import
 import MainCard from 'components/MainCard';
 import useConfig from 'hooks/useConfig';
 
-// third-party
 import ReactApexChart, { Props as ChartProps } from 'react-apexcharts';
 
-// types
 import { ThemeMode } from 'types/config';
 
-// chart options
 const columnChartOptions = {
   chart: {
     type: 'bar',
@@ -69,8 +64,6 @@ const columnChartOptions = {
     }
   ]
 };
-
-// ==============================|| SALES COLUMN CHART ||============================== //
 
 const SalesChart = () => {
   const theme = useTheme();

@@ -1,7 +1,4 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
-
-// ==============================|| OVERRIDES - INPUT LABEL ||============================== //
 
 export default function InputLabel(theme: Theme) {
   return {

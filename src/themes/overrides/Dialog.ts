@@ -1,7 +1,4 @@
-// material-ui
 import { alpha } from '@mui/material/styles';
-
-// ==============================|| OVERRIDES - DIALOG ||============================== //
 
 export default function Dialog() {
   return {

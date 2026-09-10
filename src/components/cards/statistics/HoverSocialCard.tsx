@@ -1,10 +1,6 @@
-// material-ui
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 
-// types
 import { GenericCardProps } from 'types/root';
-
-// ===========================|| HOVER SOCIAL CARD ||=========================== //
 
 interface HoverSocialCardProps extends GenericCardProps {}
 

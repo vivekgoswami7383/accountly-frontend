@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - TABLE PAGINATION ||============================== //
-
 export default function TablePagination() {
   return {
     MuiTablePagination: {

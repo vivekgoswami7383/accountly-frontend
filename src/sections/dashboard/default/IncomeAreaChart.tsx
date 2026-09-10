@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 
-// third-party
 import ReactApexChart, { Props as ChartProps } from 'react-apexcharts';
 
-// project import
 import useConfig from 'hooks/useConfig';
 
-// types
 import { ThemeMode } from 'types/config';
 
-// chart options
 const areaChartOptions = {
   chart: {
     height: 450,
@@ -32,8 +27,6 @@ const areaChartOptions = {
     strokeDashArray: 0
   }
 };
-
-// ==============================|| INCOME AREA CHART ||============================== //
 
 interface Props {
   slot: string;

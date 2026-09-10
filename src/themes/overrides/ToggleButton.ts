@@ -1,7 +1,4 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
-
-// ==============================|| OVERRIDES - TOGGLE BUTTON ||============================== //
 
 export default function ToggleButton(theme: Theme) {
   return {

@@ -1,18 +1,13 @@
 import { forwardRef, ReactNode, ReactChild, ReactFragment, ReactPortal, Ref } from 'react';
 
-// material-ui
 import MuiIconButton from '@mui/material/IconButton';
 import { alpha, styled, useTheme } from '@mui/material/styles';
 import { IconButtonProps } from '@mui/material';
 
-// project imports
 import getColors from 'utils/getColors';
 import getShadow from 'utils/getShadow';
 
-// types
 import { ButtonVariantProps, ExtendedStyleProps, IconButtonShapeProps } from 'types/extended';
-
-// ==============================|| ICON BUTTON - COLOR STYLE ||============================== //
 
 interface IconButtonStyleProps extends ExtendedStyleProps {
   variant?: ButtonVariantProps;
@@ -98,8 +93,6 @@ function getColorStyle({ variant, theme, color }: IconButtonStyleProps) {
   }
 }
 
-// ==============================|| STYLED - ICON BUTTON ||============================== //
-
 interface StyleProps extends IconButtonStyleProps {
   shape?: IconButtonShapeProps;
 }
@@ -147,8 +140,6 @@ const IconButtonStyle = styled(MuiIconButton, { shouldForwardProp: (prop) => pro
     ...getColorStyle({ variant, theme, color })
   })
 );
-
-// ==============================|| EXTENDED - ICON BUTTON ||============================== //
 
 export interface Props extends IconButtonProps {
   shape?: IconButtonShapeProps;

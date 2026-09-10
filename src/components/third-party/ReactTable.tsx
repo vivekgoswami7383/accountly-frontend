@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useState, ReactNode, Ref } from 'react';
 
-// material-ui
 import { styled, useTheme, Theme } from '@mui/material/styles';
 import {
   Box,
@@ -22,20 +21,15 @@ import {
   Typography
 } from '@mui/material';
 
-// third-party
 import { CSVLink } from 'react-csv';
 import { Headers } from 'react-csv/components/CommonPropTypes';
 import { Column, ColumnInstance, HeaderGroup, Row, SortingRule } from 'react-table';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useDrop, useDrag, useDragLayer, DragLayerMonitor, DropTargetMonitor } from 'react-dnd';
 
-// assets
 import { CaretUpOutlined, CaretDownOutlined, DragOutlined, CheckOutlined, DownloadOutlined } from '@ant-design/icons';
 
-// types
 import { ThemeMode } from 'types/config';
-
-// ==============================|| SORT HEADER ||============================== //
 
 interface HeaderSortProps {
   column: HeaderGroup<{}>;
@@ -68,8 +62,6 @@ export const HeaderSort = ({ column, sort }: HeaderSortProps) => {
     </Stack>
   );
 };
-
-// ==============================|| TABLE PAGINATION ||============================== //
 
 interface TablePaginationProps {
   gotoPage: (value: number) => void;
@@ -155,8 +147,6 @@ export const TablePagination = ({ gotoPage, rows, setPageSize, pageSize, pageInd
   );
 };
 
-// ==============================|| SELECTION - PREVIEW ||============================== //
-
 export const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }: { indeterminate: boolean }, ref: Ref<any>) => {
   const defaultRef = useRef();
   const resolvedRef = ref || defaultRef;
@@ -182,8 +172,6 @@ export const TableRowSelection = ({ selected }: { selected: number }) => (
     )}
   </>
 );
-
-// ==============================|| DRAG & DROP - DRAGGABLE HEADR ||============================== //
 
 export interface Item {
   header: string;
@@ -246,8 +234,6 @@ export const DraggableHeader = ({ children, column, index, reorder }: DraggableH
   );
 };
 
-// ==============================|| DRAG & DROP - DRAG PREVIEW ||============================== //
-
 const DragHeader = styled('div')(({ theme, x, y }: { theme: Theme; x: number; y: number }) => ({
   color: theme.palette.text.secondary,
   position: 'fixed',
@@ -282,8 +268,6 @@ export const DragPreview = () => {
     </DragHeader>
   ) : null;
 };
-
-// ==============================|| DRAG & DROP - DRAGGABLE ROW ||============================== //
 
 interface DraggableRowProps {
   index: number;
@@ -347,8 +331,6 @@ export const DraggableRow = ({ index, moveRow, children }: DraggableRowProps) =>
     </TableRow>
   );
 };
-
-// ==============================|| COLUMN HIDING - SELECT ||============================== //
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -439,8 +421,6 @@ export const HidingSelect = ({ hiddenColumns, setHiddenColumns, allColumns }: Hi
   );
 };
 
-// ==============================|| COLUMN SORTING - SELECT ||============================== //
-
 interface SortingSelectProps {
   sortBy: string;
   setSortBy: (sortBy: SortingRule<{}>[]) => void;
@@ -492,8 +472,6 @@ export const SortingSelect = ({ sortBy, setSortBy, allColumns }: SortingSelectPr
   );
 };
 
-// ==============================|| CSV EXPORT ||============================== //
-
 interface CSVExportProps {
   data: never[] | any[];
   filename: string;
@@ -509,8 +487,6 @@ export const CSVExport = ({ data, filename, headers }: CSVExportProps) => {
     </CSVLink>
   );
 };
-
-// ==============================|| EMPTY TABLE - NO DATA  ||============================== //
 
 const StyledGridOverlay = styled(Stack)(({ theme }) => ({
   height: '400px',

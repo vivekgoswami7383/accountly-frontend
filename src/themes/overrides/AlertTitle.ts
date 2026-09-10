@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - ALERT TITLE ||============================== //
-
 export default function AlertTitle() {
   return {
     MuiAlertTitle: {

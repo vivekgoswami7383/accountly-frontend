@@ -1,15 +1,11 @@
-// material-ui
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Button, Stack } from '@mui/material';
 
-// third-party
 import { useDropzone } from 'react-dropzone';
 
-// project import
 import RejectionFiles from './RejectionFiles';
 import PlaceholderContent from './PlaceholderContent';
 
-// types
 import { CustomFile, UploadProps } from 'types/dropzone';
 
 const DropzoneWrapper = styled('div')(({ theme }) => ({
@@ -23,8 +19,6 @@ const DropzoneWrapper = styled('div')(({ theme }) => ({
   border: `1px dashed ${theme.palette.secondary.main}`,
   '&:hover': { opacity: 0.72, cursor: 'pointer' }
 }));
-
-// ==============================|| UPLOAD - SINGLE FILE ||============================== //
 
 const SingleFileUpload = ({ error, file, setFieldValue, sx, ...other }: UploadProps) => {
   const theme = useTheme();

@@ -23,7 +23,7 @@ export const NavigationItems = [
     type: 'item',
     url: '/app/business',
     icon: icons.ShopOutlined,
-    allowedRoles: ['super_admin'] // Only super admin can manage businesses
+    allowedRoles: ['super_admin']
   },
   {
     id: 'customer',
@@ -31,7 +31,7 @@ export const NavigationItems = [
     type: 'item',
     url: '/app/customer',
     icon: icons.CustomerServiceOutlined,
-    allowedRoles: ['owner', 'admin', 'staff'] // Owner, admin, staff can manage customers
+    allowedRoles: ['owner', 'admin', 'staff']
   },
   {
     id: 'transaction',
@@ -39,6 +39,6 @@ export const NavigationItems = [
     type: 'item',
     url: '/app/transaction',
     icon: icons.TransactionOutlined,
-    allowedRoles: ['owner', 'admin', 'staff'] // Owner, admin, staff can manage transactions
+    allowedRoles: ['owner', 'admin', 'staff']
   }
 ];

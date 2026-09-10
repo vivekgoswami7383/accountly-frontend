@@ -1,7 +1,4 @@
-// material-ui
 import { Theme } from '@mui/material/styles';
-
-// ==============================|| OVERRIDES - ICON BUTTON ||============================== //
 
 export default function IconButton(theme: Theme) {
   return {

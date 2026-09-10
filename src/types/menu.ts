@@ -1,11 +1,8 @@
 import { ReactNode } from 'react';
 
-// material-ui
 import { ChipProps } from '@mui/material';
 
 import { GenericCardProps } from './root';
-
-// ==============================|| MENU TYPES  ||============================== //
 
 export type NavItemType = {
   allowedRoles?: string[];

@@ -1,21 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 
-// material-ui
 import { Button, FormHelperText, Grid, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
 
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project import
 import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'components/@extended/AnimateButton';
 
 import { dispatch } from 'store';
 import { openSnackbar } from 'store/reducers/snackbar';
-
-// ============================|| FIREBASE - FORGOT PASSWORD ||============================ //
 
 const AuthForgotPassword = () => {
   const scriptedRef = useScriptRef();
@@ -54,10 +49,6 @@ const AuthForgotPassword = () => {
                   navigate(isLoggedIn ? '/auth/check-mail' : '/check-mail', { replace: true });
                 }, 1500);
 
-                // WARNING: do not set any formik state here as formik might be already destroyed here. You may get following error by doing so.
-                // Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application.
-                // To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-                // github issue: https://github.com/formium/formik/issues/2430
               },
               (err: any) => {
                 setStatus({ success: false });

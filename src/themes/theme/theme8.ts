@@ -1,10 +1,7 @@
-// types
 import { PaletteThemeProps } from 'types/theme';
 import { PalettesProps } from '@ant-design/colors';
 import { PaletteColorOptions } from '@mui/material/styles';
 import { ThemeMode } from 'types/config';
-
-// ==============================|| PRESET THEME - PURPLE THEME8 ||============================== //
 
 const Theme8 = (colors: PalettesProps, mode: ThemeMode): PaletteThemeProps => {
   const { grey } = colors;

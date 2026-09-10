@@ -1,14 +1,9 @@
-// material-ui
 import { alpha } from '@mui/material/styles';
 import { Box, Paper, Typography } from '@mui/material';
 
-// third-party
 import { FileRejection } from 'react-dropzone';
 
-// utils
 import getDropzoneData from 'utils/getDropzoneData';
-
-// ==============================|| DROPZONE - REJECTION FILES ||============================== //
 
 type Props = {
   fileRejections: FileRejection[];

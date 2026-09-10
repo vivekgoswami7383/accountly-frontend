@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Box, Button, CardContent, CardMedia, Chip, Divider, Grid, Rating, Stack, Typography } from '@mui/material';
 
-// types
 import { ProductCardProps } from 'types/cart';
 
-// project import
 import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
 import SkeletonProductPlaceholder from 'components/cards/skeleton/ProductPlaceholder';
@@ -16,12 +13,9 @@ import { useDispatch, useSelector } from 'store';
 import { addProduct } from 'store/reducers/cart';
 import { openSnackbar } from 'store/reducers/snackbar';
 
-// assets
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 
 const prodImage = require.context('assets/images/e-commerce', true);
-
-// ==============================|| PRODUCT CARD ||============================== //
 
 const ProductCard = ({
   id,

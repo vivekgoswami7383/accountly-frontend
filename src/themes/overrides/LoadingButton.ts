@@ -1,5 +1,3 @@
-// ==============================|| OVERRIDES - LOADING BUTTON ||============================== //
-
 export default function LoadingButton() {
   return {
     MuiLoadingButton: {

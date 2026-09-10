@@ -1,23 +1,17 @@
 import { forwardRef, CSSProperties, ReactNode, Ref } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import { Card, CardContent, CardHeader, Divider, Typography, CardProps, CardHeaderProps, CardContentProps } from '@mui/material';
 
-// project import
 import Highlighter from './third-party/Highlighter';
 
-// types
 import { KeyedObject } from 'types/root';
 import { ThemeMode } from 'types/config';
 
-// header style
 const headerSX = {
   p: 2.5,
   '& .MuiCardHeader-action': { m: '0px auto', alignSelf: 'center' }
 };
-
-// ==============================|| CUSTOM - MAIN CARD ||============================== //
 
 export interface MainCardProps extends KeyedObject {
   border?: boolean;
@@ -102,7 +96,6 @@ const MainCard = forwardRef(
           ...sx
         }}
       >
-        {/* card header and action */}
         {!darkTitle && title && (
           <CardHeader
             sx={headerSX}
@@ -114,14 +107,11 @@ const MainCard = forwardRef(
         )}
         {darkTitle && title && <CardHeader sx={headerSX} title={<Typography variant="h4">{title}</Typography>} action={secondary} />}
 
-        {/* content & header divider */}
         {title && divider && <Divider />}
 
-        {/* card content */}
         {content && <CardContent sx={contentSX}>{children}</CardContent>}
         {!content && children}
 
-        {/* card footer - clipboard & highlighter  */}
         {codeString && (
           <>
             <Divider sx={{ borderStyle: 'dashed' }} />
