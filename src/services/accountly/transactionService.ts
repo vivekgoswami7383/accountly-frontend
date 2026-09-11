@@ -6,7 +6,7 @@ const unwrap = (res: any) => res?.data?.data ?? res?.data;
 export const transactionService = {
   async createTransaction(data: CreateTransactionRequest) {
     const res = await axios.post('/api/transaction', data);
-    return unwrap(res).transaction;
+    return unwrap(res);
   },
 
   async getTransactions(filter?: TransactionFilter) {
@@ -30,11 +30,12 @@ export const transactionService = {
 
   async updateTransaction(id: string, data: Partial<CreateTransactionRequest>) {
     const res = await axios.put(`/api/transaction/${id}`, data);
-    return unwrap(res).transaction;
+    return unwrap(res);
   },
 
   async deleteTransaction(id: string) {
-    await axios.delete(`/api/transaction/${id}`);
+    const res = await axios.delete(`/api/transaction/${id}`);
+    return unwrap(res);
   }
 };
 

@@ -53,7 +53,7 @@ export const createTransaction = createAsyncThunk(
         })
       );
       dispatch(fetchDashboardStatistics() as any);
-      return res;
+      return { transaction: res.transaction, customerBalance: res.customer_balance };
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to create transaction');
     }
@@ -98,9 +98,9 @@ export const updateTransactionById = createAsyncThunk(
   'transactions/updateTransactionById',
   async (params: { id: string; data: Partial<CreateTransactionRequest> }, { rejectWithValue, dispatch }) => {
     try {
-      const updated = await transactionService.updateTransaction(params.id, params.data);
+      const res = await transactionService.updateTransaction(params.id, params.data);
       dispatch(fetchDashboardStatistics() as any);
-      return updated;
+      return { transaction: res.transaction, customerBalance: res.customer_balance };
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to update transaction');
     }
@@ -111,9 +111,9 @@ export const deleteTransactionById = createAsyncThunk(
   'transactions/deleteTransactionById',
   async (transactionId: string, { rejectWithValue, dispatch }) => {
     try {
-      await transactionService.deleteTransaction(transactionId);
+      const res = await transactionService.deleteTransaction(transactionId);
       dispatch(fetchDashboardStatistics() as any);
-      return transactionId;
+      return { transactionId, customerBalance: res?.customer_balance };
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to delete transaction');
     }
@@ -147,10 +147,14 @@ const transactionSlice = createSlice({
       })
       .addCase(createTransaction.fulfilled, (state, action) => {
         state.loading = false;
-        const mapped = mapTx(action.payload);
+        const mapped = mapTx(action.payload.transaction);
         state.transactions.unshift(mapped);
         if (state.loadedCustomerId === mapped.customerId) {
           state.customerTransactions.unshift(mapped);
+          if (action.payload.customerBalance != null) {
+            state.customerStats.customerBalance = action.payload.customerBalance;
+            state.customerStats.totalTransactions += 1;
+          }
         }
       })
       .addCase(createTransaction.rejected, (state, action) => {
@@ -208,12 +212,15 @@ const transactionSlice = createSlice({
       })
       .addCase(updateTransactionById.fulfilled, (state, action) => {
         state.loading = false;
-        const mapped = mapTx(action.payload);
+        const mapped = mapTx(action.payload.transaction);
         const index = state.transactions.findIndex((t) => t.id === mapped.id);
         if (index !== -1) state.transactions[index] = mapped;
         const customerIndex = state.customerTransactions.findIndex((t) => t.id === mapped.id);
         if (customerIndex !== -1) state.customerTransactions[customerIndex] = mapped;
         state.selectedTransaction = mapped;
+        if (state.loadedCustomerId === mapped.customerId && action.payload.customerBalance != null) {
+          state.customerStats.customerBalance = action.payload.customerBalance;
+        }
       })
       .addCase(updateTransactionById.rejected, (state, action) => {
         state.loading = false;
@@ -225,10 +232,16 @@ const transactionSlice = createSlice({
       })
       .addCase(deleteTransactionById.fulfilled, (state, action) => {
         state.loading = false;
-        const deletedId = action.payload as string;
+        const { transactionId: deletedId, customerBalance } = action.payload;
+        const deletedTx =
+          state.customerTransactions.find((t) => t.id === deletedId) || state.transactions.find((t) => t.id === deletedId);
         state.transactions = state.transactions.filter((t) => t.id !== deletedId);
         state.customerTransactions = state.customerTransactions.filter((t) => t.id !== deletedId);
         if (state.selectedTransaction?.id === deletedId) state.selectedTransaction = null;
+        if (deletedTx && state.loadedCustomerId === deletedTx.customerId && customerBalance != null) {
+          state.customerStats.customerBalance = customerBalance;
+          state.customerStats.totalTransactions = Math.max(0, state.customerStats.totalTransactions - 1);
+        }
       })
       .addCase(deleteTransactionById.rejected, (state, action) => {
         state.loading = false;
