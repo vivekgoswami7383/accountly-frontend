@@ -16,7 +16,7 @@ interface AppHeaderProps {
 
 const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps) => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, business, logout } = useAuth();
   const c = useAccountlyColors();
   const t = useT();
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -49,7 +49,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
               </IconDot>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16, lineHeight: 1.15, color: c.ink }} noWrap>
-                  {user?.business?.business_name || 'My Business'}
+                  {business?.business_name || 'My Business'}
                 </Typography>
                 <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }} noWrap>
                   {roleLabel} · {t('header.manageKhata')}

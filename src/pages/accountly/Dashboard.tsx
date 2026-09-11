@@ -95,8 +95,8 @@ const Dashboard = () => {
     if (!hasLoaded) dispatch(fetchDashboardStatistics());
   }, [dispatch, hasLoaded]);
 
-  const youWillGet = stats?.you_will_get ?? 0;
-  const youWillGive = stats?.you_will_give ?? 0;
+  const receivable = stats?.receivable ?? 0;
+  const payable = stats?.payable ?? 0;
   const hasCustomers = recentCustomers && recentCustomers.length > 0;
   const hasTxns = recentTransactions && recentTransactions.length > 0;
 
@@ -108,8 +108,8 @@ const Dashboard = () => {
           <Fade>
             <AppCard sx={{ p: 1.75 }}>
               <Stack direction="row" spacing={1.5}>
-                <StatHalf tone="get" amount={youWillGet} loading={!hasLoaded} label={t('home.youllGet')} />
-                <StatHalf tone="give" amount={youWillGive} loading={!hasLoaded} label={t('home.youllGive')} />
+                <StatHalf tone="get" amount={receivable} loading={!hasLoaded} label={t('home.youllGet')} />
+                <StatHalf tone="give" amount={payable} loading={!hasLoaded} label={t('home.youllGive')} />
               </Stack>
               <Box
                 component="button"

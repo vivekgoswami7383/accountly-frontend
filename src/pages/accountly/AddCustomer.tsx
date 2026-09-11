@@ -19,7 +19,7 @@ const AddCustomer = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (values: { name: string; phone: string; address: string }) => {
-    if (!user?.business?._id) {
+    if (!user?.business_id) {
       showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
       return;
     }

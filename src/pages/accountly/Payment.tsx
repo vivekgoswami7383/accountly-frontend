@@ -119,7 +119,7 @@ const Payment = () => {
       return;
     }
 
-    if (!user?.business?._id) {
+    if (!user?.business_id) {
       showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
       return;
     }

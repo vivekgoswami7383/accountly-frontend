@@ -4,7 +4,7 @@ export interface ApiCustomer {
   phone: string;
   address?: string;
   balance: number;
-  business: { _id: string; business_name: string };
+  business_id: string;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
@@ -69,8 +69,8 @@ export interface TransactionFilter {
 }
 
 export interface DashboardStats {
-  you_will_get: number;
-  you_will_give: number;
+  receivable: number;
+  payable: number;
   net: number;
   customer_count: number;
   total_transactions: number;
@@ -82,7 +82,7 @@ export interface RecentCustomer {
   phone: string;
   balance: number;
   status: number;
-  business: { _id: string; business_name: string };
+  business_id: string;
 }
 
 export interface ApiTransaction {

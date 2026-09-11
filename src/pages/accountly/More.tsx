@@ -9,7 +9,7 @@ import { AppCard, ListRow, IconDot } from 'components/accountly/kit';
 
 const More = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, business, logout } = useAuth();
   const c = useAccountlyColors();
   const t = useT();
 
@@ -40,7 +40,7 @@ const More = () => {
                 {user?.name || 'User'}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, fontWeight: 500 }} noWrap>
-                {t(`role.${user?.role || 'owner'}`)} · {user?.business?.business_name || 'My Business'}
+                {t(`role.${user?.role || 'owner'}`)} · {business?.business_name || 'My Business'}
               </Typography>
             </Box>
           </AppCard>

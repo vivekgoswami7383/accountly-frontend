@@ -21,10 +21,7 @@ export type UserProfile = {
   theme?: 'light' | 'dark';
   language?: string;
   permissions?: string[];
-  business?: {
-    _id?: string;
-    business_name?: string;
-  };
+  business_id?: string;
 };
 
 export type BusinessProfile = {
