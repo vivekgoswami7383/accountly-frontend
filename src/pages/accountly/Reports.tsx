@@ -16,7 +16,7 @@ const Reports = () => {
           <IconDot size={72} bg={c.redSoft} fg={c.red}>
             <BarChart3 />
           </IconDot>
-          <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 18 }}>{t('reports.comingSoon')}</Typography>
+          <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 18 }}>{t('reports.comingSoon')}</Typography>
           <Typography sx={{ color: c.grey, fontSize: 13.5, maxWidth: 260 }}>{t('reports.comingSoonSub')}</Typography>
         </Stack>
       </Container>

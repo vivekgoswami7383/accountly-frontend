@@ -85,7 +85,7 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
               <ListItemText
                 primary={c.label}
                 secondary={c.phone}
-                primaryTypographyProps={{ fontSize: 13.5, fontWeight: 600 }}
+                primaryTypographyProps={{ fontSize: 13.5, fontWeight: 500 }}
                 secondaryTypographyProps={{ fontSize: 12 }}
               />
               {c.code === value.code && <Check size={16} color="#E23744" />}

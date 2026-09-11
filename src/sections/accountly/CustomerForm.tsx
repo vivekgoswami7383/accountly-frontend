@@ -26,7 +26,7 @@ const validatePhone = (phone: string) => /^[0-9]{10}$/.test(phone);
 const Label = ({ children }: { children: string }) => {
   const c = useAccountlyColors();
   return (
-    <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+    <Typography sx={{ fontWeight: 500, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
       {children}
     </Typography>
   );
@@ -54,7 +54,7 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
     <Box sx={{ pb: FOOTER_SPACE }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3.5 }}>
         <Box
-          sx={{ width: 84, height: 84, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 700, fontSize: 30 }}
+          sx={{ width: 84, height: 84, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 30 }}
         >
           {initials(name || 'C')}
         </Box>

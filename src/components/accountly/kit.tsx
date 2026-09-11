@@ -62,7 +62,7 @@ export const BalanceTag = styled(Box)<{ tone: 'get' | 'give' }>(({ theme, tone }
     padding: '2px 7px',
     borderRadius: 6,
     fontSize: 10,
-    fontWeight: 700,
+    fontWeight: 500,
     letterSpacing: '0.04em',
     lineHeight: 1.6,
     color: tone === 'get' ? c.greenDeep : c.redDeep,
@@ -104,10 +104,10 @@ export const SectionHeader = ({ title, action, onAction }: { title: string; acti
   const c = useAccountlyColors();
   return (
     <Stack direction="row" alignItems="center" sx={{ px: 0.25, mb: 1.25 }}>
-      <Typography sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 700, fontSize: 18, color: c.ink, letterSpacing: '-0.01em' }}>{title}</Typography>
+      <Typography sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 500, fontSize: 18, color: c.ink, letterSpacing: '-0.01em' }}>{title}</Typography>
       {action && (
         <ButtonBase onClick={onAction} sx={{ borderRadius: 1.5, px: 0.5, py: 0.25, color: c.slate }}>
-          <Typography sx={{ color: c.slate, fontWeight: 700, fontSize: 12.5, mr: 0.375 }}>{action}</Typography>
+          <Typography sx={{ color: c.slate, fontWeight: 500, fontSize: 12.5, mr: 0.375 }}>{action}</Typography>
           <ChevronRight size={14} />
         </ButtonBase>
       )}

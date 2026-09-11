@@ -112,15 +112,15 @@ export const createAccountlyTheme = (mode: AccountlyMode): Theme => {
     shape: { borderRadius: 8 },
     typography: {
       fontFamily: FONT,
-      h1: { fontWeight: 700, letterSpacing: '-0.02em' },
-      h2: { fontWeight: 700, letterSpacing: '-0.02em' },
-      h3: { fontWeight: 700, letterSpacing: '-0.02em' },
-      h4: { fontWeight: 700, letterSpacing: '-0.015em' },
-      h5: { fontWeight: 700, letterSpacing: '-0.01em' },
-      h6: { fontWeight: 700, letterSpacing: '-0.01em' },
-      subtitle1: { fontWeight: 600 },
-      subtitle2: { fontWeight: 600 },
-      button: { textTransform: 'none', fontWeight: 700, letterSpacing: 0 }
+      h1: { fontWeight: 500, letterSpacing: '-0.02em' },
+      h2: { fontWeight: 500, letterSpacing: '-0.02em' },
+      h3: { fontWeight: 500, letterSpacing: '-0.02em' },
+      h4: { fontWeight: 500, letterSpacing: '-0.015em' },
+      h5: { fontWeight: 500, letterSpacing: '-0.01em' },
+      h6: { fontWeight: 500, letterSpacing: '-0.01em' },
+      subtitle1: { fontWeight: 500 },
+      subtitle2: { fontWeight: 500 },
+      button: { textTransform: 'none', fontWeight: 500, letterSpacing: 0 }
     },
     components: {
       MuiCssBaseline: {
@@ -170,12 +170,12 @@ export const createAccountlyTheme = (mode: AccountlyMode): Theme => {
           }
         }
       },
-      MuiInputLabel: { styleOverrides: { root: { fontWeight: 600, color: c.grey } } },
+      MuiInputLabel: { styleOverrides: { root: { fontWeight: 500, color: c.grey } } },
       MuiDialog: { styleOverrides: { paper: { borderRadius: 24, boxShadow: shadow.card, backgroundColor: c.surface } } },
-      MuiDialogTitle: { styleOverrides: { root: { fontFamily: DISPLAY, fontWeight: 700, fontSize: '1.1rem', color: c.ink } } },
+      MuiDialogTitle: { styleOverrides: { root: { fontFamily: DISPLAY, fontWeight: 500, fontSize: '1.1rem', color: c.ink } } },
       MuiDialogContentText: { styleOverrides: { root: { color: c.grey } } },
       MuiMenu: { styleOverrides: { paper: { borderRadius: 16, boxShadow: shadow.card, marginTop: 8, backgroundColor: c.surface } } },
-      MuiMenuItem: { styleOverrides: { root: { fontWeight: 600, fontSize: '0.9rem', paddingTop: 10, paddingBottom: 10, gap: 12 } } },
+      MuiMenuItem: { styleOverrides: { root: { fontWeight: 500, fontSize: '0.9rem', paddingTop: 10, paddingBottom: 10, gap: 12 } } },
       MuiSwitch: {
         styleOverrides: {
           track: { backgroundColor: c.greyIcon, opacity: 1 }

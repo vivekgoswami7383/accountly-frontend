@@ -7,6 +7,9 @@ import { fetchDashboardStatistics } from './dashboard';
 interface TransactionState {
   transactions: Transaction[];
   hasLoadedGlobal: boolean;
+  page: number;
+  hasMore: boolean;
+  loadingMore: boolean;
   customerTransactions: Transaction[];
   loadedCustomerId: string | null;
   loading: boolean;
@@ -21,6 +24,9 @@ interface TransactionState {
 const initialState: TransactionState = {
   transactions: [],
   hasLoadedGlobal: false,
+  page: 0,
+  hasMore: true,
+  loadingMore: false,
   customerTransactions: [],
   loadedCustomerId: null,
   loading: false,
@@ -28,6 +34,8 @@ const initialState: TransactionState = {
   selectedTransaction: null,
   customerStats: { totalTransactions: 0, customerBalance: null }
 };
+
+export const TRANSACTIONS_PAGE_SIZE = 20;
 
 const mapTx = (tx: any): Transaction => ({
   id: tx._id,
@@ -62,9 +70,18 @@ export const createTransaction = createAsyncThunk(
 
 export const fetchTransactions = createAsyncThunk(
   'transactions/fetchTransactions',
-  async (filter: TransactionFilter | undefined, { rejectWithValue }) => {
+  async (
+    params: { filter?: TransactionFilter; page: number; append?: boolean },
+    { rejectWithValue }
+  ) => {
     try {
-      return await transactionService.getTransactions(filter);
+      const data = await transactionService.getTransactions(params.filter, { page: params.page, limit: TRANSACTIONS_PAGE_SIZE });
+      return {
+        page: params.page,
+        append: Boolean(params.append),
+        items: Array.isArray(data?.transactions) ? data.transactions : [],
+        hasMore: Boolean(data?.has_more)
+      };
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to fetch transactions');
     }
@@ -161,19 +178,24 @@ const transactionSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(fetchTransactions.pending, (state) => {
-        state.loading = true;
+      .addCase(fetchTransactions.pending, (state, action) => {
+        if (action.meta.arg.append) state.loadingMore = true;
+        else state.loading = true;
         state.error = null;
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
+        const { page, append, items, hasMore } = action.payload;
         state.loading = false;
+        state.loadingMore = false;
         state.hasLoadedGlobal = true;
-        const responseData = (action.payload as any)?.data || action.payload;
-        const arr = responseData?.transactions || responseData;
-        state.transactions = Array.isArray(arr) ? arr.map(mapTx) : [];
+        state.page = page;
+        state.hasMore = hasMore;
+        const mapped = items.map(mapTx);
+        state.transactions = append ? [...state.transactions, ...mapped] : mapped;
       })
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
+        state.loadingMore = false;
         state.error = action.payload as string;
       })
       .addCase(fetchCustomerTransactions.pending, (state) => {

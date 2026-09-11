@@ -48,7 +48,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                 <Store />
               </IconDot>
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16, lineHeight: 1.15, color: c.ink }} noWrap>
+                <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16, lineHeight: 1.15, color: c.ink }} noWrap>
                   {business?.business_name || 'My Business'}
                 </Typography>
                 <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }} noWrap>
@@ -57,7 +57,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
               </Box>
               <IconButton onClick={(e: MouseEvent<HTMLElement>) => setMenuEl(e.currentTarget)} sx={{ p: 0.5 }}>
                 <Box sx={{ position: 'relative' }}>
-                  <Avatar sx={{ width: 38, height: 38, bgcolor: c.redDeep, fontFamily: DISPLAY, fontWeight: 700, fontSize: 15 }}>
+                  <Avatar sx={{ width: 38, height: 38, bgcolor: c.redDeep, fontFamily: DISPLAY, fontWeight: 500, fontSize: 15 }}>
                     {(user?.name || 'U')[0].toUpperCase()}
                   </Avatar>
                   <Box
@@ -103,7 +103,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
               )}
               {typeof title === 'string' ? (
                 <Typography
-                  sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 700, fontSize: variant === 'root' ? 19 : 17, color: c.ink }}
+                  sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 500, fontSize: variant === 'root' ? 19 : 17, color: c.ink }}
                   noWrap
                 >
                   {title}

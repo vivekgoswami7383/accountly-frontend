@@ -9,12 +9,15 @@ export const transactionService = {
     return unwrap(res);
   },
 
-  async getTransactions(filter?: TransactionFilter) {
-    let endpoint = '/api/transaction';
-    if (filter) {
-      endpoint = `/api/transaction?filter=${encodeURIComponent(JSON.stringify(filter))}`;
+  async getTransactions(filter?: TransactionFilter, params?: { page?: number; limit?: number }) {
+    const query = new URLSearchParams();
+    if (filter) query.set('filter', JSON.stringify(filter));
+    if (params) {
+      query.set('page', String(params.page ?? 1));
+      query.set('limit', String(params.limit ?? 20));
     }
-    const res = await axios.get(endpoint);
+    const qs = query.toString();
+    const res = await axios.get(`/api/transaction${qs ? `?${qs}` : ''}`);
     return unwrap(res);
   },
 

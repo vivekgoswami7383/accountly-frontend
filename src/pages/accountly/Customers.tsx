@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Typography } from '@mui/material';
+import { Box, CircularProgress, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Typography } from '@mui/material';
 import { Search, Phone, ChevronRight, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchCustomers } from 'store/reducers/accountly/customers';
+import { fetchCustomersPage } from 'store/reducers/accountly/customers';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
+import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
 import trade from 'assets/images/accountly/illustrations/trade.png';
@@ -17,12 +18,18 @@ const Customers = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { customers, hasLoaded } = useSelector((s) => s.customers);
+  const { listItems: customers, listPage, listHasMore, listLoading, listLoadingMore } = useSelector((s) => s.customers);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    if (!hasLoaded) dispatch(fetchCustomers());
-  }, [dispatch, hasLoaded]);
+    if (listPage === 0) dispatch(fetchCustomersPage(1));
+  }, [dispatch, listPage]);
+
+  const loadMore = () => {
+    if (listHasMore && !listLoadingMore) dispatch(fetchCustomersPage(listPage + 1));
+  };
+
+  const sentinelRef = useInfiniteScroll(loadMore, listHasMore, listLoading || listLoadingMore);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -42,7 +49,7 @@ const Customers = () => {
         cursor: 'pointer',
         bgcolor: c.red,
         color: '#fff',
-        fontWeight: 700,
+        fontWeight: 500,
         fontSize: 13,
         px: 1.5,
         py: 0.875,
@@ -76,7 +83,7 @@ const Customers = () => {
             />
           )}
 
-          {!hasLoaded ? (
+          {listLoading ? (
             <AppCard sx={{ overflow: 'hidden' }}>
               {[0, 1, 2, 3].map((i) => (
                 <Box key={i}>
@@ -95,7 +102,7 @@ const Customers = () => {
           ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
               <Box component="img" src={trade} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
                 {query ? t('customers.noMatches') : t('home.noCustomersYet')}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>
@@ -113,12 +120,12 @@ const Customers = () => {
                       {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
                       <ListRow onClick={() => navigate(`/customer/${cust.id}`)}>
                         <Box
-                          sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 700, fontSize: 14, flexShrink: 0 }}
+                          sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 14, flexShrink: 0 }}
                         >
                           {initials(cust.name)}
                         </Box>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
                             {cust.name}
                           </Typography>
                           <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
@@ -129,7 +136,7 @@ const Customers = () => {
                           </Stack>
                         </Box>
                         <Stack alignItems="center" spacing={0.375} sx={{ flexShrink: 0, alignSelf: 'flex-start' }}>
-                          <Typography sx={{ fontWeight: 800, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
+                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
                             {fmt(cust.balance)}
                           </Typography>
                           <BalanceTag tone={get ? 'get' : 'give'} sx={{ alignSelf: 'center' }}>
@@ -142,6 +149,12 @@ const Customers = () => {
                   );
                 })}
               </AppCard>
+
+              {listHasMore && !query && (
+                <Box ref={sentinelRef} sx={{ display: 'flex', justifyContent: 'center', py: 2.5 }}>
+                  {listLoadingMore && <CircularProgress size={22} sx={{ color: c.red }} />}
+                </Box>
+              )}
             </Fade>
           )}
         </Stack>

@@ -12,7 +12,7 @@ import { AppCard, BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit
 const Label = ({ children }: { children: string }) => {
   const c = useAccountlyColors();
   return (
-    <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+    <Typography sx={{ fontWeight: 500, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
       {children}
     </Typography>
   );
@@ -58,17 +58,17 @@ const Profile = () => {
         <Stack spacing={2.5}>
           <AppCard sx={{ p: 3, textAlign: 'center' }}>
             <Box
-              sx={{ width: 76, height: 76, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 700, fontSize: 28, mx: 'auto', mb: 1.5 }}
+              sx={{ width: 76, height: 76, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 500, fontSize: 28, mx: 'auto', mb: 1.5 }}
             >
               {(user?.name || 'U')[0].toUpperCase()}
             </Box>
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17 }}>{user?.name || 'User'}</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17 }}>{user?.name || 'User'}</Typography>
             <Typography sx={{ color: c.grey, fontSize: 13 }}>{t(`role.${user?.role || 'owner'}`)}</Typography>
           </AppCard>
 
           <AppCard sx={{ p: 3 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15 }}>{t('common.details')}</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15 }}>{t('common.details')}</Typography>
               {!editing && (
                 <Button size="small" variant="outlined" startIcon={<SquarePen size={15} />} onClick={() => setEditing(true)}>
                   {t('common.edit')}

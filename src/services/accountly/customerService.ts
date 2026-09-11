@@ -4,8 +4,12 @@ import { ApiCustomer, CreateCustomerRequest, UpdateCustomerRequest, Customer } f
 const unwrap = (res: any) => res?.data?.data ?? res?.data;
 
 export const customerService = {
-  async getCustomers(): Promise<{ customers: ApiCustomer[] }> {
-    const res = await axios.get('/api/customer');
+  async getCustomers(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<{ customers: ApiCustomer[]; total?: number; has_more?: boolean }> {
+    const query = params ? `?page=${params.page ?? 1}&limit=${params.limit ?? 20}` : '';
+    const res = await axios.get(`/api/customer${query}`);
     return unwrap(res);
   },
 

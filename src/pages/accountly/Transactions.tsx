@@ -1,6 +1,19 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Container, Divider, Drawer, IconButton, InputAdornment, Skeleton, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Divider,
+  Drawer,
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import { Search, ArrowUp, ArrowDown, SlidersHorizontal, X, Calendar, ListFilter } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactions } from 'store/reducers/accountly/transactions';
@@ -9,6 +22,7 @@ import { AppliedFilters, DatePreset, DEFAULT_FILTERS, TypeFilter, getDateRangeFo
 import { FilterCondition, TransactionFilter } from 'services/accountly/types';
 import { AccountlyColors, DISPLAY, shadow, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
+import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot } from 'components/accountly/kit';
 import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
@@ -45,7 +59,7 @@ const FilterChip = ({ label, onClear, c }: { label: string; onClear?: () => void
       bgcolor: c.chipGrey,
       color: c.slate,
       fontSize: 12.5,
-      fontWeight: 700,
+      fontWeight: 500,
       whiteSpace: 'nowrap'
     }}
   >
@@ -63,7 +77,7 @@ const FilterChip = ({ label, onClear, c }: { label: string; onClear?: () => void
 );
 
 const SectionLabel = ({ children, c }: { children: ReactNode; c: AccountlyColors }) => (
-  <Typography sx={{ fontWeight: 700, fontSize: 11.5, color: c.grey, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.25 }}>
+  <Typography sx={{ fontWeight: 500, fontSize: 11.5, color: c.grey, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.25 }}>
     {children}
   </Typography>
 );
@@ -91,7 +105,7 @@ const ChipButton = ({
       border: active ? 'none' : `1.5px solid ${c.border}`,
       bgcolor: active ? c.red : c.surface,
       color: active ? '#fff' : c.ink,
-      fontWeight: 700,
+      fontWeight: 500,
       fontSize: 13,
       px: 1.75,
       py: 0.875,
@@ -112,15 +126,21 @@ const Transactions = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { transactions, loading } = useSelector((s) => s.transactions);
+  const { transactions, loading, page, hasMore, loadingMore } = useSelector((s) => s.transactions);
   const [query, setQuery] = useState('');
   const [appliedFilters, setAppliedFilters] = useState<AppliedFilters>(DEFAULT_FILTERS);
   const [draftFilters, setDraftFilters] = useState<AppliedFilters>(DEFAULT_FILTERS);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchTransactions(buildFilter(appliedFilters)));
+    dispatch(fetchTransactions({ filter: buildFilter(appliedFilters), page: 1 }));
   }, [dispatch, appliedFilters]);
+
+  const loadMore = () => {
+    if (hasMore && !loadingMore) dispatch(fetchTransactions({ filter: buildFilter(appliedFilters), page: page + 1, append: true }));
+  };
+
+  const sentinelRef = useInfiniteScroll(loadMore, hasMore, loading || loadingMore);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -232,7 +252,7 @@ const Transactions = () => {
           ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
               <Box component="img" src={onlinePayment} alt="" sx={{ width: 100, height: 100, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
                 {query || hasNonDefaultFilter ? t('customers.noMatches') : t('home.noPaymentsYet')}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('transactions.openCustomerRecord')}</Typography>
@@ -250,14 +270,14 @@ const Transactions = () => {
                           {sent ? <ArrowUp /> : <ArrowDown />}
                         </IconDot>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
                             {sent ? t('home.paidTo', { name: tx.customerName }) : t('home.receivedFrom', { name: tx.customerName })}
                           </Typography>
                           <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                             {fmtWhen(tx.createdAt)}
                           </Typography>
                         </Box>
-                        <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                        <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
                           {fmt(tx.amount)}
                         </Typography>
                       </ListRow>
@@ -265,6 +285,12 @@ const Transactions = () => {
                   );
                 })}
               </AppCard>
+
+              {hasMore && !query && (
+                <Box ref={sentinelRef} sx={{ display: 'flex', justifyContent: 'center', py: 2.5 }}>
+                  {loadingMore && <CircularProgress size={22} sx={{ color: c.red }} />}
+                </Box>
+              )}
             </Fade>
           )}
         </Stack>
@@ -290,7 +316,7 @@ const Transactions = () => {
 
         <Box sx={{ px: 2.5, pt: 1, pb: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2.5 }}>
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 18, color: c.ink }}>{t('transactions.filters')}</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 18, color: c.ink }}>{t('transactions.filters')}</Typography>
             <IconButton onClick={() => setDrawerOpen(false)} size="small" sx={{ color: c.greyIcon, bgcolor: c.chipGrey }}>
               <X size={16} />
             </IconButton>
@@ -313,7 +339,7 @@ const Transactions = () => {
           {draftFilters.datePreset === 'custom' && (
             <Stack direction="row" spacing={1.5} sx={{ mb: 3 }}>
               <Box sx={{ flex: 1 }}>
-                <Typography sx={{ fontSize: 11.5, color: c.grey, mb: 0.625, fontWeight: 600 }}>{t('transactions.startDate')}</Typography>
+                <Typography sx={{ fontSize: 11.5, color: c.grey, mb: 0.625, fontWeight: 500 }}>{t('transactions.startDate')}</Typography>
                 <Box
                   sx={{
                     display: 'flex',
@@ -346,7 +372,7 @@ const Transactions = () => {
                 </Box>
               </Box>
               <Box sx={{ flex: 1 }}>
-                <Typography sx={{ fontSize: 11.5, color: c.grey, mb: 0.625, fontWeight: 600 }}>{t('transactions.endDate')}</Typography>
+                <Typography sx={{ fontSize: 11.5, color: c.grey, mb: 0.625, fontWeight: 500 }}>{t('transactions.endDate')}</Typography>
                 <Box
                   sx={{
                     display: 'flex',

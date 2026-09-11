@@ -78,7 +78,7 @@ const CustomerSettings = () => {
                   <Stack direction="row" justifyContent="space-between" sx={{ py: 1.5 }}>
                     <Typography sx={{ color: c.grey, fontWeight: 500, fontSize: 13.5 }}>{label}</Typography>
                     <Typography
-                      sx={{ fontWeight: 700, fontSize: 13.5, color: isBalance ? (customer.balance < 0 ? c.greenDeep : c.redDeep) : c.ink }}
+                      sx={{ fontWeight: 500, fontSize: 13.5, color: isBalance ? (customer.balance < 0 ? c.greenDeep : c.redDeep) : c.ink }}
                     >
                       {value}
                     </Typography>
@@ -96,7 +96,7 @@ const CustomerSettings = () => {
                   <SquarePen />
                 </IconDot>
                 <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: 14, color: c.ink }}>{t('customerSettings.editCustomer')}</Typography>
+                  <Typography sx={{ fontWeight: 500, fontSize: 14, color: c.ink }}>{t('customerSettings.editCustomer')}</Typography>
                   <Typography sx={{ color: c.greyLight, fontSize: 12, fontWeight: 500 }}>{t('customerSettings.editCustomerSub')}</Typography>
                 </Box>
                 <ChevronRight size={16} color={c.greyIcon} />
@@ -107,7 +107,7 @@ const CustomerSettings = () => {
                   <Trash2 />
                 </IconDot>
                 <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: 14, color: c.red }}>{t('customerSettings.deleteCustomer')}</Typography>
+                  <Typography sx={{ fontWeight: 500, fontSize: 14, color: c.red }}>{t('customerSettings.deleteCustomer')}</Typography>
                   <Typography sx={{ color: c.greyLight, fontSize: 12, fontWeight: 500 }}>{t('customerSettings.deleteCustomerSub')}</Typography>
                 </Box>
                 <ChevronRight size={16} color={c.greyIcon} />

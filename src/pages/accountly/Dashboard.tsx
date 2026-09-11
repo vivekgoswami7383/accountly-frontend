@@ -36,7 +36,7 @@ const StatHalf = ({ tone, amount, loading, label }: { tone: 'get' | 'give'; amou
         <Skeleton variant="text" width={100} height={34} sx={{ mt: 1.25 }} />
       ) : (
         <Typography
-          sx={{ mt: 1.25, fontFamily: DISPLAY, fontWeight: 800, fontSize: 26, letterSpacing: '-0.02em', color: tone === 'get' ? c.greenDeep : c.redDeep }}
+          sx={{ mt: 1.25, fontFamily: DISPLAY, fontWeight: 500, fontSize: 26, letterSpacing: '-0.02em', color: tone === 'get' ? c.greenDeep : c.redDeep }}
           noWrap
         >
           {fmt(amount)}
@@ -72,7 +72,7 @@ const EmptyBlock = ({ img, title, sub, cta, onCta }: { img: string; title: strin
   return (
     <AppCard sx={{ px: 3, py: 4.5, textAlign: 'center' }}>
       <Box component="img" src={img} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
-      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16, color: c.ink }}>{title}</Typography>
+      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16, color: c.ink }}>{title}</Typography>
       <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5, maxWidth: 260, mx: 'auto', lineHeight: 1.5 }}>{sub}</Typography>
       {cta && (
         <Button variant="contained" onClick={onCta} startIcon={<UserPlus size={18} />} sx={{ mt: 2.5, px: 3.5 }}>
@@ -123,7 +123,7 @@ const Dashboard = () => {
                   bgcolor: 'transparent',
                   cursor: 'pointer',
                   color: c.ink,
-                  fontWeight: 600,
+                  fontWeight: 500,
                   fontSize: 13.5,
                   display: 'flex',
                   alignItems: 'center',
@@ -168,7 +168,7 @@ const Dashboard = () => {
                     {a.icon}
                   </IconDot>
                   <Box sx={{ minWidth: 0 }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: 14, lineHeight: 1.2, color: c.ink, letterSpacing: '-0.01em' }} noWrap>
+                    <Typography sx={{ fontWeight: 500, fontSize: 14, lineHeight: 1.2, color: c.ink, letterSpacing: '-0.01em' }} noWrap>
                       {a.label}
                     </Typography>
                     <Typography sx={{ color: c.greyLight, fontSize: 11.5, fontWeight: 500, mt: 0.25 }} noWrap>
@@ -195,12 +195,12 @@ const Dashboard = () => {
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
                         <ListRow onClick={() => navigate(`/customer/${cust._id}`)}>
                           <Box
-                            sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 700, fontSize: 14, flexShrink: 0 }}
+                            sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 14, flexShrink: 0 }}
                           >
                             {initials(cust.name)}
                           </Box>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
                               {cust.name}
                             </Typography>
                             <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
@@ -211,7 +211,7 @@ const Dashboard = () => {
                             </Stack>
                           </Box>
                           <Stack alignItems="center" spacing={0.375} sx={{ flexShrink: 0, alignSelf: 'flex-start' }}>
-                            <Typography sx={{ fontWeight: 800, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
                               {fmt(cust.balance)}
                             </Typography>
                             <BalanceTag tone={get ? 'get' : 'give'} sx={{ alignSelf: 'center' }}>
@@ -253,14 +253,14 @@ const Dashboard = () => {
                             {sent ? <ArrowUp /> : <ArrowDown />}
                           </IconDot>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
                               {sent ? t('home.paidTo', { name: t2.customerName }) : t('home.receivedFrom', { name: t2.customerName })}
                             </Typography>
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {fmtWhen(t2.createdAt)}
                             </Typography>
                           </Box>
-                          <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, alignSelf: 'flex-start', color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, alignSelf: 'flex-start', color: sent ? c.redDeep : c.greenDeep }} noWrap>
                             {fmt(t2.amount)}
                           </Typography>
                         </ListRow>

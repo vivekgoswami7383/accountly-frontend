@@ -9,6 +9,11 @@ interface CustomerState {
   hasLoaded: boolean;
   error: string | null;
   selectedCustomer: Customer | null;
+  listItems: Customer[];
+  listPage: number;
+  listHasMore: boolean;
+  listLoading: boolean;
+  listLoadingMore: boolean;
 }
 
 const initialState: CustomerState = {
@@ -16,13 +21,33 @@ const initialState: CustomerState = {
   loading: false,
   hasLoaded: false,
   error: null,
-  selectedCustomer: null
+  selectedCustomer: null,
+  listItems: [],
+  listPage: 0,
+  listHasMore: true,
+  listLoading: false,
+  listLoadingMore: false
 };
+
+export const CUSTOMERS_PAGE_SIZE = 20;
 
 export const fetchCustomers = createAsyncThunk('customers/fetchCustomers', async (_, { rejectWithValue }) => {
   try {
     const data = await customerService.getCustomers();
     return customerService.transformCustomers(data?.customers || []);
+  } catch (error: any) {
+    return rejectWithValue(error?.message || 'Failed to fetch customers');
+  }
+});
+
+export const fetchCustomersPage = createAsyncThunk('customers/fetchCustomersPage', async (page: number, { rejectWithValue }) => {
+  try {
+    const data = await customerService.getCustomers({ page, limit: CUSTOMERS_PAGE_SIZE });
+    return {
+      page,
+      items: customerService.transformCustomers(data?.customers || []),
+      hasMore: Boolean(data?.has_more)
+    };
   } catch (error: any) {
     return rejectWithValue(error?.message || 'Failed to fetch customers');
   }
@@ -105,6 +130,24 @@ const customerSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
+      .addCase(fetchCustomersPage.pending, (state, action) => {
+        if (action.meta.arg <= 1) state.listLoading = true;
+        else state.listLoadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchCustomersPage.fulfilled, (state, action) => {
+        const { page, items, hasMore } = action.payload;
+        state.listLoading = false;
+        state.listLoadingMore = false;
+        state.listPage = page;
+        state.listHasMore = hasMore;
+        state.listItems = page <= 1 ? items : [...state.listItems, ...items];
+      })
+      .addCase(fetchCustomersPage.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
+        state.error = action.payload as string;
+      })
       .addCase(createCustomer.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -112,6 +155,7 @@ const customerSlice = createSlice({
       .addCase(createCustomer.fulfilled, (state, action) => {
         state.loading = false;
         state.customers.unshift(action.payload);
+        if (state.listPage > 0) state.listItems.unshift(action.payload);
         state.error = null;
       })
       .addCase(createCustomer.rejected, (state, action) => {
@@ -126,6 +170,8 @@ const customerSlice = createSlice({
         state.loading = false;
         const index = state.customers.findIndex((c) => c.id === action.payload.id);
         if (index !== -1) state.customers[index] = action.payload;
+        const listIndex = state.listItems.findIndex((c) => c.id === action.payload.id);
+        if (listIndex !== -1) state.listItems[listIndex] = action.payload;
         state.error = null;
       })
       .addCase(updateCustomer.rejected, (state, action) => {
@@ -139,6 +185,7 @@ const customerSlice = createSlice({
       .addCase(deleteCustomer.fulfilled, (state, action) => {
         state.loading = false;
         state.customers = state.customers.filter((c) => c.id !== action.payload);
+        state.listItems = state.listItems.filter((c) => c.id !== action.payload);
         state.error = null;
       })
       .addCase(deleteCustomer.rejected, (state, action) => {

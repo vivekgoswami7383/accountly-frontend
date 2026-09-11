@@ -70,7 +70,7 @@ const Register = () => {
         <Container maxWidth="xs">
           <Stack spacing={3.5}>
             <Stack alignItems="center" spacing={1}>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>{t('auth.createYourAccount')}</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 24, color: c.ink }}>{t('auth.createYourAccount')}</Typography>
               <Typography sx={{ color: c.grey, fontSize: 13.5 }}>{t('auth.startManaging')}</Typography>
             </Stack>
 
@@ -125,7 +125,7 @@ const Register = () => {
 
             <Typography variant="body2" align="center" sx={{ color: c.grey }}>
               {t('auth.alreadyHaveAccount')}{' '}
-              <Link component={RouterLink} to="/login" sx={{ color: c.red, fontWeight: 700 }} underline="none">
+              <Link component={RouterLink} to="/login" sx={{ color: c.red, fontWeight: 500 }} underline="none">
                 {t('auth.signInLink')}
               </Link>
             </Typography>

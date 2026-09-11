@@ -151,7 +151,7 @@ const Payment = () => {
           {customer && (
             <Typography sx={{ color: c.grey, fontSize: 14 }}>
               {isDebit ? t('payment.to') : t('payment.from')}{' '}
-              <Box component="span" sx={{ color: c.ink, fontWeight: 700 }}>
+              <Box component="span" sx={{ color: c.ink, fontWeight: 500 }}>
                 {customer.name}
               </Box>
             </Typography>
@@ -170,7 +170,7 @@ const Payment = () => {
               gap: 1
             }}
           >
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 30, color: c.greyLight }}>{currencySymbol}</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 30, color: c.greyLight }}>{currencySymbol}</Typography>
             <Box
               component="input"
               autoFocus
@@ -188,7 +188,7 @@ const Payment = () => {
                 outline: 'none',
                 bgcolor: 'transparent',
                 fontFamily: DISPLAY,
-                fontWeight: 800,
+                fontWeight: 500,
                 fontSize: 34,
                 letterSpacing: '-0.02em',
                 color: accentDeep,

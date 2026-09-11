@@ -74,7 +74,7 @@ const Login = () => {
               <Box sx={{ width: 60, height: 60, borderRadius: '18px', bgcolor: c.redSoft, color: c.red, display: 'grid', placeItems: 'center' }}>
                 <Store size={28} />
               </Box>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>{t('auth.welcomeBack')}</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 24, color: c.ink }}>{t('auth.welcomeBack')}</Typography>
               <Typography sx={{ color: c.grey, fontSize: 13.5 }}>{t('auth.signInToKhata')}</Typography>
             </Stack>
 
@@ -116,7 +116,7 @@ const Login = () => {
 
             <Typography variant="body2" align="center" sx={{ color: c.grey }}>
               {t('auth.newToAccountly')}{' '}
-              <Link component={RouterLink} to="/register" sx={{ color: c.red, fontWeight: 700 }} underline="none">
+              <Link component={RouterLink} to="/register" sx={{ color: c.red, fontWeight: 500 }} underline="none">
                 {t('auth.createAccount')}
               </Link>
             </Typography>

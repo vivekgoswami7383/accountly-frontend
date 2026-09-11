@@ -51,12 +51,12 @@ const CustomerDetail = () => {
   const headerTitle = (
     <Stack direction="row" alignItems="center" spacing={1.25} sx={{ minWidth: 0 }}>
       <Box
-        sx={{ width: 38, height: 38, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 700, fontSize: 13, flexShrink: 0 }}
+        sx={{ width: 38, height: 38, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 13, flexShrink: 0 }}
       >
         {initials(customer?.name || 'C')}
       </Box>
       <Box sx={{ minWidth: 0 }}>
-        <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15.5, color: c.ink, lineHeight: 1.15 }} noWrap>
+        <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15.5, color: c.ink, lineHeight: 1.15 }} noWrap>
           {customer?.name || 'Customer'}
         </Typography>
         <Typography sx={{ color: c.grey, fontSize: 11.5, fontWeight: 500 }} noWrap>
@@ -106,10 +106,10 @@ const CustomerDetail = () => {
                     </>
                   ) : (
                     <>
-                      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: balance < 0 ? c.greenDeep : c.redDeep }}>
+                      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 22, color: balance < 0 ? c.greenDeep : c.redDeep }}>
                         {fmt(balance)}
                       </Typography>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500, mt: 0.25 }}>
                         {balance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
                       </Typography>
                     </>
@@ -123,10 +123,10 @@ const CustomerDetail = () => {
                     </>
                   ) : (
                     <>
-                      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: c.slate }}>
+                      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 22, color: c.slate }}>
                         {customerTransactions.length}
                       </Typography>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>{t('detail.transactions')}</Typography>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500, mt: 0.25 }}>{t('detail.transactions')}</Typography>
                     </>
                   )}
                 </Box>
@@ -168,14 +168,14 @@ const CustomerDetail = () => {
                             {sent ? <ArrowUp /> : <ArrowDown />}
                           </IconDot>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
                               {sent ? t('detail.youGave') : t('detail.youGot')}
                             </Typography>
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {fmtWhen(tx.createdAt)}
                             </Typography>
                           </Box>
-                          <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
                             {fmt(tx.amount)}
                           </Typography>
                         </ListRow>
@@ -188,7 +188,7 @@ const CustomerDetail = () => {
           ) : (
             <AppCard sx={{ px: 3, py: 4.5, textAlign: 'center' }}>
               <Box component="img" src={onlinePayment} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.5, opacity: 0.95 }} />
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15.5 }}>{t('detail.noTransactionsYet')}</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15.5 }}>{t('detail.noTransactionsYet')}</Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('detail.recordBelow')}</Typography>
             </AppCard>
           )}

@@ -59,18 +59,18 @@ const Settings = () => {
       <AppHeader variant="screen" title={t('settings.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <AppCard sx={{ p: 3 }}>
-          <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15, mb: 2 }}>{t('settings.preferences')}</Typography>
+          <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15, mb: 2 }}>{t('settings.preferences')}</Typography>
           <Stack spacing={1}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 1 }}>
               <Box>
-                <Typography sx={{ fontWeight: 600, fontSize: 14 }}>{t('settings.darkMode')}</Typography>
+                <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('settings.darkMode')}</Typography>
                 <Typography sx={{ color: c.grey, fontSize: 12.5 }}>{t('settings.darkModeSub')}</Typography>
               </Box>
               <Switch checked={mode === ThemeMode.DARK} onChange={(e) => handleThemeToggle(e.target.checked)} />
             </Stack>
             <Divider sx={{ borderColor: c.line }} />
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 1 }}>
-              <Typography sx={{ fontWeight: 600, fontSize: 14 }}>{t('settings.language')}</Typography>
+              <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('settings.language')}</Typography>
               <FormControl size="small">
                 <Select value={language} onChange={(e) => handleLanguageChange(e.target.value as I18n)} sx={{ borderRadius: '12px' }}>
                   {languages.map((l) => (
@@ -83,7 +83,7 @@ const Settings = () => {
             </Stack>
             <Divider sx={{ borderColor: c.line }} />
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 1 }}>
-              <Typography sx={{ fontWeight: 600, fontSize: 14 }}>{t('settings.currency')}</Typography>
+              <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('settings.currency')}</Typography>
               <FormControl size="small">
                 <Select
                   value={currency}

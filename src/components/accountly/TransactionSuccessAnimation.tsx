@@ -57,7 +57,7 @@ const TransactionSuccessAnimation = ({ visible, onComplete }: Props) => {
             </Box>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 20, color: c.ink }}>{t('payment.entrySaved')}</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 20, color: c.ink }}>{t('payment.entrySaved')}</Typography>
           </motion.div>
         </motion.div>
       )}

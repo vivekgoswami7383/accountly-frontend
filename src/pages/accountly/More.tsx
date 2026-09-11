@@ -31,12 +31,12 @@ const More = () => {
         <Stack spacing={2.5}>
           <AppCard sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
-              sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 700, fontSize: 22, flexShrink: 0 }}
+              sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 500, fontSize: 22, flexShrink: 0 }}
             >
               {(user?.name || 'U')[0].toUpperCase()}
             </Box>
             <Box sx={{ minWidth: 0 }}>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }} noWrap>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }} noWrap>
                 {user?.name || 'User'}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, fontWeight: 500 }} noWrap>
@@ -54,7 +54,7 @@ const More = () => {
                     {item.icon}
                   </IconDot>
                   <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: 14, color: c.ink }}>{item.label}</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: 14, color: c.ink }}>{item.label}</Typography>
                     <Typography sx={{ color: c.greyLight, fontSize: 12, fontWeight: 500 }}>{item.desc}</Typography>
                   </Box>
                   <ChevronRight size={16} color={c.greyIcon} />
