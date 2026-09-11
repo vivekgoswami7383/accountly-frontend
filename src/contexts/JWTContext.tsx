@@ -2,6 +2,8 @@ import React, { createContext, useEffect, useReducer } from 'react';
 import jwtDecode from 'jwt-decode';
 import { LOGIN, LOGOUT } from 'store/reducers/actions';
 import authReducer from 'store/reducers/auth';
+import { RESET_ACCOUNTLY_STATE } from 'store/reducers/accountly/resetAction';
+import { useDispatch as useReduxDispatch } from 'react-redux';
 import Loader from 'components/Loader';
 import axios from 'utils/axios';
 import businessService from 'services/accountly/businessService';
@@ -40,6 +42,7 @@ const JWTContext = createContext<JWTContextType | null>(null);
 
 export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const reduxDispatch = useReduxDispatch();
 
   useEffect(() => {
     const init = async () => {
@@ -74,6 +77,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
   const login = async (phone: string, password: string) => {
     try {
+      reduxDispatch({ type: RESET_ACCOUNTLY_STATE });
+
       const response = await axios.post('/api/auth/login', { phone, password });
       const { token } = response.data;
 
@@ -113,6 +118,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
   const logout = () => {
     setSession(null);
+    reduxDispatch({ type: RESET_ACCOUNTLY_STATE });
     dispatch({ type: LOGOUT });
   };
 

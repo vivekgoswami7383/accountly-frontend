@@ -1,9 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
 import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchDashboardStatistics } from 'store/reducers/accountly/dashboard';
 import { formatAmount } from 'utils/accountly/format';
 import { c, DISPLAY, shadow, avatarTint, initials } from 'themes/accountly';
@@ -19,7 +18,7 @@ const fmtWhen = (iso?: string) => {
   return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true }).replace(',', '');
 };
 
-const StatHalf = ({ tone, amount }: { tone: 'get' | 'give'; amount: number }) => (
+const StatHalf = ({ tone, amount, loading }: { tone: 'get' | 'give'; amount: number; loading?: boolean }) => (
   <Box sx={{ flex: 1, minWidth: 0, p: 1.75, borderRadius: '16px', bgcolor: tone === 'get' ? '#EAF6F0' : '#FCEDED' }}>
     <Stack direction="row" alignItems="center" spacing={1}>
       <IconDot size={26} bg={tone === 'get' ? '#D6EEE2' : '#F8DEDE'} fg={tone === 'get' ? c.greenDeep : c.red}>
@@ -29,13 +28,35 @@ const StatHalf = ({ tone, amount }: { tone: 'get' | 'give'; amount: number }) =>
         {tone === 'get' ? "You'll Get" : "You'll Give"}
       </Typography>
     </Stack>
-    <Typography
-      sx={{ mt: 1.25, fontFamily: DISPLAY, fontWeight: 800, fontSize: 26, letterSpacing: '-0.02em', color: tone === 'get' ? c.greenDeep : c.redDeep }}
-      noWrap
-    >
-      {formatAmount(amount)}
-    </Typography>
+    {loading ? (
+      <Skeleton variant="text" width={100} height={34} sx={{ mt: 1.25 }} />
+    ) : (
+      <Typography
+        sx={{ mt: 1.25, fontFamily: DISPLAY, fontWeight: 800, fontSize: 26, letterSpacing: '-0.02em', color: tone === 'get' ? c.greenDeep : c.redDeep }}
+        noWrap
+      >
+        {formatAmount(amount)}
+      </Typography>
+    )}
   </Box>
+);
+
+const ListSkeleton = ({ rows = 3 }: { rows?: number }) => (
+  <AppCard sx={{ overflow: 'hidden' }}>
+    {Array.from({ length: rows }).map((_, i) => (
+      <Box key={i}>
+        {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+        <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+          <Skeleton variant="circular" width={44} height={44} />
+          <Box sx={{ flex: 1 }}>
+            <Skeleton variant="text" width="55%" height={20} />
+            <Skeleton variant="text" width="30%" height={16} />
+          </Box>
+          <Skeleton variant="text" width={56} height={20} />
+        </Stack>
+      </Box>
+    ))}
+  </AppCard>
 );
 
 const EmptyBlock = ({ img, title, sub, cta, onCta }: { img: string; title: string; sub: string; cta?: string; onCta?: () => void }) => (
@@ -54,16 +75,14 @@ const EmptyBlock = ({ img, title, sub, cta, onCta }: { img: string; title: strin
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { customers } = useSelector((s) => s.customers);
-  const { recentCustomers, recentTransactions } = useSelector((s) => s.dashboard);
+  const { stats, recentCustomers, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
 
   useEffect(() => {
-    dispatch(fetchDashboardStatistics());
-    dispatch(fetchCustomers());
-  }, [dispatch]);
+    if (!hasLoaded) dispatch(fetchDashboardStatistics());
+  }, [dispatch, hasLoaded]);
 
-  const youWillGet = useMemo(() => customers.filter((x) => x.balance < 0).reduce((s, x) => s + Math.abs(x.balance), 0), [customers]);
-  const youWillGive = useMemo(() => customers.filter((x) => x.balance > 0).reduce((s, x) => s + x.balance, 0), [customers]);
+  const youWillGet = stats?.you_will_get ?? 0;
+  const youWillGive = stats?.you_will_give ?? 0;
   const hasCustomers = recentCustomers && recentCustomers.length > 0;
   const hasTxns = recentTransactions && recentTransactions.length > 0;
 
@@ -75,8 +94,8 @@ const Dashboard = () => {
           <Fade>
             <AppCard sx={{ p: 1.75 }}>
               <Stack direction="row" spacing={1.5}>
-                <StatHalf tone="get" amount={youWillGet} />
-                <StatHalf tone="give" amount={youWillGive} />
+                <StatHalf tone="get" amount={youWillGet} loading={!hasLoaded} />
+                <StatHalf tone="give" amount={youWillGive} loading={!hasLoaded} />
               </Stack>
               <Box
                 component="button"
@@ -150,7 +169,9 @@ const Dashboard = () => {
           <Fade delay={0.1}>
             <Box>
               <SectionHeader title="Customers" action="See all" onAction={() => navigate('/customer')} />
-              {hasCustomers ? (
+              {!hasLoaded ? (
+                <ListSkeleton />
+              ) : hasCustomers ? (
                 <AppCard sx={{ overflow: 'hidden' }}>
                   {recentCustomers.map((cust, i) => {
                     const get = cust.balance < 0;
@@ -202,7 +223,9 @@ const Dashboard = () => {
           <Fade delay={0.15}>
             <Box>
               <SectionHeader title="Recent Payments" action={hasTxns ? 'See all' : undefined} onAction={() => navigate('/transaction')} />
-              {hasTxns ? (
+              {!hasLoaded ? (
+                <ListSkeleton />
+              ) : hasTxns ? (
                 <AppCard sx={{ overflow: 'hidden' }}>
                   {recentTransactions.slice(0, 5).map((t, i) => {
                     const sent = t.transaction_type === 'debit';

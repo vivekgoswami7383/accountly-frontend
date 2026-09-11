@@ -13,8 +13,11 @@ import invoice from './invoice';
 import customers from './accountly/customers';
 import transactions from './accountly/transactions';
 import dashboard from './accountly/dashboard';
+import { RESET_ACCOUNTLY_STATE } from './accountly/resetAction';
 
-const reducers = combineReducers({
+export { RESET_ACCOUNTLY_STATE };
+
+const appReducers = combineReducers({
   chat,
   calendar,
   menu,
@@ -34,5 +37,12 @@ const reducers = combineReducers({
   kanban,
   invoice
 });
+
+const reducers = (state: ReturnType<typeof appReducers> | undefined, action: { type: string }) => {
+  if (action.type === RESET_ACCOUNTLY_STATE && state) {
+    state = { ...state, customers: undefined, transactions: undefined, dashboard: undefined } as any;
+  }
+  return appReducers(state, action);
+};
 
 export default reducers;

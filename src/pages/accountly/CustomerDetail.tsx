@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Skeleton, Stack, Typography } from '@mui/material';
 import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
-import { fetchCustomerTransactions } from 'store/reducers/accountly/transactions';
+import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
 import { formatAmount, balanceLabel } from 'utils/accountly/format';
 import { c, DISPLAY, avatarTint, initials } from 'themes/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -22,20 +22,26 @@ const CustomerDetail = () => {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { customers } = useSelector((s) => s.customers);
-  const { transactions, customerStats } = useSelector((s) => s.transactions);
+  const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
+  const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
 
   const customer = customers.find((x) => x.id === id);
   const av = avatarTint(customer?.name || 'Customer');
   const balance = customerStats.customerBalance ?? customer?.balance ?? 0;
+  const isCurrent = loadedCustomerId === id;
+  const showSkeleton = !isCurrent && loading;
 
   useEffect(() => {
-    if (customers.length === 0) dispatch(fetchCustomers());
-  }, [dispatch, customers.length]);
+    if (!customersLoaded) dispatch(fetchCustomers());
+  }, [dispatch, customersLoaded]);
 
   useEffect(() => {
-    if (id) dispatch(fetchCustomerTransactions(id));
+    if (!id) return;
+    if (loadedCustomerId === id) return;
+    dispatch(resetCustomerView(id));
+    dispatch(fetchCustomerTransactions(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
   const headerTitle = (
@@ -89,25 +95,64 @@ const CustomerDetail = () => {
             <AppCard sx={{ p: 0 }}>
               <Stack direction="row" divider={<Divider orientation="vertical" flexItem sx={{ borderColor: c.line }} />}>
                 <Box sx={{ flex: 1, textAlign: 'center', py: 2.5 }}>
-                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: balance < 0 ? c.greenDeep : c.redDeep }}>
-                    {formatAmount(balance)}
-                  </Typography>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>{balanceLabel(balance)}</Typography>
+                  {showSkeleton ? (
+                    <>
+                      <Skeleton variant="text" width={90} height={30} sx={{ mx: 'auto' }} />
+                      <Skeleton variant="text" width={60} height={18} sx={{ mx: 'auto', mt: 0.25 }} />
+                    </>
+                  ) : (
+                    <>
+                      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: balance < 0 ? c.greenDeep : c.redDeep }}>
+                        {formatAmount(balance)}
+                      </Typography>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>{balanceLabel(balance)}</Typography>
+                    </>
+                  )}
                 </Box>
                 <Box sx={{ flex: 1, textAlign: 'center', py: 2.5 }}>
-                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: c.slate }}>{transactions.length}</Typography>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>Transactions</Typography>
+                  {showSkeleton ? (
+                    <>
+                      <Skeleton variant="text" width={30} height={30} sx={{ mx: 'auto' }} />
+                      <Skeleton variant="text" width={80} height={18} sx={{ mx: 'auto', mt: 0.25 }} />
+                    </>
+                  ) : (
+                    <>
+                      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: c.slate }}>
+                        {customerTransactions.length}
+                      </Typography>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>Transactions</Typography>
+                    </>
+                  )}
                 </Box>
               </Stack>
             </AppCard>
           </Fade>
 
-          {transactions.length > 0 ? (
+          {showSkeleton ? (
+            <Box>
+              <SectionHeader title="Recent Transactions" />
+              <AppCard sx={{ overflow: 'hidden' }}>
+                {[0, 1, 2].map((i) => (
+                  <Box key={i}>
+                    {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+                    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                      <Skeleton variant="circular" width={44} height={44} />
+                      <Box sx={{ flex: 1 }}>
+                        <Skeleton variant="text" width="60%" height={20} />
+                        <Skeleton variant="text" width="35%" height={16} />
+                      </Box>
+                      <Skeleton variant="text" width={56} height={20} />
+                    </Stack>
+                  </Box>
+                ))}
+              </AppCard>
+            </Box>
+          ) : customerTransactions.length > 0 ? (
             <Fade delay={0.05}>
               <Box>
                 <SectionHeader title="Recent Transactions" />
                 <AppCard sx={{ overflow: 'hidden' }}>
-                  {transactions.map((t, i) => {
+                  {customerTransactions.map((t, i) => {
                     const sent = t.transaction_type === 'debit';
                     return (
                       <Box key={t.id}>

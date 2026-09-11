@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Divider, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Box, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Typography } from '@mui/material';
 import { Search, ArrowUp, ArrowDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactions } from 'store/reducers/accountly/transactions';
@@ -20,12 +20,12 @@ const fmtWhen = (iso?: string) => {
 const Transactions = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { transactions } = useSelector((s) => s.transactions);
+  const { transactions, hasLoadedGlobal } = useSelector((s) => s.transactions);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    dispatch(fetchTransactions(undefined));
-  }, [dispatch]);
+    if (!hasLoadedGlobal) dispatch(fetchTransactions(undefined));
+  }, [dispatch, hasLoadedGlobal]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -57,7 +57,23 @@ const Transactions = () => {
             />
           )}
 
-          {filtered.length === 0 ? (
+          {!hasLoadedGlobal ? (
+            <AppCard sx={{ overflow: 'hidden' }}>
+              {[0, 1, 2, 3].map((i) => (
+                <Box key={i}>
+                  {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                    <Skeleton variant="circular" width={44} height={44} />
+                    <Box sx={{ flex: 1 }}>
+                      <Skeleton variant="text" width="55%" height={20} />
+                      <Skeleton variant="text" width="30%" height={16} />
+                    </Box>
+                    <Skeleton variant="text" width={56} height={20} />
+                  </Stack>
+                </Box>
+              ))}
+            </AppCard>
+          ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
               <Box component="img" src={onlinePayment} alt="" sx={{ width: 100, height: 100, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>

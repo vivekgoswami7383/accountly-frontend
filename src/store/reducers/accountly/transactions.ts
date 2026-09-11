@@ -6,21 +6,27 @@ import { fetchDashboardStatistics } from './dashboard';
 
 interface TransactionState {
   transactions: Transaction[];
+  hasLoadedGlobal: boolean;
+  customerTransactions: Transaction[];
+  loadedCustomerId: string | null;
   loading: boolean;
   error: string | null;
   selectedTransaction: Transaction | null;
   customerStats: {
     totalTransactions: number;
-    customerBalance: number;
+    customerBalance: number | null;
   };
 }
 
 const initialState: TransactionState = {
   transactions: [],
+  hasLoadedGlobal: false,
+  customerTransactions: [],
+  loadedCustomerId: null,
   loading: false,
   error: null,
   selectedTransaction: null,
-  customerStats: { totalTransactions: 0, customerBalance: 0 }
+  customerStats: { totalTransactions: 0, customerBalance: null }
 };
 
 const mapTx = (tx: any): Transaction => ({
@@ -69,7 +75,8 @@ export const fetchCustomerTransactions = createAsyncThunk(
   'transactions/fetchCustomerTransactions',
   async (customerId: string, { rejectWithValue }) => {
     try {
-      return await transactionService.getCustomerTransactions(customerId);
+      const response = await transactionService.getCustomerTransactions(customerId);
+      return { customerId, response };
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to fetch customer transactions');
     }
@@ -123,6 +130,13 @@ const transactionSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
       state.loading = false;
+    },
+    resetCustomerView: (state, action: PayloadAction<string>) => {
+      if (state.loadedCustomerId === action.payload) return;
+      state.customerTransactions = [];
+      state.customerStats = { totalTransactions: 0, customerBalance: null };
+      state.loadedCustomerId = null;
+      state.loading = true;
     }
   },
   extraReducers: (builder) => {
@@ -133,7 +147,11 @@ const transactionSlice = createSlice({
       })
       .addCase(createTransaction.fulfilled, (state, action) => {
         state.loading = false;
-        state.transactions.unshift(mapTx(action.payload));
+        const mapped = mapTx(action.payload);
+        state.transactions.unshift(mapped);
+        if (state.loadedCustomerId === mapped.customerId) {
+          state.customerTransactions.unshift(mapped);
+        }
       })
       .addCase(createTransaction.rejected, (state, action) => {
         state.loading = false;
@@ -145,6 +163,7 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.loading = false;
+        state.hasLoadedGlobal = true;
         const responseData = (action.payload as any)?.data || action.payload;
         const arr = responseData?.transactions || responseData;
         state.transactions = Array.isArray(arr) ? arr.map(mapTx) : [];
@@ -159,12 +178,13 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchCustomerTransactions.fulfilled, (state, action) => {
         state.loading = false;
-        const response = action.payload as any;
-        state.transactions = (response.transactions || []).map(mapTx);
+        const { customerId, response } = action.payload as any;
+        state.customerTransactions = (response.transactions || []).map(mapTx);
         state.customerStats = {
           totalTransactions: (response.transactions || []).length,
           customerBalance: response.customer_balance
         };
+        state.loadedCustomerId = customerId;
       })
       .addCase(fetchCustomerTransactions.rejected, (state, action) => {
         state.loading = false;
@@ -191,6 +211,8 @@ const transactionSlice = createSlice({
         const mapped = mapTx(action.payload);
         const index = state.transactions.findIndex((t) => t.id === mapped.id);
         if (index !== -1) state.transactions[index] = mapped;
+        const customerIndex = state.customerTransactions.findIndex((t) => t.id === mapped.id);
+        if (customerIndex !== -1) state.customerTransactions[customerIndex] = mapped;
         state.selectedTransaction = mapped;
       })
       .addCase(updateTransactionById.rejected, (state, action) => {
@@ -205,6 +227,7 @@ const transactionSlice = createSlice({
         state.loading = false;
         const deletedId = action.payload as string;
         state.transactions = state.transactions.filter((t) => t.id !== deletedId);
+        state.customerTransactions = state.customerTransactions.filter((t) => t.id !== deletedId);
         if (state.selectedTransaction?.id === deletedId) state.selectedTransaction = null;
       })
       .addCase(deleteTransactionById.rejected, (state, action) => {
@@ -214,5 +237,5 @@ const transactionSlice = createSlice({
   }
 });
 
-export const { setSelectedTransaction, setError } = transactionSlice.actions;
+export const { setSelectedTransaction, setError, resetCustomerView } = transactionSlice.actions;
 export default transactionSlice.reducer;

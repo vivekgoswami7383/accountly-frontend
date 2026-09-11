@@ -7,6 +7,7 @@ interface DashboardState {
   recentCustomers: RecentCustomer[];
   recentTransactions: Transaction[];
   loading: boolean;
+  hasLoaded: boolean;
   error: string | null;
 }
 
@@ -15,6 +16,7 @@ const initialState: DashboardState = {
   recentCustomers: [],
   recentTransactions: [],
   loading: false,
+  hasLoaded: false,
   error: null
 };
 
@@ -42,6 +44,7 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchDashboardStatistics.fulfilled, (state, action) => {
         state.loading = false;
+        state.hasLoaded = true;
         state.stats = action.payload.stats;
         state.recentCustomers = action.payload.recent_customers || [];
         state.recentTransactions = (action.payload.recent_transactions || []).map((t: ApiTransaction) => ({

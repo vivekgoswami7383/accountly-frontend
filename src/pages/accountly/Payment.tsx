@@ -67,10 +67,15 @@ const Payment = () => {
   }, [transactionId, selectedTransaction]);
 
   const customer = useMemo(() => {
-    if (isEdit && selectedTransaction) return { id: selectedTransaction.customerId, name: selectedTransaction.customerName };
+    if (isEdit) {
+      if (selectedTransaction && selectedTransaction.id === transactionId) {
+        return { id: selectedTransaction.customerId, name: selectedTransaction.customerName };
+      }
+      return null;
+    }
     const found = customers.find((x) => x.id === customerId);
     return found ? { id: found.id, name: found.name } : null;
-  }, [isEdit, selectedTransaction, customers, customerId]);
+  }, [isEdit, selectedTransaction, transactionId, customers, customerId]);
 
   const transactionType: TransactionType = isEdit
     ? selectedTransaction?.transaction_type || 'debit'

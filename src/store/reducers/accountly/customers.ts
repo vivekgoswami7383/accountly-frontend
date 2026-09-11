@@ -6,6 +6,7 @@ import { fetchDashboardStatistics } from './dashboard';
 interface CustomerState {
   customers: Customer[];
   loading: boolean;
+  hasLoaded: boolean;
   error: string | null;
   selectedCustomer: Customer | null;
 }
@@ -13,6 +14,7 @@ interface CustomerState {
 const initialState: CustomerState = {
   customers: [],
   loading: false,
+  hasLoaded: false,
   error: null,
   selectedCustomer: null
 };
@@ -95,6 +97,7 @@ const customerSlice = createSlice({
       })
       .addCase(fetchCustomers.fulfilled, (state, action) => {
         state.loading = false;
+        state.hasLoaded = true;
         state.customers = action.payload;
         state.error = null;
       })
