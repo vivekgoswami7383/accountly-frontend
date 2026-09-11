@@ -43,7 +43,6 @@ dist
 .dynamodb/
 .tern-port
 .bak
-package-lock.json
 yarn.lock
 .env
 

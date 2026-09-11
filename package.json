@@ -2,6 +2,11 @@
   "name": "accountly-frontend",
   "version": "2.1.0",
   "private": true,
+  "overrides": {
+    "css-minimizer-webpack-plugin": {
+      "schema-utils": "4.0.1"
+    }
+  },
   "dependencies": {
     "@ant-design/colors": "^7.0.0",
     "@ant-design/icons": "^5.0.1",
