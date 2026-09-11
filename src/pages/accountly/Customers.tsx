@@ -47,7 +47,7 @@ const Customers = () => {
         px: 1.5,
         py: 0.875,
         borderRadius: '999px',
-        fontFamily: `'Inter', sans-serif`
+        fontFamily: DISPLAY
       }}
     >
       <Plus size={15} /> {t('common.add')}

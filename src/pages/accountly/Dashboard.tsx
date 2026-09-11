@@ -129,7 +129,7 @@ const Dashboard = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 0.875,
-                  fontFamily: `'Inter', sans-serif`
+                  fontFamily: DISPLAY
                 }}
               >
                 <FileText size={14} color={c.grey} />

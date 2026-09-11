@@ -60,7 +60,7 @@ export interface CreateTransactionRequest {
 
 export interface FilterCondition {
   field_name: string;
-  field_value: string;
+  field_value: string | string[];
   operator: string;
 }
 
