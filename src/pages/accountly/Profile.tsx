@@ -1,9 +1,17 @@
 import { useState } from 'react';
-import { Avatar, Box, Button, Card, Stack, TextField, Typography } from '@mui/material';
-import { EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { Box, Button, Container, Stack, TextField, Typography } from '@mui/material';
+import { SquarePen } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
-import ScreenHeader from 'components/accountly/ScreenHeader';
+import { c, DISPLAY } from 'themes/accountly';
+import AppHeader from 'components/accountly/AppHeader';
+import { AppCard, BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
+
+const Label = ({ children }: { children: string }) => (
+  <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+    {children}
+  </Typography>
+);
 
 const Profile = () => {
   const { user, updateProfile } = useAuth();
@@ -17,7 +25,7 @@ const Profile = () => {
     setSaving(true);
     try {
       await updateProfile({ name: name.trim(), phone: phone.trim() });
-      showSnackbar({ message: 'Profile updated successfully', type: 'success' });
+      showSnackbar({ message: 'Profile updated', type: 'success' });
       setEditing(false);
     } catch (e: any) {
       showSnackbar({ message: e?.message || 'Failed to update profile', type: 'error' });
@@ -33,51 +41,56 @@ const Profile = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 560, mx: 'auto' }}>
-      <ScreenHeader title="Profile" />
-
-      <Card sx={{ borderRadius: 3, p: 3, mb: 2, textAlign: 'center' }}>
-        <Avatar sx={{ width: 80, height: 80, bgcolor: 'primary.main', fontSize: 28, mx: 'auto', mb: 1.5 }}>
-          {(user?.name || 'U').charAt(0).toUpperCase()}
-        </Avatar>
-        <Typography variant="h6" fontWeight={700}>
-          {user?.name || 'User'}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-          {user?.role || 'Owner'}
-        </Typography>
-      </Card>
-
-      <Card sx={{ borderRadius: 3, p: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h6" fontWeight={700}>
-            Profile Information
-          </Typography>
-          {!editing && (
-            <Button size="small" variant="outlined" startIcon={<EditOutlined />} onClick={() => setEditing(true)}>
-              Edit
-            </Button>
-          )}
-        </Stack>
-
+    <>
+      <AppHeader variant="screen" title="Profile" />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: editing ? FOOTER_SPACE : undefined }}>
         <Stack spacing={2.5}>
-          <TextField label="Name" fullWidth value={name} disabled={!editing} onChange={(e) => setName(e.target.value)} />
-          <TextField label="Phone" fullWidth value={phone} disabled={!editing} onChange={(e) => setPhone(e.target.value)} />
-          <TextField label="Role" fullWidth value={user?.role || ''} disabled sx={{ textTransform: 'capitalize' }} />
+          <AppCard sx={{ p: 3, textAlign: 'center' }}>
+            <Box
+              sx={{ width: 76, height: 76, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 700, fontSize: 28, mx: 'auto', mb: 1.5 }}
+            >
+              {(user?.name || 'U')[0].toUpperCase()}
+            </Box>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17 }}>{user?.name || 'User'}</Typography>
+            <Typography sx={{ color: c.grey, fontSize: 13, textTransform: 'capitalize' }}>{user?.role || 'Owner'}</Typography>
+          </AppCard>
 
-          {editing && (
-            <Stack direction="row" spacing={1} justifyContent="flex-end">
-              <Button variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button variant="contained" startIcon={<SaveOutlined />} disabled={saving} onClick={handleSave}>
-                {saving ? 'Saving…' : 'Save'}
-              </Button>
+          <AppCard sx={{ p: 3 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15 }}>Details</Typography>
+              {!editing && (
+                <Button size="small" variant="outlined" startIcon={<SquarePen size={15} />} onClick={() => setEditing(true)}>
+                  Edit
+                </Button>
+              )}
             </Stack>
-          )}
+            <Stack spacing={2.5}>
+              <Box>
+                <Label>Name</Label>
+                <TextField fullWidth value={name} disabled={!editing} onChange={(e) => setName(e.target.value)} />
+              </Box>
+              <Box>
+                <Label>Phone</Label>
+                <TextField fullWidth value={phone} disabled={!editing} onChange={(e) => setPhone(e.target.value)} />
+              </Box>
+            </Stack>
+          </AppCard>
         </Stack>
-      </Card>
-    </Box>
+      </Container>
+
+      {editing && (
+        <BottomActionBar>
+          <Stack direction="row" spacing={1.5}>
+            <Button fullWidth variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button fullWidth variant="contained" disabled={saving} onClick={handleSave}>
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+          </Stack>
+        </BottomActionBar>
+      )}
+    </>
   );
 };
 

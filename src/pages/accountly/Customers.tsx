@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Card, Fab, InputAdornment, Stack, TextField, Typography, alpha, useMediaQuery, Button } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { SearchOutlined, PhoneOutlined, UserAddOutlined, PlusOutlined } from '@ant-design/icons';
+import { Box, Container, Divider, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Search, Phone, ChevronRight, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
-import CustomerAvatar from 'components/accountly/CustomerAvatar';
-import EmptyState from 'components/accountly/EmptyState';
-import { formatAmount, balanceLabel } from 'utils/accountly/format';
+import { formatAmount } from 'utils/accountly/format';
+import { c, DISPLAY, avatarTint, initials } from 'themes/accountly';
+import AppHeader from 'components/accountly/AppHeader';
+import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
 import trade from 'assets/images/accountly/illustrations/trade.png';
 
 const Customers = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { customers } = useSelector((s) => s.customers);
   const [query, setQuery] = useState('');
 
@@ -25,101 +23,108 @@ const Customers = () => {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return customers;
-    return customers.filter((c) => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+    return customers.filter((x) => x.name.toLowerCase().includes(q) || x.phone.includes(q));
   }, [customers, query]);
 
-  return (
-    <Box sx={{ width: '100%', maxWidth: '100%' }}>
-      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        {customers.length > 0 && (
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search customers"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchOutlined />
-                </InputAdornment>
-              )
-            }}
-          />
-        )}
-        {isDesktop && (
-          <Button variant="contained" startIcon={<PlusOutlined />} sx={{ flexShrink: 0 }} onClick={() => navigate('/customer/add')}>
-            Add Customer
-          </Button>
-        )}
-      </Stack>
-
-      {filtered.length === 0 ? (
-        <EmptyState
-          illustration={trade}
-          title="Customers Not Found"
-          description={query ? 'Try adjusting your search terms' : 'Add your first customer to get started'}
-        />
-      ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-            gap: 1.5,
-            width: '100%'
-          }}
-        >
-          {filtered.map((c) => (
-            <Card
-              key={c.id}
-              onClick={() => navigate(`/customer/${c.id}`)}
-              sx={{
-                p: 2,
-                borderRadius: 3,
-                minWidth: 0,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                cursor: 'pointer',
-                '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.06) }
-              }}
-            >
-              <CustomerAvatar name={c.name} sx={{ flexShrink: 0 }} />
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="subtitle1" fontWeight={600} noWrap>
-                  {c.name}
-                </Typography>
-                <Stack direction="row" spacing={0.5} alignItems="center" sx={{ minWidth: 0 }}>
-                  <PhoneOutlined style={{ fontSize: 12, color: theme.palette.text.secondary, flexShrink: 0 }} />
-                  <Typography variant="body2" color="text.secondary" noWrap>
-                    {c.phone}
-                  </Typography>
-                </Stack>
-              </Box>
-              <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
-                <Typography variant="subtitle1" fontWeight={700} color={c.balance < 0 ? 'success.main' : 'error.main'} noWrap>
-                  {formatAmount(c.balance)}
-                </Typography>
-                <Typography variant="caption" color={c.balance < 0 ? 'success.main' : 'error.main'} noWrap component="div">
-                  {balanceLabel(c.balance)}
-                </Typography>
-              </Box>
-            </Card>
-          ))}
-        </Box>
-      )}
-
-      {!isDesktop && (
-        <Fab
-          color="primary"
-          aria-label="add customer"
-          onClick={() => navigate('/customer/add')}
-          sx={{ position: 'fixed', bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', right: 20 }}
-        >
-          <UserAddOutlined style={{ fontSize: 20 }} />
-        </Fab>
-      )}
+  const addBtn = (
+    <Box
+      component="button"
+      onClick={() => navigate('/customer/add')}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        border: 'none',
+        cursor: 'pointer',
+        bgcolor: c.red,
+        color: '#fff',
+        fontWeight: 700,
+        fontSize: 13,
+        px: 1.5,
+        py: 0.875,
+        borderRadius: '999px',
+        fontFamily: `'Inter', sans-serif`
+      }}
+    >
+      <Plus size={15} /> Add
     </Box>
+  );
+
+  return (
+    <>
+      <AppHeader variant="root" title="Customers" right={addBtn} />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
+        <Stack spacing={2}>
+          {customers.length > 0 && (
+            <TextField
+              fullWidth
+              placeholder="Search by name or phone"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={18} color={c.greyLight} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '16px', boxShadow: '0 1px 2px rgba(20,23,26,0.03)' }
+              }}
+            />
+          )}
+
+          {filtered.length === 0 ? (
+            <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
+              <Box component="img" src={trade} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>
+                {query ? 'No matches' : 'No customers yet'}
+              </Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>
+                {query ? 'Try a different name or number.' : 'Tap Add to create your first customer.'}
+              </Typography>
+            </AppCard>
+          ) : (
+            <Fade>
+              <AppCard sx={{ overflow: 'hidden' }}>
+                {filtered.map((cust, i) => {
+                  const get = cust.balance < 0;
+                  const av = avatarTint(cust.name);
+                  return (
+                    <Box key={cust.id}>
+                      {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+                      <ListRow onClick={() => navigate(`/customer/${cust.id}`)}>
+                        <Box
+                          sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 700, fontSize: 14, flexShrink: 0 }}
+                        >
+                          {initials(cust.name)}
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                            {cust.name}
+                          </Typography>
+                          <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
+                            <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
+                            <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
+                              {cust.phone}
+                            </Typography>
+                          </Stack>
+                        </Box>
+                        <Stack direction="row" alignItems="center" spacing={0.75} sx={{ flexShrink: 0 }}>
+                          <Typography sx={{ fontWeight: 800, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
+                            {formatAmount(cust.balance)}
+                          </Typography>
+                          <BalanceTag tone={get ? 'get' : 'give'}>{get ? 'GET' : 'GIVE'}</BalanceTag>
+                        </Stack>
+                        <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
+                      </ListRow>
+                    </Box>
+                  );
+                })}
+              </AppCard>
+            </Fade>
+          )}
+        </Stack>
+      </Container>
+    </>
   );
 };
 

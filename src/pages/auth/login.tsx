@@ -4,20 +4,31 @@ import {
   Box,
   Button,
   Container,
+  CssBaseline,
   Divider,
   IconButton,
   InputAdornment,
   Link,
   Stack,
   TextField,
+  ThemeProvider,
   Typography
 } from '@mui/material';
-import { EyeOutlined, EyeInvisibleOutlined, GoogleOutlined } from '@ant-design/icons';
+import { Eye, EyeOff, Store } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
-import logo from 'assets/images/accountly/logo/logo.png';
+import accountlyTheme, { c, DISPLAY } from 'themes/accountly';
+
+const GoogleIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden focusable="false">
+    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 3-2.26 5.54-4.78 7.27l7.73 6c4.51-4.18 7.09-10.36 7.09-17.74z" />
+    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+  </svg>
+);
 
 const Login = () => {
   const navigate = useNavigate();
@@ -46,81 +57,65 @@ const Login = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(180deg, #1A1A1A 0%, #2D2D2D 100%)',
-        display: 'flex',
-        alignItems: 'center'
-      }}
-    >
-      <Container maxWidth="xs">
-        <Stack spacing={4}>
-          <Box sx={{ textAlign: 'center' }}>
-            <Box
-              component="img"
-              src={logo}
-              alt="Accountly"
-              sx={{ width: 200, maxWidth: '80%', height: 'auto', display: 'block', mx: 'auto' }}
-            />
-          </Box>
+    <ThemeProvider theme={accountlyTheme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', bgcolor: c.bg, display: 'flex', alignItems: 'center', py: 5 }}>
+        <Container maxWidth="xs">
+          <Stack spacing={4}>
+            <Stack alignItems="center" spacing={1.5}>
+              <Box sx={{ width: 60, height: 60, borderRadius: '18px', bgcolor: c.redSoft, color: c.red, display: 'grid', placeItems: 'center' }}>
+                <Store size={28} />
+              </Box>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>Welcome back</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13.5 }}>Sign in to your khata</Typography>
+            </Stack>
 
-          <Stack spacing={2}>
-            <TextField
-              fullWidth
-              placeholder="Phone Number"
-              value={phone}
-              error={errors.phone}
-              onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
-              inputProps={{ inputMode: 'numeric', maxLength: 10 }}
-              InputProps={{ startAdornment: <InputAdornment position="start"><CountryCodePicker value={country} onChange={setCountry} /></InputAdornment> }}
-            />
+            <Stack spacing={2}>
+              <TextField
+                fullWidth
+                placeholder="Enter phone number"
+                value={phone}
+                error={errors.phone}
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
+                inputProps={{ inputMode: 'numeric', maxLength: 10 }}
+                InputProps={{ startAdornment: <InputAdornment position="start"><CountryCodePicker value={country} onChange={setCountry} /></InputAdornment> }}
+              />
+              <TextField
+                fullWidth
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                error={errors.password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword((s) => !s)} edge="end">
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <Button fullWidth size="large" variant="contained" disabled={submitting} onClick={handleSubmit}>
+                {submitting ? 'Signing in…' : 'Sign In'}
+              </Button>
+              <Divider sx={{ color: c.greyLight, fontSize: 12, '&::before, &::after': { borderColor: c.border } }}>OR</Divider>
+              <Button fullWidth size="large" variant="outlined" startIcon={<GoogleIcon />}>
+                Continue with Google
+              </Button>
+            </Stack>
 
-            <TextField
-              fullWidth
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Password"
-              value={password}
-              error={errors.password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((s) => !s)} edge="end">
-                      {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-
-            <Button
-              fullWidth
-              size="large"
-              variant="contained"
-              disabled={submitting}
-              onClick={handleSubmit}
-              sx={{ borderRadius: 3, py: 1.5 }}
-            >
-              {submitting ? 'Signing In…' : 'Sign In'}
-            </Button>
-
-            <Divider>OR</Divider>
-
-            <Button fullWidth size="large" variant="outlined" startIcon={<GoogleOutlined />} sx={{ borderRadius: 3, py: 1.5 }}>
-              Continue with Google
-            </Button>
+            <Typography variant="body2" align="center" sx={{ color: c.grey }}>
+              New to Accountly?{' '}
+              <Link component={RouterLink} to="/register" sx={{ color: c.red, fontWeight: 700 }} underline="none">
+                Create account
+              </Link>
+            </Typography>
           </Stack>
-
-          <Typography variant="body2" color="text.secondary" align="center">
-            Don&apos;t have an account?{' '}
-            <Link component={RouterLink} to="/register" fontWeight={600}>
-              Sign Up
-            </Link>
-          </Typography>
-        </Stack>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </ThemeProvider>
   );
 };
 

@@ -1,17 +1,9 @@
 import axios from 'axios';
 
-const { REACT_APP_API_URL, REACT_APP_API_PORT } = process.env;
-
-const resolveBaseURL = () => {
-  if (REACT_APP_API_URL) return REACT_APP_API_URL;
-  if (typeof window !== 'undefined' && window.location && REACT_APP_API_PORT) {
-    const { protocol, hostname } = window.location;
-    return `${protocol}//${hostname}:${REACT_APP_API_PORT}`;
-  }
-  return '';
-};
-
-const axiosServices = axios.create({ baseURL: resolveBaseURL() });
+const axiosServices = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: { 'ngrok-skip-browser-warning': 'true' }
+});
 
 axiosServices.interceptors.request.use(
   (config) => {

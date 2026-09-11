@@ -27,7 +27,6 @@ export interface Customer {
 }
 
 export interface CreateCustomerRequest {
-  business: { _id: string; business_name: string };
   name: string;
   phone: string;
   address?: string;
@@ -37,25 +36,25 @@ export interface UpdateCustomerRequest {
   name?: string;
   phone?: string;
   address?: string;
-  balance?: string | number;
 }
+
+export type TransactionType = 'debit' | 'credit';
 
 export interface Transaction {
   id: string;
   customerId: string;
   customerName: string;
   amount: number;
-  transaction_type: 'sent' | 'received';
+  transaction_type: TransactionType;
   description: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateTransactionRequest {
-  business: { _id: string; business_name: string };
   customer: { _id: string; name: string };
   amount: number;
-  transaction_type: 'sent' | 'received';
+  transaction_type: TransactionType;
   description?: string;
 }
 
@@ -70,9 +69,10 @@ export interface TransactionFilter {
 }
 
 export interface DashboardStats {
-  total_sent: number;
-  total_received: number;
-  pending: number;
+  you_will_get: number;
+  you_will_give: number;
+  net: number;
+  customer_count: number;
   total_transactions: number;
 }
 
@@ -89,10 +89,11 @@ export interface ApiTransaction {
   _id: string;
   customer: { _id: string; name: string };
   amount: number;
-  transaction_type: 'sent' | 'received';
+  transaction_type: TransactionType;
   description: string;
   created_at: string;
   updated_at: string;
+  balance_after?: number;
 }
 
 export interface DashboardStatisticsResponse {

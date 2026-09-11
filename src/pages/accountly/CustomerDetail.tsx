@@ -1,49 +1,34 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-  useMediaQuery
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import {
-  PhoneOutlined,
-  MoreOutlined,
-  SettingOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-  ArrowLeftOutlined
-} from '@ant-design/icons';
-import { useState } from 'react';
+import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions } from 'store/reducers/accountly/transactions';
-import CustomerAvatar from 'components/accountly/CustomerAvatar';
-import TransactionCard from 'components/accountly/TransactionCard';
-import EmptyState from 'components/accountly/EmptyState';
 import { formatAmount, balanceLabel } from 'utils/accountly/format';
+import { c, DISPLAY, avatarTint, initials } from 'themes/accountly';
+import AppHeader from 'components/accountly/AppHeader';
+import { AppCard, Fade, ListRow, IconDot, SectionHeader } from 'components/accountly/kit';
 import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
 
+const fmtWhen = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true }).replace(',', '');
+};
+
 const CustomerDetail = () => {
-  const theme = useTheme();
+  const { id = '' } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id = '' } = useParams();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-
   const { customers } = useSelector((s) => s.customers);
   const { transactions, customerStats } = useSelector((s) => s.transactions);
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
 
-  const customer = customers.find((c) => c.id === id);
+  const customer = customers.find((x) => x.id === id);
+  const av = avatarTint(customer?.name || 'Customer');
+  const balance = customerStats.customerBalance ?? customer?.balance ?? 0;
 
   useEffect(() => {
     if (customers.length === 0) dispatch(fetchCustomers());
@@ -53,129 +38,152 @@ const CustomerDetail = () => {
     if (id) dispatch(fetchCustomerTransactions(id));
   }, [dispatch, id]);
 
-  const balance = customerStats.customerBalance ?? customer?.balance ?? 0;
+  const headerTitle = (
+    <Stack direction="row" alignItems="center" spacing={1.25} sx={{ minWidth: 0 }}>
+      <Box
+        sx={{ width: 38, height: 38, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 700, fontSize: 13, flexShrink: 0 }}
+      >
+        {initials(customer?.name || 'C')}
+      </Box>
+      <Box sx={{ minWidth: 0 }}>
+        <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15.5, color: c.ink, lineHeight: 1.15 }} noWrap>
+          {customer?.name || 'Customer'}
+        </Typography>
+        <Typography sx={{ color: c.grey, fontSize: 11.5, fontWeight: 500 }} noWrap>
+          {customer?.phone || ''}
+        </Typography>
+      </Box>
+    </Stack>
+  );
+
+  const headerRight = (
+    <Stack direction="row" spacing={0.25} sx={{ flexShrink: 0 }}>
+      {customer?.phone && (
+        <IconButton component="a" href={`tel:${customer.phone}`} sx={{ color: c.ink }}>
+          <Phone size={18} />
+        </IconButton>
+      )}
+      <IconButton onClick={(e) => setMenuEl(e.currentTarget)} sx={{ color: c.ink }}>
+        <MoreHorizontal size={20} />
+      </IconButton>
+      <Menu anchorEl={menuEl} open={Boolean(menuEl)} onClose={() => setMenuEl(null)}>
+        <MenuItem
+          onClick={() => {
+            setMenuEl(null);
+            navigate(`/customer/${id}/settings`);
+          }}
+          sx={{ gap: 1.25 }}
+        >
+          <Settings size={16} /> Settings
+        </MenuItem>
+      </Menu>
+    </Stack>
+  );
 
   return (
-    <Box sx={{ pb: { xs: 'calc(92px + env(safe-area-inset-bottom, 0px))', md: 2 } }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-        <IconButton onClick={() => navigate(-1)} sx={{ ml: -1 }}>
-          <ArrowLeftOutlined />
-        </IconButton>
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1.5}
-          sx={{ flex: 1, minWidth: 0, cursor: 'pointer' }}
-          onClick={() => navigate(`/customer/${id}/settings`)}
-        >
-          <CustomerAvatar name={customer?.name || 'Customer'} />
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1" fontWeight={700} noWrap>
-              {customer?.name || 'Customer'}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" noWrap>
-              {customer?.phone || ''}
-            </Typography>
-          </Box>
+    <>
+      <AppHeader variant="screen" title={headerTitle} right={headerRight} />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: `calc(96px + env(safe-area-inset-bottom, 0px))` }}>
+        <Stack spacing={2.25}>
+          <Fade>
+            <AppCard sx={{ p: 0 }}>
+              <Stack direction="row" divider={<Divider orientation="vertical" flexItem sx={{ borderColor: c.line }} />}>
+                <Box sx={{ flex: 1, textAlign: 'center', py: 2.5 }}>
+                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: balance < 0 ? c.greenDeep : c.redDeep }}>
+                    {formatAmount(balance)}
+                  </Typography>
+                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>{balanceLabel(balance)}</Typography>
+                </Box>
+                <Box sx={{ flex: 1, textAlign: 'center', py: 2.5 }}>
+                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: c.slate }}>{transactions.length}</Typography>
+                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>Transactions</Typography>
+                </Box>
+              </Stack>
+            </AppCard>
+          </Fade>
+
+          {transactions.length > 0 ? (
+            <Fade delay={0.05}>
+              <Box>
+                <SectionHeader title="Recent Transactions" />
+                <AppCard sx={{ overflow: 'hidden' }}>
+                  {transactions.map((t, i) => {
+                    const sent = t.transaction_type === 'debit';
+                    return (
+                      <Box key={t.id}>
+                        {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+                        <ListRow onClick={() => navigate(`/transaction/${t.id}`)}>
+                          <IconDot size={44} bg={sent ? c.redSoft : c.greenSoft} fg={sent ? c.redDeep : c.greenDeep}>
+                            {sent ? <ArrowUp /> : <ArrowDown />}
+                          </IconDot>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                              {sent ? 'You gave' : 'You got'} {formatAmount(t.amount)}
+                            </Typography>
+                            <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
+                              {fmtWhen(t.createdAt)}
+                            </Typography>
+                          </Box>
+                          <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                            {sent ? '−' : '+'}
+                            {formatAmount(t.amount)}
+                          </Typography>
+                        </ListRow>
+                      </Box>
+                    );
+                  })}
+                </AppCard>
+              </Box>
+            </Fade>
+          ) : (
+            <AppCard sx={{ px: 3, py: 4.5, textAlign: 'center' }}>
+              <Box component="img" src={onlinePayment} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.5, opacity: 0.95 }} />
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15.5 }}>No transactions yet</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>Record a Send or Receive below.</Typography>
+            </AppCard>
+          )}
         </Stack>
-        {customer?.phone && (
-          <IconButton component="a" href={`tel:${customer.phone}`}>
-            <PhoneOutlined />
-          </IconButton>
-        )}
-        <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
-          <MoreOutlined />
-        </IconButton>
-        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
-          <MenuItem
-            onClick={() => {
-              setMenuAnchor(null);
-              navigate(`/customer/${id}/settings`);
-            }}
-          >
-            <SettingOutlined style={{ marginRight: 8 }} /> Settings
-          </MenuItem>
-        </Menu>
-      </Stack>
-
-      <Card sx={{ borderRadius: 3, mb: 2 }}>
-        <CardContent>
-          <Stack direction="row" alignItems="center">
-            <Box sx={{ flex: 1, textAlign: 'center' }}>
-              <Typography variant="h5" fontWeight={700} color={balance < 0 ? 'success.main' : 'error.main'}>
-                {formatAmount(balance)}
-              </Typography>
-              <Typography variant="caption" color={balance < 0 ? 'success.main' : 'error.main'}>
-                {balanceLabel(balance)}
-              </Typography>
-            </Box>
-            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-            <Box sx={{ flex: 1, textAlign: 'center' }}>
-              <Typography variant="h5" fontWeight={700} color="primary.main">
-                {transactions.length}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Transactions
-              </Typography>
-            </Box>
-          </Stack>
-        </CardContent>
-      </Card>
-
-      {transactions.length > 0 ? (
-        <>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5 }}>
-            Recent Transactions
-          </Typography>
-          <Stack spacing={1.5}>
-            {transactions.map((t) => (
-              <TransactionCard key={t.id} transaction={t} onClick={() => navigate(`/transaction/${t.id}`)} />
-            ))}
-          </Stack>
-        </>
-      ) : (
-        <EmptyState
-          illustration={onlinePayment}
-          title="Transactions Not Found"
-          description="Record a Send or Receive payment to get started."
-        />
-      )}
+      </Container>
 
       <Box
         sx={{
-          position: isDesktop ? 'static' : 'fixed',
-          bottom: isDesktop ? 'auto' : 'calc(16px + env(safe-area-inset-bottom, 0px))',
-          left: 16,
-          right: 16,
-          mt: isDesktop ? 3 : 0,
-          maxWidth: isDesktop ? 480 : 'none'
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 25,
+          px: 1.5,
+          pt: 1.5,
+          pb: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+          background: `linear-gradient(180deg, rgba(238,241,245,0) 0%, ${c.bg} 40%)`,
+          pointerEvents: 'none'
         }}
       >
-        <Divider sx={{ mb: 2, display: isDesktop ? 'none' : 'block' }} />
-        <Stack direction="row" spacing={1.5}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="error"
-            startIcon={<ArrowUpOutlined />}
-            onClick={() => navigate(`/transaction/new?customerId=${id}&type=payment`)}
-            sx={{ borderRadius: 2, py: 1.25 }}
-          >
-            Send
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            color="success"
-            startIcon={<ArrowDownOutlined />}
-            onClick={() => navigate(`/transaction/new?customerId=${id}&type=refund`)}
-            sx={{ borderRadius: 2, py: 1.25 }}
-          >
-            Receive
-          </Button>
-        </Stack>
+        <Container maxWidth="sm" disableGutters>
+          <Stack direction="row" spacing={1.25} sx={{ pointerEvents: 'auto' }}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<ArrowUp size={18} />}
+              onClick={() => navigate(`/transaction/new?customerId=${id}&type=payment`)}
+              sx={{ bgcolor: c.red, boxShadow: 'none', '&:hover': { bgcolor: c.redDeep } }}
+            >
+              You Gave
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              startIcon={<ArrowDown size={18} />}
+              onClick={() => navigate(`/transaction/new?customerId=${id}&type=refund`)}
+              sx={{ bgcolor: c.green, boxShadow: 'none', '&:hover': { bgcolor: c.greenDeep } }}
+            >
+              You Got
+            </Button>
+          </Stack>
+        </Container>
       </Box>
-    </Box>
+    </>
   );
 };
 
