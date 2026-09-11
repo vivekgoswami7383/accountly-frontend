@@ -22,6 +22,7 @@ import {
 } from 'store/reducers/accountly/transactions';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { TransactionType } from 'services/accountly/types';
+import { formatAmountInput } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import { c, DISPLAY } from 'themes/accountly';
@@ -168,7 +169,7 @@ const Payment = () => {
               autoFocus
               inputMode="decimal"
               placeholder="0"
-              value={amount}
+              value={formatAmountInput(amount)}
               onChange={(e: any) => {
                 setAmount(e.target.value.replace(/[^0-9.]/g, ''));
                 setAmountError(false);

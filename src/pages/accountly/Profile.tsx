@@ -3,6 +3,7 @@ import { Box, Button, Container, Stack, TextField, Typography } from '@mui/mater
 import { SquarePen } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
+import businessService from 'services/accountly/businessService';
 import { c, DISPLAY } from 'themes/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
@@ -16,14 +17,19 @@ const Label = ({ children }: { children: string }) => (
 const Profile = () => {
   const { user, updateProfile } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const isOwner = user?.role === 'owner';
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [businessName, setBusinessName] = useState(user?.business?.business_name || '');
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
 
   const handleSave = async () => {
     setSaving(true);
     try {
+      if (isOwner && user?.business?._id && businessName.trim() !== (user?.business?.business_name || '')) {
+        await businessService.updateBusiness(user.business._id, { business_name: businessName.trim() });
+      }
       await updateProfile({ name: name.trim(), phone: phone.trim() });
       showSnackbar({ message: 'Profile updated', type: 'success' });
       setEditing(false);
@@ -35,6 +41,7 @@ const Profile = () => {
   };
 
   const handleCancel = () => {
+    setBusinessName(user?.business?.business_name || '');
     setName(user?.name || '');
     setPhone(user?.phone || '');
     setEditing(false);
@@ -65,6 +72,15 @@ const Profile = () => {
               )}
             </Stack>
             <Stack spacing={2.5}>
+              <Box>
+                <Label>Business Name</Label>
+                <TextField
+                  fullWidth
+                  value={businessName}
+                  disabled={!editing || !isOwner}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                />
+              </Box>
               <Box>
                 <Label>Name</Label>
                 <TextField fullWidth value={name} disabled={!editing} onChange={(e) => setName(e.target.value)} />
