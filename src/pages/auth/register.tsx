@@ -4,18 +4,21 @@ import {
   Box,
   Button,
   Container,
+  CssBaseline,
   IconButton,
   InputAdornment,
   Link,
   Stack,
   TextField,
+  ThemeProvider,
   Typography
 } from '@mui/material';
-import { EyeOutlined, EyeInvisibleOutlined, ShopOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Eye, EyeOff, Store, User, Lock } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
+import accountlyTheme, { c, DISPLAY } from 'themes/accountly';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -53,87 +56,75 @@ const Register = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(180deg, #1A1A1A 0%, #2D2D2D 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        py: 4
-      }}
-    >
-      <Container maxWidth="xs">
-        <Stack spacing={3}>
-          <Typography variant="h4" fontWeight={700} align="center">
-            Create Account
-          </Typography>
+    <ThemeProvider theme={accountlyTheme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', bgcolor: c.bg, display: 'flex', alignItems: 'center', py: 5 }}>
+        <Container maxWidth="xs">
+          <Stack spacing={3.5}>
+            <Stack alignItems="center" spacing={1}>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>Create your account</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13.5 }}>Start managing your khata in minutes</Typography>
+            </Stack>
 
-          <Stack spacing={2}>
-            <TextField
-              fullWidth
-              placeholder="Business Name"
-              value={form.business_name}
-              error={errors.business_name}
-              onChange={set('business_name')}
-              InputProps={{ startAdornment: <InputAdornment position="start"><ShopOutlined /></InputAdornment> }}
-            />
-            <TextField
-              fullWidth
-              placeholder="Your Name"
-              value={form.name}
-              error={errors.name}
-              onChange={set('name')}
-              InputProps={{ startAdornment: <InputAdornment position="start"><UserOutlined /></InputAdornment> }}
-            />
-            <TextField
-              fullWidth
-              placeholder="Phone Number"
-              value={form.phone}
-              error={errors.phone}
-              onChange={set('phone')}
-              inputProps={{ inputMode: 'numeric', maxLength: 10 }}
-              InputProps={{ startAdornment: <InputAdornment position="start"><CountryCodePicker value={country} onChange={setCountry} /></InputAdornment> }}
-            />
-            <TextField
-              fullWidth
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Password (min 8 characters)"
-              value={form.password}
-              error={errors.password}
-              onChange={set('password')}
-              InputProps={{
-                startAdornment: <InputAdornment position="start"><LockOutlined /></InputAdornment>,
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((s) => !s)} edge="end">
-                      {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
+            <Stack spacing={2}>
+              <TextField
+                fullWidth
+                placeholder="Business name"
+                value={form.business_name}
+                error={errors.business_name}
+                onChange={set('business_name')}
+                InputProps={{ startAdornment: <InputAdornment position="start"><Store size={18} color={c.greyLight} /></InputAdornment> }}
+              />
+              <TextField
+                fullWidth
+                placeholder="Your name"
+                value={form.name}
+                error={errors.name}
+                onChange={set('name')}
+                InputProps={{ startAdornment: <InputAdornment position="start"><User size={18} color={c.greyLight} /></InputAdornment> }}
+              />
+              <TextField
+                fullWidth
+                placeholder="Enter phone number"
+                value={form.phone}
+                error={errors.phone}
+                onChange={set('phone')}
+                inputProps={{ inputMode: 'numeric', maxLength: 10 }}
+                InputProps={{ startAdornment: <InputAdornment position="start"><CountryCodePicker value={country} onChange={setCountry} /></InputAdornment> }}
+              />
+              <TextField
+                fullWidth
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={form.password}
+                error={errors.password}
+                onChange={set('password')}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Lock size={18} color={c.greyLight} /></InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword((s) => !s)} edge="end">
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <Button fullWidth size="large" variant="contained" disabled={submitting} onClick={handleSubmit}>
+                {submitting ? 'Creating account…' : 'Create Account'}
+              </Button>
+            </Stack>
 
-            <Button
-              fullWidth
-              size="large"
-              variant="contained"
-              disabled={submitting}
-              onClick={handleSubmit}
-              sx={{ borderRadius: 3, py: 1.5 }}
-            >
-              {submitting ? 'Creating Account…' : 'Create Account'}
-            </Button>
+            <Typography variant="body2" align="center" sx={{ color: c.grey }}>
+              Already have an account?{' '}
+              <Link component={RouterLink} to="/login" sx={{ color: c.red, fontWeight: 700 }} underline="none">
+                Sign in
+              </Link>
+            </Typography>
           </Stack>
-
-          <Typography variant="body2" color="text.secondary" align="center">
-            Already have an account?{' '}
-            <Link component={RouterLink} to="/login" fontWeight={600}>
-              Sign In
-            </Link>
-          </Typography>
-        </Stack>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </ThemeProvider>
   );
 };
 

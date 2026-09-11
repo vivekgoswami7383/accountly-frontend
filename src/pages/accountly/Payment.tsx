@@ -3,17 +3,16 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Button,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  InputAdornment,
   Stack,
-  TextField,
   Typography
 } from '@mui/material';
-import { FileTextOutlined, DeleteOutlined, WarningOutlined } from '@ant-design/icons';
+import { FileText, Trash2, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import {
   createTransaction,
@@ -22,10 +21,13 @@ import {
   deleteTransactionById
 } from 'store/reducers/accountly/transactions';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
+import { TransactionType } from 'services/accountly/types';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
-import ScreenHeader from 'components/accountly/ScreenHeader';
+import { c, DISPLAY } from 'themes/accountly';
+import AppHeader from 'components/accountly/AppHeader';
 import TransactionSuccessAnimation from 'components/accountly/TransactionSuccessAnimation';
+import { BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -65,21 +67,21 @@ const Payment = () => {
   }, [transactionId, selectedTransaction]);
 
   const customer = useMemo(() => {
-    if (isEdit && selectedTransaction) {
-      return { id: selectedTransaction.customerId, name: selectedTransaction.customerName };
-    }
-    const c = customers.find((x) => x.id === customerId);
-    return c ? { id: c.id, name: c.name } : null;
+    if (isEdit && selectedTransaction) return { id: selectedTransaction.customerId, name: selectedTransaction.customerName };
+    const found = customers.find((x) => x.id === customerId);
+    return found ? { id: found.id, name: found.name } : null;
   }, [isEdit, selectedTransaction, customers, customerId]);
 
-  const transactionType: 'sent' | 'received' = isEdit
-    ? selectedTransaction?.transaction_type || 'sent'
+  const transactionType: TransactionType = isEdit
+    ? selectedTransaction?.transaction_type || 'debit'
     : type === 'payment'
-    ? 'sent'
-    : 'received';
+    ? 'debit'
+    : 'credit';
 
-  const title = isEdit ? 'Edit Transaction' : transactionType === 'sent' ? 'Send Payment' : 'Receive Payment';
-  const accentColor = transactionType === 'sent' ? 'error' : 'success';
+  const isDebit = transactionType === 'debit';
+  const title = isEdit ? 'Edit Entry' : isDebit ? 'You Gave' : 'You Got';
+  const accent = isDebit ? c.red : c.green;
+  const accentDeep = isDebit ? c.redDeep : c.greenDeep;
 
   const handleSubmit = async () => {
     const value = Number(amount);
@@ -100,7 +102,7 @@ const Payment = () => {
         })
       );
       if (updateTransactionById.fulfilled.match(result)) navigate(-1);
-      else showSnackbar({ message: (result.payload as string) || 'Failed to update transaction', type: 'error' });
+      else showSnackbar({ message: (result.payload as string) || 'Failed to update entry', type: 'error' });
       return;
     }
 
@@ -110,7 +112,6 @@ const Payment = () => {
     }
     const result = await dispatch(
       createTransaction({
-        business: { _id: user.business._id, business_name: user.business.business_name || '' },
         customer: { _id: customer.id, name: customer.name },
         amount: value,
         transaction_type: transactionType,
@@ -118,7 +119,7 @@ const Payment = () => {
       })
     );
     if (createTransaction.fulfilled.match(result)) setSuccess(true);
-    else showSnackbar({ message: (result.payload as string) || 'Failed to record transaction', type: 'error' });
+    else showSnackbar({ message: (result.payload as string) || 'Failed to record entry', type: 'error' });
   };
 
   const handleDelete = async () => {
@@ -126,105 +127,158 @@ const Payment = () => {
     if (!transactionId) return;
     const result = await dispatch(deleteTransactionById(transactionId));
     if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || 'Failed to delete transaction', type: 'error' });
+    else showSnackbar({ message: (result.payload as string) || 'Failed to delete entry', type: 'error' });
   };
 
   return (
-    <Box sx={{ maxWidth: 480, mx: 'auto' }}>
-      <ScreenHeader title={title} />
+    <>
+      <AppHeader variant="screen" title={title} />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: FOOTER_SPACE }}>
+        <Stack spacing={3}>
+          {customer && (
+            <Typography sx={{ color: c.grey, fontSize: 14 }}>
+              {isDebit ? 'to' : 'from'}{' '}
+              <Box component="span" sx={{ color: c.ink, fontWeight: 700 }}>
+                {customer.name}
+              </Box>
+            </Typography>
+          )}
 
-      <Stack spacing={2.5}>
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
-            Amount
-          </Typography>
-          <TextField
-            fullWidth
-            autoFocus
-            placeholder="Enter amount"
-            value={amount}
-            error={amountError}
-            helperText={amountError ? 'Enter a valid amount' : ' '}
-            onChange={(e) => {
-              setAmount(e.target.value.replace(/[^0-9.]/g, ''));
-              setAmountError(false);
+          <Box
+            sx={{
+              bgcolor: c.surface,
+              borderRadius: '20px',
+              boxShadow: '0 1px 2px rgba(20,23,26,0.04)',
+              border: `1.5px solid ${amountError ? c.red : c.border}`,
+              px: 2.5,
+              py: 3,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}
-            inputProps={{ inputMode: 'decimal' }}
-            InputProps={{ startAdornment: <InputAdornment position="start">₹</InputAdornment> }}
-          />
-        </Box>
+          >
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 30, color: c.greyLight }}>₹</Typography>
+            <Box
+              component="input"
+              autoFocus
+              inputMode="decimal"
+              placeholder="0"
+              value={amount}
+              onChange={(e: any) => {
+                setAmount(e.target.value.replace(/[^0-9.]/g, ''));
+                setAmountError(false);
+              }}
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                border: 'none',
+                outline: 'none',
+                bgcolor: 'transparent',
+                fontFamily: DISPLAY,
+                fontWeight: 800,
+                fontSize: 34,
+                letterSpacing: '-0.02em',
+                color: accentDeep,
+                '::placeholder': { color: c.greyIcon }
+              }}
+            />
+          </Box>
 
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
-            Description
-          </Typography>
-          <TextField
-            fullWidth
-            multiline
-            minRows={3}
-            placeholder="Enter description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            inputProps={{ maxLength: 200 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5 }}>
-                  <FileTextOutlined />
-                </InputAdornment>
-              )
+          <Box
+            sx={{
+              bgcolor: c.surface,
+              borderRadius: '14px',
+              border: `1.5px solid ${c.border}`,
+              px: 2,
+              py: 1.75,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 1.25
             }}
-          />
-        </Box>
+          >
+            <FileText size={20} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
+            <Box
+              component="textarea"
+              rows={3}
+              placeholder="Add a note (optional)"
+              value={description}
+              onChange={(e: any) => setDescription(e.target.value)}
+              maxLength={200}
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                border: 'none',
+                outline: 'none',
+                resize: 'none',
+                bgcolor: 'transparent',
+                fontFamily: 'inherit',
+                fontSize: '0.95rem',
+                lineHeight: 1.5,
+                color: c.ink,
+                '::placeholder': { color: c.greyLight }
+              }}
+            />
+          </Box>
+        </Stack>
+      </Container>
 
+      <BottomActionBar>
         {isEdit ? (
           <Stack direction="row" spacing={1.5}>
             <Button
               fullWidth
-              variant="contained"
-              color="error"
-              startIcon={<DeleteOutlined />}
+              variant="outlined"
+              startIcon={<Trash2 size={18} />}
               disabled={loading}
               onClick={() => setConfirmDelete(true)}
-              sx={{ borderRadius: 2, py: 1.5 }}
+              sx={{ color: c.red, borderColor: c.border }}
             >
               Delete
             </Button>
-            <Button fullWidth variant="contained" disabled={loading} onClick={handleSubmit} sx={{ borderRadius: 2, py: 1.5 }}>
-              {loading ? 'Processing…' : 'Update'}
+            <Button
+              fullWidth
+              variant="contained"
+              disabled={loading}
+              onClick={handleSubmit}
+              sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
+            >
+              {loading ? 'Saving…' : 'Update'}
             </Button>
           </Stack>
         ) : (
           <Button
             fullWidth
+            size="large"
             variant="contained"
-            color={accentColor}
             disabled={loading}
             onClick={handleSubmit}
-            sx={{ borderRadius: 2, py: 1.5 }}
+            sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
           >
-            {loading ? 'Processing…' : 'Save'}
+            {loading ? 'Saving…' : 'Save Entry'}
           </Button>
         )}
-      </Stack>
+      </BottomActionBar>
 
-      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
-        <DialogTitle>
-          <WarningOutlined style={{ color: '#FF3B30', marginRight: 8 }} />
-          Delete Transaction
+      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontFamily: DISPLAY }}>
+          <TriangleAlert size={18} color={c.red} style={{ marginRight: 8, verticalAlign: 'text-bottom' }} />
+          Delete this entry?
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to delete this transaction? This action cannot be undone.</DialogContentText>
+          <DialogContentText sx={{ color: c.grey }}>This will update the customer balance. It cannot be undone.</DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmDelete(false)}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleDelete}>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button onClick={() => setConfirmDelete(false)} variant="outlined">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} variant="contained">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
 
       <TransactionSuccessAnimation visible={success} onComplete={() => navigate(-1)} />
-    </Box>
+    </>
   );
 };
 

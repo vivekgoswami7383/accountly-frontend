@@ -9,10 +9,9 @@ import {
   List,
   ListItemButton,
   ListItemText,
-  TextField,
-  Typography
+  TextField
 } from '@mui/material';
-import { DownOutlined, SearchOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import { ChevronDown, Search, X, Check } from 'lucide-react';
 import countries, { CountryType } from 'data/countries';
 
 export const DEFAULT_COUNTRY: CountryType = countries.find((c) => c.code === 'IN') || countries[0];
@@ -38,20 +37,20 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
     <>
       <Button
         onClick={() => setOpen(true)}
-        endIcon={<DownOutlined style={{ fontSize: 12 }} />}
-        sx={{ color: 'text.primary', flexShrink: 0, minWidth: 0, px: 1 }}
+        endIcon={<ChevronDown size={14} />}
+        sx={{ color: 'text.primary', flexShrink: 0, minWidth: 0, px: 1, fontWeight: 500, fontSize: '0.95rem' }}
       >
         {value.phone}
       </Button>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { height: '80vh' } }}>
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h6">Select Country</Typography>
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { height: '70vh' } }}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 16, py: 2 }}>
+          Select Country
           <IconButton onClick={() => setOpen(false)} size="small">
-            <CloseOutlined />
+            <X size={16} />
           </IconButton>
         </DialogTitle>
-        <Box sx={{ px: 3, pb: 1 }}>
+        <Box sx={{ px: 2.5, pb: 1 }}>
           <TextField
             fullWidth
             size="small"
@@ -59,27 +58,35 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             InputProps={{
+              sx: { fontSize: 13.5 },
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchOutlined />
+                  <Search size={16} />
                 </InputAdornment>
               )
             }}
           />
         </Box>
-        <List sx={{ overflow: 'auto', flex: 1 }}>
+        <List sx={{ overflow: 'auto', flex: 1, py: 0 }}>
           {filtered.map((c) => (
             <ListItemButton
               key={c.code}
+              dense
               selected={c.code === value.code}
               onClick={() => {
                 onChange(c);
                 setQuery('');
                 setOpen(false);
               }}
+              sx={{ py: 1 }}
             >
-              <ListItemText primary={c.label} secondary={c.phone} />
-              {c.code === value.code && <CheckOutlined style={{ color: '#007AFF' }} />}
+              <ListItemText
+                primary={c.label}
+                secondary={c.phone}
+                primaryTypographyProps={{ fontSize: 13.5, fontWeight: 600 }}
+                secondaryTypographyProps={{ fontSize: 12 }}
+              />
+              {c.code === value.code && <Check size={16} color="#E23744" />}
             </ListItemButton>
           ))}
         </List>

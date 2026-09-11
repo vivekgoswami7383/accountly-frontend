@@ -29,9 +29,7 @@ const mapTx = (tx: any): Transaction => ({
   customerName: tx.customer.name,
   amount: tx.amount,
   transaction_type: tx.transaction_type,
-  description:
-    tx.description ||
-    `Payment ${tx.transaction_type === 'sent' ? 'sent to' : 'received from'} ${tx.customer.name}`,
+  description: tx.description || '',
   createdAt: tx.created_at || tx.createdAt,
   updatedAt: tx.updated_at || tx.updatedAt
 });

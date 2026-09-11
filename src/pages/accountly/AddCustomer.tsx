@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Container } from '@mui/material';
 import { useDispatch, useSelector } from 'store';
 import { createCustomer } from 'store/reducers/accountly/customers';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
-import ScreenHeader from 'components/accountly/ScreenHeader';
+import AppHeader from 'components/accountly/AppHeader';
 import CustomerForm from 'sections/accountly/CustomerForm';
 
 const AddCustomer = () => {
@@ -24,9 +24,9 @@ const AddCustomer = () => {
     setSubmitting(true);
     const result = await dispatch(
       createCustomer({
-        business: { _id: user.business._id, business_name: user.business.business_name || '' },
         name: values.name,
-        phone: values.phone
+        phone: values.phone,
+        address: values.address
       })
     );
     setSubmitting(false);
@@ -38,10 +38,12 @@ const AddCustomer = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 560, mx: 'auto' }}>
-      <ScreenHeader title="Add Customer" />
-      <CustomerForm submitLabel="Add Customer" loading={loading || submitting} onSubmit={handleSubmit} />
-    </Box>
+    <>
+      <AppHeader variant="screen" title="Add Customer" />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 3 }}>
+        <CustomerForm submitLabel="Add Customer" loading={loading || submitting} onSubmit={handleSubmit} />
+      </Container>
+    </>
   );
 };
 

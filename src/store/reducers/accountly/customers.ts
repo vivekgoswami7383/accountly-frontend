@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import customerService from 'services/accountly/customerService';
-import { Customer, CreateCustomerRequest, UpdateCustomerRequest } from 'services/accountly/types';
+import { Customer, CreateCustomerRequest, UpdateCustomerRequest, TransactionType } from 'services/accountly/types';
 import { fetchDashboardStatistics } from './dashboard';
 
 interface CustomerState {
@@ -74,12 +74,12 @@ const customerSlice = createSlice({
     },
     updateCustomerBalance: (
       state,
-      action: PayloadAction<{ customerId: string; amount: number; transactionType: 'sent' | 'received' }>
+      action: PayloadAction<{ customerId: string; amount: number; transactionType: TransactionType }>
     ) => {
       const { customerId, amount, transactionType } = action.payload;
       const customer = state.customers.find((c) => c.id === customerId);
       if (customer) {
-        const balanceChange = transactionType === 'sent' ? -amount : amount;
+        const balanceChange = transactionType === 'debit' ? -amount : amount;
         customer.balance = customer.balance + balanceChange;
         if (state.selectedCustomer?.id === customerId) {
           state.selectedCustomer.balance = customer.balance;

@@ -1,12 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, InputAdornment, TextField } from '@mui/material';
-import { SearchOutlined } from '@ant-design/icons';
+import { Box, Container, Divider, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Search, ArrowUp, ArrowDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactions } from 'store/reducers/accountly/transactions';
-import TransactionCard from 'components/accountly/TransactionCard';
-import EmptyState from 'components/accountly/EmptyState';
+import { formatAmount } from 'utils/accountly/format';
+import { c, DISPLAY } from 'themes/accountly';
+import AppHeader from 'components/accountly/AppHeader';
+import { AppCard, Fade, ListRow, IconDot } from 'components/accountly/kit';
 import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
+
+const fmtWhen = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true }).replace(',', '');
+};
 
 const Transactions = () => {
   const navigate = useNavigate();
@@ -22,52 +31,76 @@ const Transactions = () => {
     const q = query.trim().toLowerCase();
     if (!q) return transactions;
     return transactions.filter(
-      (t) =>
-        t.description?.toLowerCase().includes(q) ||
-        String(t.amount).includes(q) ||
-        t.customerName?.toLowerCase().includes(q)
+      (t) => t.customerName?.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q) || String(t.amount).includes(q)
     );
   }, [transactions, query]);
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '100%' }}>
-      <TextField
-        fullWidth
-        size="small"
-        placeholder="Search transactions"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        sx={{ mb: 2 }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchOutlined />
-            </InputAdornment>
-          )
-        }}
-      />
+    <>
+      <AppHeader variant="root" title="Payments" />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
+        <Stack spacing={2}>
+          {transactions.length > 0 && (
+            <TextField
+              fullWidth
+              placeholder="Search payments"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={18} color={c.greyLight} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '16px', boxShadow: '0 1px 2px rgba(20,23,26,0.03)' }
+              }}
+            />
+          )}
 
-      {filtered.length === 0 ? (
-        <EmptyState
-          illustration={onlinePayment}
-          title="Transactions Not Found"
-          description="Go to a customer's details page to record transactions."
-        />
-      ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-            gap: 1.5,
-            width: '100%'
-          }}
-        >
-          {filtered.map((t) => (
-            <TransactionCard key={t.id} transaction={t} onClick={() => navigate(`/transaction/${t.id}`)} />
-          ))}
-        </Box>
-      )}
-    </Box>
+          {filtered.length === 0 ? (
+            <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
+              <Box component="img" src={onlinePayment} alt="" sx={{ width: 100, height: 100, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>
+                {query ? 'No matches' : 'No payments yet'}
+              </Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>
+                Open a customer and record a Send or Receive.
+              </Typography>
+            </AppCard>
+          ) : (
+            <Fade>
+              <AppCard sx={{ overflow: 'hidden' }}>
+                {filtered.map((t, i) => {
+                  const sent = t.transaction_type === 'debit';
+                  return (
+                    <Box key={t.id}>
+                      {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+                      <ListRow onClick={() => navigate(`/transaction/${t.id}`)}>
+                        <IconDot size={44} bg={sent ? c.redSoft : c.greenSoft} fg={sent ? c.redDeep : c.greenDeep}>
+                          {sent ? <ArrowUp /> : <ArrowDown />}
+                        </IconDot>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
+                            {sent ? 'Paid to' : 'Received from'} {t.customerName}
+                          </Typography>
+                          <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
+                            {fmtWhen(t.createdAt)}
+                          </Typography>
+                        </Box>
+                        <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                          {sent ? '−' : '+'}
+                          {formatAmount(t.amount)}
+                        </Typography>
+                      </ListRow>
+                    </Box>
+                  );
+                })}
+              </AppCard>
+            </Fade>
+          )}
+        </Stack>
+      </Container>
+    </>
   );
 };
 
