@@ -9,6 +9,7 @@ const initialState: CustomizationProps = {
   ...config,
   onChangeContainer: () => {},
   onChangeLocalization: (lang: I18n) => {},
+  onChangeCurrency: (currency: string) => {},
   onChangeMode: (mode: ThemeMode) => {},
   onChangePresetColor: (theme: PresetColor) => {},
   onChangeDirection: (direction: ThemeDirection) => {},
@@ -30,59 +31,66 @@ function ConfigProvider({ children }: ConfigProviderProps) {
   });
 
   const onChangeContainer = () => {
-    setConfig({
-      ...config,
-      container: !config.container
-    });
+    setConfig((prev: typeof config) => ({
+      ...prev,
+      container: !prev.container
+    }));
   };
 
   const onChangeLocalization = (lang: I18n) => {
-    setConfig({
-      ...config,
-      i18n: lang
-    });
+    setConfig((prev: typeof config) => ({
+      ...prev,
+      language: lang
+    }));
+  };
+
+  const onChangeCurrency = (currency: string) => {
+    setConfig((prev: typeof config) => ({
+      ...prev,
+      currency
+    }));
   };
 
   const onChangeMode = (mode: ThemeMode) => {
-    setConfig({
-      ...config,
+    setConfig((prev: typeof config) => ({
+      ...prev,
       mode
-    });
+    }));
   };
 
   const onChangePresetColor = (theme: PresetColor) => {
-    setConfig({
-      ...config,
+    setConfig((prev: typeof config) => ({
+      ...prev,
       presetColor: theme
-    });
+    }));
   };
 
   const onChangeDirection = (direction: ThemeDirection) => {
-    setConfig({
-      ...config,
+    setConfig((prev: typeof config) => ({
+      ...prev,
       themeDirection: direction
-    });
+    }));
   };
 
   const onChangeMiniDrawer = (miniDrawer: boolean) => {
-    setConfig({
-      ...config,
+    setConfig((prev: typeof config) => ({
+      ...prev,
       miniDrawer
-    });
+    }));
   };
 
   const onChangeMenuOrientation = (layout: MenuOrientation) => {
-    setConfig({
-      ...config,
+    setConfig((prev: typeof config) => ({
+      ...prev,
       menuOrientation: layout
-    });
+    }));
   };
 
   const onChangeFontFamily = (fontFamily: FontFamily) => {
-    setConfig({
-      ...config,
+    setConfig((prev: typeof config) => ({
+      ...prev,
       fontFamily
-    });
+    }));
   };
 
   return (
@@ -91,6 +99,7 @@ function ConfigProvider({ children }: ConfigProviderProps) {
         ...config,
         onChangeContainer,
         onChangeLocalization,
+        onChangeCurrency,
         onChangeMode,
         onChangePresetColor,
         onChangeDirection,

@@ -13,7 +13,8 @@ import { AuthProps, JWTContextType } from 'types/auth';
 const initialState: AuthProps = {
   isLoggedIn: false,
   isInitialized: false,
-  user: null
+  user: null,
+  business: null
 };
 
 const verifyToken: (st: string) => boolean = (serviceToken) => {
@@ -51,12 +52,13 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         if (serviceToken && verifyToken(serviceToken)) {
           setSession(serviceToken);
           const response = await axios.get('/api/auth/me');
-          const { user } = response.data.data;
+          const { user, business } = response.data.data;
           dispatch({
             type: LOGIN,
             payload: {
               isLoggedIn: true,
-              user
+              user,
+              business
             }
           });
         } else {
@@ -89,7 +91,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
       setSession(token);
 
       const userResponse = await axios.get('/api/auth/me');
-      const { user } = userResponse.data.data;
+      const { user, business } = userResponse.data.data;
 
       if (!user) {
         throw new Error('No user data received from server');
@@ -99,7 +101,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         type: LOGIN,
         payload: {
           isLoggedIn: true,
-          user
+          user,
+          business
         }
       });
     } catch (error) {
@@ -130,19 +133,33 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     const body = {
       name: payload.name ?? state.user?.name ?? '',
       phone: payload.phone ?? state.user?.phone ?? '',
-      theme: payload.theme ?? state.user?.theme ?? 'light'
+      theme: payload.theme ?? state.user?.theme ?? 'dark',
+      language: payload.language ?? state.user?.language ?? 'en'
     };
     await axios.patch(`/api/user/${userId}`, body);
     const response = await axios.get('/api/auth/me');
-    const { user } = response.data.data;
-    dispatch({ type: LOGIN, payload: { isLoggedIn: true, user } });
+    const { user, business } = response.data.data;
+    dispatch({ type: LOGIN, payload: { isLoggedIn: true, user, business } });
+  };
+
+  const updateBusiness = async (payload?: Record<string, any>) => {
+    const businessId = (state.business as any)?._id || (state.user as any)?.business?._id;
+    if (!payload || !businessId) return;
+    await businessService.updateBusiness(businessId, payload);
+    const response = await axios.get('/api/auth/me');
+    const { user, business } = response.data.data;
+    dispatch({ type: LOGIN, payload: { isLoggedIn: true, user, business } });
   };
 
   if (state.isInitialized !== undefined && !state.isInitialized) {
     return <Loader />;
   }
 
-  return <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile }}>{children}</JWTContext.Provider>;
+  return (
+    <JWTContext.Provider value={{ ...state, login, logout, register, resetPassword, updateProfile, updateBusiness }}>
+      {children}
+    </JWTContext.Provider>
+  );
 };
 
 export default JWTContext;

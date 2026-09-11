@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import { Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { c, DISPLAY } from 'themes/accountly';
+import { DISPLAY, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 
 interface Props {
   visible: boolean;
@@ -10,6 +11,8 @@ interface Props {
 }
 
 const TransactionSuccessAnimation = ({ visible, onComplete }: Props) => {
+  const c = useAccountlyColors();
+  const t = useT();
   useEffect(() => {
     if (!visible) return;
     const t = setTimeout(onComplete, 2200);
@@ -54,7 +57,7 @@ const TransactionSuccessAnimation = ({ visible, onComplete }: Props) => {
             </Box>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 20, color: c.ink }}>Entry saved</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 20, color: c.ink }}>{t('payment.entrySaved')}</Typography>
           </motion.div>
         </motion.div>
       )}

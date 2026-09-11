@@ -1,31 +1,47 @@
+import { useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Box, ButtonBase, Container, CssBaseline, Stack, ThemeProvider, Typography } from '@mui/material';
 import { Home, Users, ArrowRightLeft, LayoutGrid } from 'lucide-react';
-import accountlyTheme, { c, shadow } from 'themes/accountly';
-
-const TABS = [
-  { label: 'Home', icon: <Home size={21} />, to: '/' },
-  { label: 'Customers', icon: <Users size={21} />, to: '/customer' },
-  { label: 'Payments', icon: <ArrowRightLeft size={21} />, to: '/transaction' },
-  { label: 'More', icon: <LayoutGrid size={21} />, to: '/more' }
-];
-
-const isTabRoute = (p: string) => TABS.some((t) => t.to === p);
-const activeTab = (p: string) => {
-  let idx = 0;
-  TABS.forEach((t, i) => {
-    if (t.to === '/' ? p === '/' : p.startsWith(t.to)) idx = i;
-  });
-  return idx;
-};
+import { createAccountlyTheme, getAccountlyColors, shadow } from 'themes/accountly';
+import useConfig from 'hooks/useConfig';
+import useAuth from 'hooks/useAuth';
+import { useT } from 'i18n/accountly';
+import { ThemeMode, I18n } from 'types/config';
 
 const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { mode, onChangeMode, onChangeLocalization, onChangeCurrency } = useConfig();
+  const { user, business } = useAuth();
+  const t = useT();
+
+  const syncedRef = useRef(false);
+  useEffect(() => {
+    if (syncedRef.current || !user) return;
+    syncedRef.current = true;
+    if (user.theme) onChangeMode(user.theme === 'dark' ? ThemeMode.DARK : ThemeMode.LIGHT);
+    if (user.language) onChangeLocalization(user.language as I18n);
+    if (business?.currency) onChangeCurrency(business.currency);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, business]);
+  const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
+  const theme = useMemo(() => createAccountlyTheme(accountlyMode), [accountlyMode]);
+  const c = getAccountlyColors(accountlyMode);
+
+  const TABS = [
+    { label: t('nav.home'), icon: <Home size={21} />, to: '/' },
+    { label: t('nav.customers'), icon: <Users size={21} />, to: '/customer' },
+    { label: t('nav.payments'), icon: <ArrowRightLeft size={21} />, to: '/transaction' },
+    { label: t('nav.more'), icon: <LayoutGrid size={21} />, to: '/more' }
+  ];
+
+  const isTabRoute = (p: string) => ['/', '/customer', '/transaction', '/more'].includes(p);
+  const activeTab = (p: string) => ['/', '/customer', '/transaction', '/more'].indexOf(p);
+
   const showNav = isTabRoute(location.pathname);
 
   return (
-    <ThemeProvider theme={accountlyTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: c.bg, color: c.ink }}>
         <Box
@@ -57,7 +73,7 @@ const AppLayout = () => {
                     const active = activeTab(location.pathname) === i;
                     return (
                       <ButtonBase
-                        key={t.label}
+                        key={t.to}
                         onClick={() => navigate(t.to)}
                         sx={{ flex: 1, flexDirection: 'column', gap: 0.375, position: 'relative', color: active ? c.red : c.greyLight }}
                       >

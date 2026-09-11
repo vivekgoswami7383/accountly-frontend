@@ -13,7 +13,10 @@ export const businessService = {
     return unwrap(res);
   },
 
-  async updateBusiness(id: string, data: { business_name?: string; business_type?: string; address?: string }) {
+  async updateBusiness(
+    id: string,
+    data: { business_name?: string; business_type?: string; address?: string; logo?: string; gst_number?: string; currency?: string }
+  ) {
     const res = await axios.put(`/api/business/${id}`, data);
     return unwrap(res);
   }

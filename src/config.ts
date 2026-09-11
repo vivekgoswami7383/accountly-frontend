@@ -10,7 +10,8 @@ export const DRAWER_WIDTH = 260;
 
 const config: DefaultConfigProps = {
   fontFamily: `'Poppins', sans-serif`,
-  i18n: 'en',
+  language: 'en',
+  currency: 'INR',
   menuOrientation: MenuOrientation.VERTICAL,
   miniDrawer: false,
   container: false,

@@ -8,6 +8,7 @@ import AppHeader from 'components/accountly/AppHeader';
 import CustomerForm from 'sections/accountly/CustomerForm';
 import countries, { CountryType } from 'data/countries';
 import { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
+import { useT } from 'i18n/accountly';
 
 const splitPhone = (full: string): { country: CountryType; local: string } => {
   const match = [...countries].filter((x) => full.startsWith(x.phone)).sort((a, b) => b.phone.length - a.phone.length)[0];
@@ -20,6 +21,7 @@ const EditCustomer = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { showSnackbar } = useSnackbar();
+  const t = useT();
   const { customers, loading } = useSelector((s) => s.customers);
   const [submitting, setSubmitting] = useState(false);
 
@@ -41,14 +43,16 @@ const EditCustomer = () => {
     const result = await dispatch(updateCustomer({ id: customer.id, data: values }));
     setSubmitting(false);
     if (updateCustomer.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || 'Failed to update customer', type: 'error' });
+    else showSnackbar({ message: (result.payload as string) || t('customerForm.failedUpdate'), type: 'error' });
   };
 
   return (
     <>
-      <AppHeader variant="screen" title="Edit Customer" />
+      <AppHeader variant="screen" title={t('customerForm.editTitle')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 3 }}>
-        {initial && <CustomerForm initial={initial} submitLabel="Save Changes" loading={loading || submitting} onSubmit={handleSubmit} />}
+        {initial && (
+          <CustomerForm initial={initial} submitLabel={t('customerForm.saveChanges')} loading={loading || submitting} onSubmit={handleSubmit} />
+        )}
       </Container>
     </>
   );

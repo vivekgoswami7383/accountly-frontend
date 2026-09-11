@@ -5,8 +5,9 @@ import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown } from 'lucide-reac
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
-import { formatAmount, balanceLabel } from 'utils/accountly/format';
-import { c, DISPLAY, avatarTint, initials } from 'themes/accountly';
+import { useFormatAmount } from 'utils/accountly/format';
+import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot, SectionHeader } from 'components/accountly/kit';
 import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
@@ -22,6 +23,9 @@ const CustomerDetail = () => {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const c = useAccountlyColors();
+  const t = useT();
+  const fmt = useFormatAmount();
   const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
   const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -80,7 +84,7 @@ const CustomerDetail = () => {
           }}
           sx={{ gap: 1.25 }}
         >
-          <Settings size={16} /> Settings
+          <Settings size={16} /> {t('common.settings')}
         </MenuItem>
       </Menu>
     </Stack>
@@ -103,9 +107,11 @@ const CustomerDetail = () => {
                   ) : (
                     <>
                       <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: balance < 0 ? c.greenDeep : c.redDeep }}>
-                        {formatAmount(balance)}
+                        {fmt(balance)}
                       </Typography>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>{balanceLabel(balance)}</Typography>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>
+                        {balance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
+                      </Typography>
                     </>
                   )}
                 </Box>
@@ -120,7 +126,7 @@ const CustomerDetail = () => {
                       <Typography sx={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, color: c.slate }}>
                         {customerTransactions.length}
                       </Typography>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>Transactions</Typography>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 600, mt: 0.25 }}>{t('detail.transactions')}</Typography>
                     </>
                   )}
                 </Box>
@@ -130,7 +136,7 @@ const CustomerDetail = () => {
 
           {showSkeleton ? (
             <Box>
-              <SectionHeader title="Recent Transactions" />
+              <SectionHeader title={t('detail.recentTransactions')} />
               <AppCard sx={{ overflow: 'hidden' }}>
                 {[0, 1, 2].map((i) => (
                   <Box key={i}>
@@ -150,28 +156,28 @@ const CustomerDetail = () => {
           ) : customerTransactions.length > 0 ? (
             <Fade delay={0.05}>
               <Box>
-                <SectionHeader title="Recent Transactions" />
+                <SectionHeader title={t('detail.recentTransactions')} />
                 <AppCard sx={{ overflow: 'hidden' }}>
-                  {customerTransactions.map((t, i) => {
-                    const sent = t.transaction_type === 'debit';
+                  {customerTransactions.map((tx, i) => {
+                    const sent = tx.transaction_type === 'debit';
                     return (
-                      <Box key={t.id}>
+                      <Box key={tx.id}>
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                        <ListRow onClick={() => navigate(`/transaction/${t.id}`)}>
+                        <ListRow onClick={() => navigate(`/transaction/${tx.id}`)}>
                           <IconDot size={44} bg={sent ? c.redSoft : c.greenSoft} fg={sent ? c.redDeep : c.greenDeep}>
                             {sent ? <ArrowUp /> : <ArrowDown />}
                           </IconDot>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
                             <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
-                              {sent ? 'You gave' : 'You got'} {formatAmount(t.amount)}
+                              {sent ? t('detail.youGave', { amount: fmt(tx.amount) }) : t('detail.youGot', { amount: fmt(tx.amount) })}
                             </Typography>
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
-                              {fmtWhen(t.createdAt)}
+                              {fmtWhen(tx.createdAt)}
                             </Typography>
                           </Box>
                           <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
                             {sent ? '−' : '+'}
-                            {formatAmount(t.amount)}
+                            {fmt(tx.amount)}
                           </Typography>
                         </ListRow>
                       </Box>
@@ -183,8 +189,8 @@ const CustomerDetail = () => {
           ) : (
             <AppCard sx={{ px: 3, py: 4.5, textAlign: 'center' }}>
               <Box component="img" src={onlinePayment} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.5, opacity: 0.95 }} />
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15.5 }}>No transactions yet</Typography>
-              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>Record a Send or Receive below.</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15.5 }}>{t('detail.noTransactionsYet')}</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('detail.recordBelow')}</Typography>
             </AppCard>
           )}
         </Stack>
@@ -213,7 +219,7 @@ const CustomerDetail = () => {
               onClick={() => navigate(`/transaction/new?customerId=${id}&type=payment`)}
               sx={{ bgcolor: c.red, boxShadow: 'none', '&:hover': { bgcolor: c.redDeep } }}
             >
-              You Gave
+              {t('detail.youGaveBtn')}
             </Button>
             <Button
               fullWidth
@@ -223,7 +229,7 @@ const CustomerDetail = () => {
               onClick={() => navigate(`/transaction/new?customerId=${id}&type=refund`)}
               sx={{ bgcolor: c.green, boxShadow: 'none', '&:hover': { bgcolor: c.greenDeep } }}
             >
-              You Got
+              {t('detail.youGotBtn')}
             </Button>
           </Stack>
         </Container>

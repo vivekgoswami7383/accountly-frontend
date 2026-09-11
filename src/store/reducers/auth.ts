@@ -5,25 +5,28 @@ import { AuthProps, AuthActionProps } from 'types/auth';
 export const initialState: AuthProps = {
   isLoggedIn: false,
   isInitialized: false,
-  user: null
+  user: null,
+  business: null
 };
 
 const auth = (state = initialState, action: AuthActionProps) => {
   switch (action.type) {
     case REGISTER: {
-      const { user } = action.payload!;
+      const { user, business } = action.payload!;
       return {
         ...state,
-        user
+        user,
+        business
       };
     }
     case LOGIN: {
-      const { user } = action.payload!;
+      const { user, business } = action.payload!;
       return {
         ...state,
         isLoggedIn: true,
         isInitialized: true,
-        user
+        user,
+        business
       };
     }
     case LOGOUT: {
@@ -31,7 +34,8 @@ const auth = (state = initialState, action: AuthActionProps) => {
         ...state,
         isInitialized: true,
         isLoggedIn: false,
-        user: null
+        user: null,
+        business: null
       };
     }
     default: {

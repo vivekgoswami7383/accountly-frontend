@@ -4,8 +4,9 @@ import { Box, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Ty
 import { Search, Phone, ChevronRight, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
-import { formatAmount } from 'utils/accountly/format';
-import { c, DISPLAY, avatarTint, initials } from 'themes/accountly';
+import { useFormatAmount } from 'utils/accountly/format';
+import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
 import trade from 'assets/images/accountly/illustrations/trade.png';
@@ -13,6 +14,9 @@ import trade from 'assets/images/accountly/illustrations/trade.png';
 const Customers = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const c = useAccountlyColors();
+  const t = useT();
+  const fmt = useFormatAmount();
   const { customers, hasLoaded } = useSelector((s) => s.customers);
   const [query, setQuery] = useState('');
 
@@ -46,19 +50,19 @@ const Customers = () => {
         fontFamily: `'Inter', sans-serif`
       }}
     >
-      <Plus size={15} /> Add
+      <Plus size={15} /> {t('common.add')}
     </Box>
   );
 
   return (
     <>
-      <AppHeader variant="root" title="Customers" right={addBtn} />
+      <AppHeader variant="root" title={t('customers.title')} right={addBtn} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={2}>
           {customers.length > 0 && (
             <TextField
               fullWidth
-              placeholder="Search by name or phone"
+              placeholder={t('customers.searchPlaceholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               InputProps={{
@@ -92,10 +96,10 @@ const Customers = () => {
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
               <Box component="img" src={trade} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>
-                {query ? 'No matches' : 'No customers yet'}
+                {query ? t('customers.noMatches') : t('home.noCustomersYet')}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>
-                {query ? 'Try a different name or number.' : 'Tap Add to create your first customer.'}
+                {query ? t('customers.tryDifferent') : t('customers.tapAddToCreate')}
               </Typography>
             </AppCard>
           ) : (
@@ -124,11 +128,13 @@ const Customers = () => {
                             </Typography>
                           </Stack>
                         </Box>
-                        <Stack direction="row" alignItems="center" spacing={0.75} sx={{ flexShrink: 0 }}>
+                        <Stack alignItems="flex-end" spacing={0.375} sx={{ flexShrink: 0, alignSelf: 'flex-start' }}>
                           <Typography sx={{ fontWeight: 800, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
-                            {formatAmount(cust.balance)}
+                            {fmt(cust.balance)}
                           </Typography>
-                          <BalanceTag tone={get ? 'get' : 'give'}>{get ? 'GET' : 'GIVE'}</BalanceTag>
+                          <BalanceTag tone={get ? 'get' : 'give'} sx={{ alignSelf: 'flex-end' }}>
+                            {get ? t('customers.get') : t('customers.give')}
+                          </BalanceTag>
                         </Stack>
                         <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
                       </ListRow>

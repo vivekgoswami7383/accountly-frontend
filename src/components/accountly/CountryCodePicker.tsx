@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { ChevronDown, Search, X, Check } from 'lucide-react';
 import countries, { CountryType } from 'data/countries';
+import { useT } from 'i18n/accountly';
 
 export const DEFAULT_COUNTRY: CountryType = countries.find((c) => c.code === 'IN') || countries[0];
 
@@ -22,6 +23,7 @@ interface CountryCodePickerProps {
 }
 
 const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -45,7 +47,7 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
 
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { height: '70vh' } }}>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 16, py: 2 }}>
-          Select Country
+          {t('customerForm.selectCountry')}
           <IconButton onClick={() => setOpen(false)} size="small">
             <X size={16} />
           </IconButton>
@@ -54,7 +56,7 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
           <TextField
             fullWidth
             size="small"
-            placeholder="Search countries"
+            placeholder={t('customerForm.searchCountries')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             InputProps={{

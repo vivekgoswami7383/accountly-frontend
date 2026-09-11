@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Container, Divider, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { Store, ArrowLeft, User, Settings, LogOut } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
-import { c, DISPLAY } from 'themes/accountly';
+import { DISPLAY, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import { IconDot } from './kit';
 
 interface AppHeaderProps {
@@ -16,6 +17,8 @@ interface AppHeaderProps {
 const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const c = useAccountlyColors();
+  const t = useT();
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
 
   const doLogout = async () => {
@@ -23,6 +26,8 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
     await logout();
     navigate('/login', { state: { from: '' } });
   };
+
+  const roleLabel = t(`role.${user?.role || 'owner'}`);
 
   return (
     <Box
@@ -47,7 +52,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                   {user?.business?.business_name || 'My Business'}
                 </Typography>
                 <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }} noWrap>
-                  {(user?.role || 'Owner').replace(/^\w/, (m) => m.toUpperCase())} · Manage khata
+                  {roleLabel} · {t('header.manageKhata')}
                 </Typography>
               </Box>
               <IconButton onClick={(e: MouseEvent<HTMLElement>) => setMenuEl(e.currentTarget)} sx={{ p: 0.5 }}>
@@ -78,14 +83,14 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                 PaperProps={{ sx: { minWidth: 220, py: 0.5 } }}
               >
                 <MenuItem onClick={() => { setMenuEl(null); navigate('/profile'); }} sx={{ gap: 1.5, py: 1.25 }}>
-                  <User size={18} /> Profile
+                  <User size={18} /> {t('menu.profile')}
                 </MenuItem>
                 <MenuItem onClick={() => { setMenuEl(null); navigate('/settings'); }} sx={{ gap: 1.5, py: 1.25 }}>
-                  <Settings size={18} /> Settings
+                  <Settings size={18} /> {t('menu.settings')}
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
                 <MenuItem onClick={doLogout} sx={{ color: c.red, gap: 1.5, py: 1.25 }}>
-                  <LogOut size={18} /> Logout
+                  <LogOut size={18} /> {t('menu.logout')}
                 </MenuItem>
               </Menu>
             </>

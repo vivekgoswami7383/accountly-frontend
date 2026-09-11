@@ -20,20 +20,20 @@ interface Props {
 }
 
 const Locales = ({ children }: Props) => {
-  const { i18n } = useConfig();
+  const { language } = useConfig();
 
   const [messages, setMessages] = useState<Record<string, string> | Record<string, MessageFormatElement[]> | undefined>();
 
   useEffect(() => {
-    loadLocaleData(i18n).then((d: { default: Record<string, string> | Record<string, MessageFormatElement[]> | undefined }) => {
+    loadLocaleData(language).then((d: { default: Record<string, string> | Record<string, MessageFormatElement[]> | undefined }) => {
       setMessages(d.default);
     });
-  }, [i18n]);
+  }, [language]);
 
   return (
     <>
       {messages && (
-        <IntlProvider locale={i18n} defaultLocale="en" messages={messages}>
+        <IntlProvider locale={language} defaultLocale="en" messages={messages}>
           {children}
         </IntlProvider>
       )}

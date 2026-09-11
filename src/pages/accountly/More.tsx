@@ -2,13 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material';
 import { User, Settings, BarChart3, LogOut, ChevronRight } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
-import { c, DISPLAY } from 'themes/accountly';
+import { DISPLAY, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, ListRow, IconDot } from 'components/accountly/kit';
 
 const More = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const c = useAccountlyColors();
+  const t = useT();
 
   const handleLogout = async () => {
     await logout();
@@ -16,14 +19,14 @@ const More = () => {
   };
 
   const items = [
-    { label: 'Profile', desc: 'Your name and phone', icon: <User />, path: '/profile' },
-    { label: 'Settings', desc: 'Theme and language', icon: <Settings />, path: '/settings' },
-    { label: 'Reports', desc: 'Coming soon', icon: <BarChart3 />, path: '/reports' }
+    { label: t('menu.profile'), desc: t('more.profileDesc'), icon: <User />, path: '/profile' },
+    { label: t('menu.settings'), desc: t('more.settingsDesc'), icon: <Settings />, path: '/settings' },
+    { label: t('more.reports'), desc: t('more.reportsComingSoon'), icon: <BarChart3 />, path: '/reports' }
   ];
 
   return (
     <>
-      <AppHeader variant="root" title="More" />
+      <AppHeader variant="root" title={t('more.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={2.5}>
           <AppCard sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -36,8 +39,8 @@ const More = () => {
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }} noWrap>
                 {user?.name || 'User'}
               </Typography>
-              <Typography sx={{ color: c.grey, fontSize: 13, fontWeight: 500, textTransform: 'capitalize' }} noWrap>
-                {user?.role || 'Owner'} · {user?.business?.business_name || 'My Business'}
+              <Typography sx={{ color: c.grey, fontSize: 13, fontWeight: 500 }} noWrap>
+                {t(`role.${user?.role || 'owner'}`)} · {user?.business?.business_name || 'My Business'}
               </Typography>
             </Box>
           </AppCard>
@@ -67,7 +70,7 @@ const More = () => {
             onClick={handleLogout}
             sx={{ color: c.red, borderColor: c.border, bgcolor: c.surface, py: 1.5 }}
           >
-            Logout
+            {t('menu.logout')}
           </Button>
         </Stack>
       </Container>

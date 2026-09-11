@@ -19,6 +19,7 @@ export type UserProfile = {
   role?: string;
   tier?: string;
   theme?: 'light' | 'dark';
+  language?: string;
   permissions?: string[];
   business?: {
     _id?: string;
@@ -26,10 +27,21 @@ export type UserProfile = {
   };
 };
 
+export type BusinessProfile = {
+  _id?: string;
+  business_name?: string;
+  business_type?: string;
+  address?: string;
+  logo?: string;
+  gst_number?: string;
+  currency?: string;
+};
+
 export interface AuthProps {
   isLoggedIn: boolean;
   isInitialized?: boolean;
   user?: UserProfile | null;
+  business?: BusinessProfile | null;
   token?: string | null;
 }
 
@@ -79,11 +91,13 @@ export type JWTContextType = {
   isLoggedIn: boolean;
   isInitialized?: boolean;
   user?: UserProfile | null | undefined;
+  business?: BusinessProfile | null | undefined;
   logout: () => void;
   login: (phone: string, password: string) => Promise<void>;
   register: (businessName: string, name: string, phone: string, password: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (payload?: Record<string, any>) => Promise<void>;
+  updateBusiness: (payload?: Record<string, any>) => Promise<void>;
 };
 
 export type Auth0ContextType = {

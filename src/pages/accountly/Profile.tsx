@@ -4,19 +4,25 @@ import { SquarePen } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import businessService from 'services/accountly/businessService';
-import { c, DISPLAY } from 'themes/accountly';
+import { DISPLAY, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
 
-const Label = ({ children }: { children: string }) => (
-  <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-    {children}
-  </Typography>
-);
+const Label = ({ children }: { children: string }) => {
+  const c = useAccountlyColors();
+  return (
+    <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+      {children}
+    </Typography>
+  );
+};
 
 const Profile = () => {
   const { user, updateProfile } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const c = useAccountlyColors();
+  const t = useT();
   const isOwner = user?.role === 'owner';
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -31,10 +37,10 @@ const Profile = () => {
         await businessService.updateBusiness(user.business._id, { business_name: businessName.trim() });
       }
       await updateProfile({ name: name.trim(), phone: phone.trim() });
-      showSnackbar({ message: 'Profile updated', type: 'success' });
+      showSnackbar({ message: t('profile.updated'), type: 'success' });
       setEditing(false);
     } catch (e: any) {
-      showSnackbar({ message: e?.message || 'Failed to update profile', type: 'error' });
+      showSnackbar({ message: e?.message || t('profile.failedUpdate'), type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -49,7 +55,7 @@ const Profile = () => {
 
   return (
     <>
-      <AppHeader variant="screen" title="Profile" />
+      <AppHeader variant="screen" title={t('profile.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: editing ? FOOTER_SPACE : undefined }}>
         <Stack spacing={2.5}>
           <AppCard sx={{ p: 3, textAlign: 'center' }}>
@@ -59,21 +65,21 @@ const Profile = () => {
               {(user?.name || 'U')[0].toUpperCase()}
             </Box>
             <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17 }}>{user?.name || 'User'}</Typography>
-            <Typography sx={{ color: c.grey, fontSize: 13, textTransform: 'capitalize' }}>{user?.role || 'Owner'}</Typography>
+            <Typography sx={{ color: c.grey, fontSize: 13 }}>{t(`role.${user?.role || 'owner'}`)}</Typography>
           </AppCard>
 
           <AppCard sx={{ p: 3 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15 }}>Details</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 15 }}>{t('common.details')}</Typography>
               {!editing && (
                 <Button size="small" variant="outlined" startIcon={<SquarePen size={15} />} onClick={() => setEditing(true)}>
-                  Edit
+                  {t('common.edit')}
                 </Button>
               )}
             </Stack>
             <Stack spacing={2.5}>
               <Box>
-                <Label>Business Name</Label>
+                <Label>{t('profile.businessName')}</Label>
                 <TextField
                   fullWidth
                   value={businessName}
@@ -82,11 +88,11 @@ const Profile = () => {
                 />
               </Box>
               <Box>
-                <Label>Name</Label>
+                <Label>{t('common.name')}</Label>
                 <TextField fullWidth value={name} disabled={!editing} onChange={(e) => setName(e.target.value)} />
               </Box>
               <Box>
-                <Label>Phone</Label>
+                <Label>{t('common.phone')}</Label>
                 <TextField fullWidth value={phone} disabled={!editing} onChange={(e) => setPhone(e.target.value)} />
               </Box>
             </Stack>
@@ -98,10 +104,10 @@ const Profile = () => {
         <BottomActionBar>
           <Stack direction="row" spacing={1.5}>
             <Button fullWidth variant="outlined" onClick={handleCancel}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button fullWidth variant="contained" disabled={saving} onClick={handleSave}>
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? t('common.saving') : t('common.save')}
             </Button>
           </Stack>
         </BottomActionBar>

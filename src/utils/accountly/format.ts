@@ -1,4 +1,11 @@
-export const formatAmount = (value: number): string => `₹${Math.abs(Number(value) || 0).toLocaleString('en-IN')}`;
+import { useCallback } from 'react';
+import useConfig from 'hooks/useConfig';
+import { DEFAULT_CURRENCY, getCurrency } from 'data/currencies';
+
+export const formatAmount = (value: number, currencyCode: string = DEFAULT_CURRENCY.code): string => {
+  const currency = getCurrency(currencyCode);
+  return `${currency.symbol}${Math.abs(Number(value) || 0).toLocaleString(currency.locale)}`;
+};
 
 export const formatAmountInput = (raw: string): string => {
   if (!raw) return '';
@@ -23,4 +30,7 @@ export const formatTime = (dateString?: string): string => {
 
 export const formatDateTime = (dateString?: string): string => `${formatDate(dateString)} • ${formatTime(dateString)}`;
 
-export const balanceLabel = (balance: number): string => (balance < 0 ? 'You Will Get' : 'You Will Give');
+export const useFormatAmount = () => {
+  const { currency } = useConfig();
+  return useCallback((value: number) => formatAmount(value, currency), [currency]);
+};

@@ -25,7 +25,10 @@ import { TransactionType } from 'services/accountly/types';
 import { formatAmountInput } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
-import { c, DISPLAY } from 'themes/accountly';
+import useConfig from 'hooks/useConfig';
+import { getCurrency } from 'data/currencies';
+import { DISPLAY, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import TransactionSuccessAnimation from 'components/accountly/TransactionSuccessAnimation';
 import { BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
@@ -37,6 +40,10 @@ const Payment = () => {
   const [params] = useSearchParams();
   const { user } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const c = useAccountlyColors();
+  const t = useT();
+  const { currency } = useConfig();
+  const currencySymbol = getCurrency(currency).symbol;
 
   const customerId = params.get('customerId') || '';
   const type = params.get('type') === 'refund' ? 'refund' : 'payment';
@@ -85,7 +92,7 @@ const Payment = () => {
     : 'credit';
 
   const isDebit = transactionType === 'debit';
-  const title = isEdit ? 'Edit Entry' : isDebit ? 'You Gave' : 'You Got';
+  const title = isEdit ? t('payment.editEntry') : isDebit ? t('payment.youGaveTitle') : t('payment.youGotTitle');
   const accent = isDebit ? c.red : c.green;
   const accentDeep = isDebit ? c.redDeep : c.greenDeep;
 
@@ -96,7 +103,7 @@ const Payment = () => {
       return;
     }
     if (!customer) {
-      showSnackbar({ message: 'Customer not found', type: 'error' });
+      showSnackbar({ message: t('payment.customerNotFound'), type: 'error' });
       return;
     }
 
@@ -108,12 +115,12 @@ const Payment = () => {
         })
       );
       if (updateTransactionById.fulfilled.match(result)) navigate(-1);
-      else showSnackbar({ message: (result.payload as string) || 'Failed to update entry', type: 'error' });
+      else showSnackbar({ message: (result.payload as string) || t('payment.failedUpdateEntry'), type: 'error' });
       return;
     }
 
     if (!user?.business?._id) {
-      showSnackbar({ message: 'Business information not found', type: 'error' });
+      showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
       return;
     }
     const result = await dispatch(
@@ -125,7 +132,7 @@ const Payment = () => {
       })
     );
     if (createTransaction.fulfilled.match(result)) setSuccess(true);
-    else showSnackbar({ message: (result.payload as string) || 'Failed to record entry', type: 'error' });
+    else showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
   };
 
   const handleDelete = async () => {
@@ -133,7 +140,7 @@ const Payment = () => {
     if (!transactionId) return;
     const result = await dispatch(deleteTransactionById(transactionId));
     if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || 'Failed to delete entry', type: 'error' });
+    else showSnackbar({ message: (result.payload as string) || t('payment.failedDeleteEntry'), type: 'error' });
   };
 
   return (
@@ -143,7 +150,7 @@ const Payment = () => {
         <Stack spacing={3}>
           {customer && (
             <Typography sx={{ color: c.grey, fontSize: 14 }}>
-              {isDebit ? 'to' : 'from'}{' '}
+              {isDebit ? t('payment.to') : t('payment.from')}{' '}
               <Box component="span" sx={{ color: c.ink, fontWeight: 700 }}>
                 {customer.name}
               </Box>
@@ -163,7 +170,7 @@ const Payment = () => {
               gap: 1
             }}
           >
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 30, color: c.greyLight }}>₹</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 30, color: c.greyLight }}>{currencySymbol}</Typography>
             <Box
               component="input"
               autoFocus
@@ -206,7 +213,7 @@ const Payment = () => {
             <Box
               component="textarea"
               rows={3}
-              placeholder="Add a note (optional)"
+              placeholder={t('payment.addNote')}
               value={description}
               onChange={(e: any) => setDescription(e.target.value)}
               maxLength={200}
@@ -239,7 +246,7 @@ const Payment = () => {
               onClick={() => setConfirmDelete(true)}
               sx={{ color: c.red, borderColor: c.border }}
             >
-              Delete
+              {t('common.delete')}
             </Button>
             <Button
               fullWidth
@@ -248,7 +255,7 @@ const Payment = () => {
               onClick={handleSubmit}
               sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
             >
-              {loading ? 'Saving…' : 'Update'}
+              {loading ? t('common.saving') : t('payment.update')}
             </Button>
           </Stack>
         ) : (
@@ -260,7 +267,7 @@ const Payment = () => {
             onClick={handleSubmit}
             sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
           >
-            {loading ? 'Saving…' : 'Save Entry'}
+            {loading ? t('common.saving') : t('payment.saveEntry')}
           </Button>
         )}
       </BottomActionBar>
@@ -268,17 +275,17 @@ const Payment = () => {
       <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ fontFamily: DISPLAY }}>
           <TriangleAlert size={18} color={c.red} style={{ marginRight: 8, verticalAlign: 'text-bottom' }} />
-          Delete this entry?
+          {t('payment.deleteEntryQ')}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: c.grey }}>This will update the customer balance. It cannot be undone.</DialogContentText>
+          <DialogContentText sx={{ color: c.grey }}>{t('payment.deleteEntryBody')}</DialogContentText>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
           <Button onClick={() => setConfirmDelete(false)} variant="outlined">
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleDelete} variant="contained">
-            Delete
+            {t('common.delete')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -17,9 +17,12 @@ import {
 import { Eye, EyeOff, Store } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
+import useConfig from 'hooks/useConfig';
+import { ThemeMode } from 'types/config';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
-import accountlyTheme, { c, DISPLAY } from 'themes/accountly';
+import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 
 const GoogleIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden focusable="false">
@@ -34,6 +37,11 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const { mode } = useConfig();
+  const t = useT();
+  const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
+  const theme = useMemo(() => createAccountlyTheme(accountlyMode), [accountlyMode]);
+  const c = getAccountlyColors(accountlyMode);
   const [country, setCountry] = useState<CountryType>(DEFAULT_COUNTRY);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -50,14 +58,14 @@ const Login = () => {
       await login(`${country.phone}${phone}`, password);
       navigate('/', { replace: true });
     } catch (err: any) {
-      showSnackbar({ message: err?.message || 'Login failed. Please try again.', type: 'error' });
+      showSnackbar({ message: err?.message || t('auth.loginFailed'), type: 'error' });
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <ThemeProvider theme={accountlyTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: c.bg, display: 'flex', alignItems: 'center', py: 5 }}>
         <Container maxWidth="xs">
@@ -66,14 +74,14 @@ const Login = () => {
               <Box sx={{ width: 60, height: 60, borderRadius: '18px', bgcolor: c.redSoft, color: c.red, display: 'grid', placeItems: 'center' }}>
                 <Store size={28} />
               </Box>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>Welcome back</Typography>
-              <Typography sx={{ color: c.grey, fontSize: 13.5 }}>Sign in to your khata</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>{t('auth.welcomeBack')}</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13.5 }}>{t('auth.signInToKhata')}</Typography>
             </Stack>
 
             <Stack spacing={2}>
               <TextField
                 fullWidth
-                placeholder="Enter phone number"
+                placeholder={t('auth.enterPhoneNumber')}
                 value={phone}
                 error={errors.phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
@@ -83,7 +91,7 @@ const Login = () => {
               <TextField
                 fullWidth
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder={t('auth.password')}
                 value={password}
                 error={errors.password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -98,18 +106,18 @@ const Login = () => {
                 }}
               />
               <Button fullWidth size="large" variant="contained" disabled={submitting} onClick={handleSubmit}>
-                {submitting ? 'Signing in…' : 'Sign In'}
+                {submitting ? t('auth.signingIn') : t('auth.signIn')}
               </Button>
-              <Divider sx={{ color: c.greyLight, fontSize: 12, '&::before, &::after': { borderColor: c.border } }}>OR</Divider>
+              <Divider sx={{ color: c.greyLight, fontSize: 12, '&::before, &::after': { borderColor: c.border } }}>{t('auth.or')}</Divider>
               <Button fullWidth size="large" variant="outlined" startIcon={<GoogleIcon />}>
-                Continue with Google
+                {t('auth.continueWithGoogle')}
               </Button>
             </Stack>
 
             <Typography variant="body2" align="center" sx={{ color: c.grey }}>
-              New to Accountly?{' '}
+              {t('auth.newToAccountly')}{' '}
               <Link component={RouterLink} to="/register" sx={{ color: c.red, fontWeight: 700 }} underline="none">
-                Create account
+                {t('auth.createAccount')}
               </Link>
             </Typography>
           </Stack>

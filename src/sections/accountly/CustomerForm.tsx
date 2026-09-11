@@ -3,7 +3,8 @@ import { Box, Button, InputAdornment, Stack, TextField, Typography } from '@mui/
 import { User, Phone, MapPin } from 'lucide-react';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
-import { c, DISPLAY, avatarTint, initials } from 'themes/accountly';
+import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 import { BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
 
 export interface CustomerFormValues {
@@ -22,13 +23,18 @@ interface CustomerFormProps {
 
 const validatePhone = (phone: string) => /^[0-9]{10}$/.test(phone);
 
-const Label = ({ children }: { children: string }) => (
-  <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-    {children}
-  </Typography>
-);
+const Label = ({ children }: { children: string }) => {
+  const c = useAccountlyColors();
+  return (
+    <Typography sx={{ fontWeight: 700, fontSize: 12.5, color: c.grey, mb: 0.75, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+      {children}
+    </Typography>
+  );
+};
 
 const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormProps) => {
+  const c = useAccountlyColors();
+  const t = useT();
   const [name, setName] = useState(initial?.name || '');
   const [phone, setPhone] = useState(initial?.phone || '');
   const [address, setAddress] = useState(initial?.address || '');
@@ -56,26 +62,26 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
 
       <Stack spacing={2.5}>
         <Box>
-          <Label>Customer Name</Label>
+          <Label>{t('customerForm.customerName')}</Label>
           <TextField
             fullWidth
-            placeholder="Enter name"
+            placeholder={t('customerForm.enterName')}
             value={name}
             error={errors.name}
-            helperText={errors.name ? 'Name is required' : undefined}
+            helperText={errors.name ? t('customerForm.nameRequired') : undefined}
             onChange={(e) => setName(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><User size={18} color={c.greyLight} /></InputAdornment> }}
           />
         </Box>
 
         <Box>
-          <Label>Phone Number</Label>
+          <Label>{t('customerForm.phoneNumber')}</Label>
           <TextField
             fullWidth
-            placeholder="Enter phone number"
+            placeholder={t('customerForm.enterPhoneNumber')}
             value={phone}
             error={errors.phone}
-            helperText={errors.phone ? 'Enter a valid 10-digit number' : undefined}
+            helperText={errors.phone ? t('customerForm.invalidPhone') : undefined}
             onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
             inputProps={{ inputMode: 'numeric', maxLength: 10 }}
             InputProps={{
@@ -90,7 +96,7 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
         </Box>
 
         <Box>
-          <Label>Address</Label>
+          <Label>{t('customerForm.address')}</Label>
           <Box
             sx={{
               bgcolor: c.surface,
@@ -107,7 +113,7 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
             <Box
               component="textarea"
               rows={3}
-              placeholder="Optional"
+              placeholder={t('customerForm.optional')}
               value={address}
               onChange={(e: any) => setAddress(e.target.value)}
               sx={{
@@ -130,7 +136,7 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
 
       <BottomActionBar>
         <Button fullWidth size="large" variant="contained" disabled={loading} onClick={handleSubmit}>
-          {loading ? 'Saving…' : submitLabel}
+          {loading ? t('common.saving') : submitLabel}
         </Button>
       </BottomActionBar>
     </Box>

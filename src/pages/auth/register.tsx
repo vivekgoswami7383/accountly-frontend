@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -16,14 +16,22 @@ import {
 import { Eye, EyeOff, Store, User, Lock } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
+import useConfig from 'hooks/useConfig';
+import { ThemeMode } from 'types/config';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
-import accountlyTheme, { c, DISPLAY } from 'themes/accountly';
+import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accountly';
+import { useT } from 'i18n/accountly';
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const { mode } = useConfig();
+  const t = useT();
+  const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
+  const theme = useMemo(() => createAccountlyTheme(accountlyMode), [accountlyMode]);
+  const c = getAccountlyColors(accountlyMode);
   const [country, setCountry] = useState<CountryType>(DEFAULT_COUNTRY);
   const [form, setForm] = useState({ business_name: '', name: '', phone: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -49,27 +57,27 @@ const Register = () => {
       await register(form.business_name.trim(), form.name.trim(), `${country.phone}${form.phone}`, form.password);
       navigate('/', { replace: true });
     } catch (err: any) {
-      showSnackbar({ message: err?.message || 'Registration failed. Please try again.', type: 'error' });
+      showSnackbar({ message: err?.message || t('auth.registrationFailed'), type: 'error' });
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <ThemeProvider theme={accountlyTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: c.bg, display: 'flex', alignItems: 'center', py: 5 }}>
         <Container maxWidth="xs">
           <Stack spacing={3.5}>
             <Stack alignItems="center" spacing={1}>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>Create your account</Typography>
-              <Typography sx={{ color: c.grey, fontSize: 13.5 }}>Start managing your khata in minutes</Typography>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, color: c.ink }}>{t('auth.createYourAccount')}</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13.5 }}>{t('auth.startManaging')}</Typography>
             </Stack>
 
             <Stack spacing={2}>
               <TextField
                 fullWidth
-                placeholder="Business name"
+                placeholder={t('auth.businessName')}
                 value={form.business_name}
                 error={errors.business_name}
                 onChange={set('business_name')}
@@ -77,7 +85,7 @@ const Register = () => {
               />
               <TextField
                 fullWidth
-                placeholder="Your name"
+                placeholder={t('auth.yourName')}
                 value={form.name}
                 error={errors.name}
                 onChange={set('name')}
@@ -85,7 +93,7 @@ const Register = () => {
               />
               <TextField
                 fullWidth
-                placeholder="Enter phone number"
+                placeholder={t('auth.enterPhoneNumber')}
                 value={form.phone}
                 error={errors.phone}
                 onChange={set('phone')}
@@ -95,7 +103,7 @@ const Register = () => {
               <TextField
                 fullWidth
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder={t('auth.password')}
                 value={form.password}
                 error={errors.password}
                 onChange={set('password')}
@@ -111,14 +119,14 @@ const Register = () => {
                 }}
               />
               <Button fullWidth size="large" variant="contained" disabled={submitting} onClick={handleSubmit}>
-                {submitting ? 'Creating account…' : 'Create Account'}
+                {submitting ? t('auth.creatingAccount') : t('auth.createAccountBtn')}
               </Button>
             </Stack>
 
             <Typography variant="body2" align="center" sx={{ color: c.grey }}>
-              Already have an account?{' '}
+              {t('auth.alreadyHaveAccount')}{' '}
               <Link component={RouterLink} to="/login" sx={{ color: c.red, fontWeight: 700 }} underline="none">
-                Sign in
+                {t('auth.signInLink')}
               </Link>
             </Typography>
           </Stack>

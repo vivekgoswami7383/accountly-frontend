@@ -1,6 +1,6 @@
 export type FontFamily = `'Inter', sans-serif` | `'Poppins', sans-serif` | `'Roboto', sans-serif` | `'Public Sans', sans-serif`;
 export type PresetColor = 'default' | 'theme1' | 'theme2' | 'theme3' | 'theme4' | 'theme5' | 'theme6' | 'theme7' | 'theme8';
-export type I18n = 'en' | 'hi' | 'gu';
+export type I18n = 'en' | 'hi' | 'gu' | 'hi-latn' | 'gu-latn';
 
 export enum ThemeMode {
   LIGHT = 'light',
@@ -25,7 +25,9 @@ export type CustomizationActionProps = {
 export type DefaultConfigProps = {
   fontFamily: FontFamily;
 
-  i18n: I18n;
+  language: I18n;
+
+  currency: string;
 
   menuOrientation: MenuOrientation;
 
@@ -42,7 +44,8 @@ export type DefaultConfigProps = {
 
 export type CustomizationProps = {
   fontFamily: FontFamily;
-  i18n: I18n;
+  language: I18n;
+  currency: string;
   miniDrawer: boolean;
   container: boolean;
   menuOrientation: MenuOrientation;
@@ -51,6 +54,7 @@ export type CustomizationProps = {
   themeDirection: ThemeDirection;
   onChangeContainer: VoidFunction;
   onChangeLocalization: (lang: I18n) => void;
+  onChangeCurrency: (currency: string) => void;
   onChangeMode: (mode: ThemeMode) => void;
   onChangePresetColor: (theme: PresetColor) => void;
   onChangeDirection: (direction: ThemeDirection) => void;
