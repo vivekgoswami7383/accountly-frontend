@@ -106,7 +106,6 @@ const Transactions = () => {
                           </Typography>
                         </Box>
                         <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
-                          {sent ? '−' : '+'}
                           {fmt(tx.amount)}
                         </Typography>
                       </ListRow>

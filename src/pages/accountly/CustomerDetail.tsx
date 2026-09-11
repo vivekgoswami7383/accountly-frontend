@@ -169,14 +169,13 @@ const CustomerDetail = () => {
                           </IconDot>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
                             <Typography sx={{ fontWeight: 700, fontSize: 14.5, color: c.ink }} noWrap>
-                              {sent ? t('detail.youGave', { amount: fmt(tx.amount) }) : t('detail.youGot', { amount: fmt(tx.amount) })}
+                              {sent ? t('detail.youGave') : t('detail.youGot')}
                             </Typography>
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {fmtWhen(tx.createdAt)}
                             </Typography>
                           </Box>
                           <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
-                            {sent ? '−' : '+'}
                             {fmt(tx.amount)}
                           </Typography>
                         </ListRow>

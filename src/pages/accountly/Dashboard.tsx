@@ -210,12 +210,12 @@ const Dashboard = () => {
                               </Typography>
                             </Stack>
                           </Box>
-                          <Stack alignItems="flex-end" spacing={0.375} sx={{ flexShrink: 0, alignSelf: 'flex-start' }}>
+                          <Stack alignItems="center" spacing={0.375} sx={{ flexShrink: 0, alignSelf: 'flex-start' }}>
                             <Typography sx={{ fontWeight: 800, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
                               {fmt(cust.balance)}
                             </Typography>
-                            <BalanceTag tone={get ? 'get' : 'give'} sx={{ alignSelf: 'flex-end' }}>
-                              {get ? t('customers.get') : t('customers.give')}
+                            <BalanceTag tone={get ? 'get' : 'give'} sx={{ alignSelf: 'center' }}>
+                              {get ? t('home.youllGet') : t('home.youllGive')}
                             </BalanceTag>
                           </Stack>
                           <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
@@ -261,7 +261,6 @@ const Dashboard = () => {
                             </Typography>
                           </Box>
                           <Typography sx={{ fontWeight: 800, fontSize: 14.5, flexShrink: 0, alignSelf: 'flex-start', color: sent ? c.redDeep : c.greenDeep }} noWrap>
-                            {sent ? '−' : '+'}
                             {fmt(t2.amount)}
                           </Typography>
                         </ListRow>
