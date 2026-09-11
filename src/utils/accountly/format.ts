@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import useConfig from 'hooks/useConfig';
 import { DEFAULT_CURRENCY, getCurrency } from 'data/currencies';
+import countries from 'data/countries';
 
 export const formatAmount = (value: number, currencyCode: string = DEFAULT_CURRENCY.code): string => {
   const currency = getCurrency(currencyCode);
@@ -29,6 +30,16 @@ export const formatTime = (dateString?: string): string => {
 };
 
 export const formatDateTime = (dateString?: string): string => `${formatDate(dateString)} • ${formatTime(dateString)}`;
+
+export const formatPhone = (phone?: string): string => {
+  if (!phone) return '';
+  const countryMatch = [...countries].filter((c) => phone.startsWith(c.phone)).sort((a, b) => b.phone.length - a.phone.length)[0];
+  if (countryMatch) {
+    return `${countryMatch.phone} ${phone.slice(countryMatch.phone.length)}`.trim();
+  }
+  const fallback = phone.match(/^(\+\d{1,3})(.*)$/);
+  return fallback ? `${fallback[1]} ${fallback[2]}`.trim() : phone;
+};
 
 export const useFormatAmount = () => {
   const { currency } = useConfig();

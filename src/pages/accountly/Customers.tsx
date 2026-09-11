@@ -4,7 +4,7 @@ import { Box, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Ty
 import { Search, Phone, ChevronRight, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
-import { useFormatAmount } from 'utils/accountly/format';
+import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -124,7 +124,7 @@ const Customers = () => {
                           <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
                             <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
-                              {cust.phone}
+                              {formatPhone(cust.phone)}
                             </Typography>
                           </Stack>
                         </Box>

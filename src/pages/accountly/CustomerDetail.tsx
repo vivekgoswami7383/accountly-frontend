@@ -5,7 +5,7 @@ import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown } from 'lucide-reac
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
-import { useFormatAmount } from 'utils/accountly/format';
+import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -60,7 +60,7 @@ const CustomerDetail = () => {
           {customer?.name || 'Customer'}
         </Typography>
         <Typography sx={{ color: c.grey, fontSize: 11.5, fontWeight: 500 }} noWrap>
-          {customer?.phone || ''}
+          {formatPhone(customer?.phone)}
         </Typography>
       </Box>
     </Stack>

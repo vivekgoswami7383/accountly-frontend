@@ -17,7 +17,7 @@ import { SquarePen, Trash2, ChevronRight, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers, deleteCustomer } from 'store/reducers/accountly/customers';
 import useSnackbar from 'hooks/useSnackbar';
-import { useFormatAmount } from 'utils/accountly/format';
+import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -60,7 +60,7 @@ const CustomerSettings = () => {
 
   const rows: [string, string, boolean?][] = [
     [t('common.name'), customer.name],
-    [t('common.phone'), customer.phone],
+    [t('common.phone'), formatPhone(customer.phone)],
     [t('common.balance'), fmt(customer.balance), true]
   ];
 

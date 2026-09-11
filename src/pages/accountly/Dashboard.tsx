@@ -4,7 +4,7 @@ import { Box, Button, Container, Divider, Skeleton, Stack, Typography, alpha } f
 import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchDashboardStatistics } from 'store/reducers/accountly/dashboard';
-import { useFormatAmount } from 'utils/accountly/format';
+import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, shadow, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -206,7 +206,7 @@ const Dashboard = () => {
                             <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
                               <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                               <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
-                                {cust.phone}
+                                {formatPhone(cust.phone)}
                               </Typography>
                             </Stack>
                           </Box>

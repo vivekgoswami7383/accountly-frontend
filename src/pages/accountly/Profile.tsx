@@ -3,6 +3,7 @@ import { Box, Button, Container, Stack, TextField, Typography } from '@mui/mater
 import { SquarePen } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
+import { formatPhone } from 'utils/accountly/format';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -27,7 +28,6 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [businessName, setBusinessName] = useState(business?.business_name || '');
   const [name, setName] = useState(user?.name || '');
-  const [phone, setPhone] = useState(user?.phone || '');
 
   const handleSave = async () => {
     setSaving(true);
@@ -35,7 +35,7 @@ const Profile = () => {
       if (isOwner && user?.business_id && businessName.trim() !== (business?.business_name || '')) {
         await updateBusiness({ business_name: businessName.trim() });
       }
-      await updateProfile({ name: name.trim(), phone: phone.trim() });
+      await updateProfile({ name: name.trim() });
       showSnackbar({ message: t('profile.updated'), type: 'success' });
       setEditing(false);
     } catch (e: any) {
@@ -48,7 +48,6 @@ const Profile = () => {
   const handleCancel = () => {
     setBusinessName(business?.business_name || '');
     setName(user?.name || '');
-    setPhone(user?.phone || '');
     setEditing(false);
   };
 
@@ -92,7 +91,7 @@ const Profile = () => {
               </Box>
               <Box>
                 <Label>{t('common.phone')}</Label>
-                <TextField fullWidth value={phone} disabled={!editing} onChange={(e) => setPhone(e.target.value)} />
+                <TextField fullWidth value={formatPhone(user?.phone)} disabled />
               </Box>
             </Stack>
           </AppCard>
