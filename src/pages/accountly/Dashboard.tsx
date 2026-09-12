@@ -143,7 +143,7 @@ const Dashboard = () => {
             <Stack direction="row" spacing={1.5}>
               {[
                 { label: t('home.addCustomer'), sub: t('home.newContact'), icon: <UserPlus />, to: '/customer/add' },
-                { label: t('home.newEntry'), sub: t('home.recordPayment'), icon: <Zap />, to: '/transaction' }
+                { label: t('home.newEntry'), sub: t('home.recordPayment'), icon: <Zap />, to: '/customer' }
               ].map((a) => (
                 <MotionButton
                   key={a.to}

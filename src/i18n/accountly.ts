@@ -71,6 +71,11 @@ const en: Dict = {
   'detail.recordBelow': 'Record a Send or Receive below.',
   'detail.youGaveBtn': 'You Gave',
   'detail.youGotBtn': 'You Got',
+  'detail.sendReminderWhatsapp': 'WhatsApp Reminder',
+  'detail.sendReminderSms': 'SMS Reminder',
+  'detail.reminderDue': (v) =>
+    `Hi ${v.name}, this is a reminder that you have a pending payment of ${v.amount} to ${v.business}. Please pay at your earliest convenience. Thank you!`,
+  'detail.reminderOwed': (v) => `Hi ${v.name}, we owe you ${v.amount} from ${v.business}. We will settle this soon. Thank you!`,
 
   'customerSettings.title': 'Customer Settings',
   'customerSettings.notFound': 'Customer not found.',
@@ -252,6 +257,10 @@ const hi: Dict = {
   'detail.recordBelow': 'नीचे दिए या लिए दर्ज करें।',
   'detail.youGaveBtn': 'उधार दिए',
   'detail.youGotBtn': 'उधार लिए',
+  'detail.sendReminderWhatsapp': 'व्हाट्सएप रिमाइंडर',
+  'detail.sendReminderSms': 'एसएमएस रिमाइंडर',
+  'detail.reminderDue': (v) => `नमस्ते ${v.name}, आपका ${v.business} को ${v.amount} का भुगतान बाकी है। कृपया जल्द भुगतान करें। धन्यवाद!`,
+  'detail.reminderOwed': (v) => `नमस्ते ${v.name}, ${v.business} की तरफ से आपको ${v.amount} देने हैं। हम जल्द ही यह चुका देंगे। धन्यवाद!`,
 
   'customerSettings.title': 'ग्राहक सेटिंग्स',
   'customerSettings.notFound': 'ग्राहक नहीं मिला।',
@@ -433,6 +442,10 @@ const gu: Dict = {
   'detail.recordBelow': 'નીચે આપ્યા અથવા લીધા નોંધો.',
   'detail.youGaveBtn': 'ઉધાર આપ્યા',
   'detail.youGotBtn': 'ઉધાર લીધા',
+  'detail.sendReminderWhatsapp': 'વોટ્સએપ રિમાઇન્ડર',
+  'detail.sendReminderSms': 'એસએમએસ રિમાઇન્ડર',
+  'detail.reminderDue': (v) => `નમસ્તે ${v.name}, તમારે ${v.business} ને ${v.amount} ચૂકવવાના બાકી છે. કૃપા કરી જલ્દી ચૂકવો. આભાર!`,
+  'detail.reminderOwed': (v) => `નમસ્તે ${v.name}, ${v.business} તરફથી તમને ${v.amount} આપવાના બાકી છે. અમે જલ્દી ચૂકવીશું. આભાર!`,
 
   'customerSettings.title': 'ગ્રાહક સેટિંગ્સ',
   'customerSettings.notFound': 'ગ્રાહક મળ્યો નથી.',
@@ -614,6 +627,10 @@ const hiLatn: Dict = {
   'detail.recordBelow': 'Niche Send ya Receive record karo.',
   'detail.youGaveBtn': 'Udhar Diye',
   'detail.youGotBtn': 'Udhar Liye',
+  'detail.sendReminderWhatsapp': 'WhatsApp Reminder',
+  'detail.sendReminderSms': 'SMS Reminder',
+  'detail.reminderDue': (v) => `Hi ${v.name}, ${v.business} ko ${v.amount} ka udhar dena baaki hai. Please jald pay karein. Dhanyawad!`,
+  'detail.reminderOwed': (v) => `Hi ${v.name}, ${v.business} ki taraf se aapko ${v.amount} dene hain. Hum jald settle kar denge. Dhanyawad!`,
 
   'customerSettings.title': 'Customer Settings',
   'customerSettings.notFound': 'Customer nahi mila.',
@@ -795,6 +812,10 @@ const guLatn: Dict = {
   'detail.recordBelow': 'Niche Send ke Receive nondho.',
   'detail.youGaveBtn': 'Udhar Aapya',
   'detail.youGotBtn': 'Udhar Lidha',
+  'detail.sendReminderWhatsapp': 'WhatsApp Reminder',
+  'detail.sendReminderSms': 'SMS Reminder',
+  'detail.reminderDue': (v) => `Hi ${v.name}, tamare ${v.business} ne ${v.amount} nu udhar aapvanu baki chhe. Krupa kari jaldi chukvo. Aabhar!`,
+  'detail.reminderOwed': (v) => `Hi ${v.name}, ${v.business} taraf thi tamne ${v.amount} malvana baki chhe. Ame jaldi chukvi aapishu. Aabhar!`,
 
   'customerSettings.title': 'Grahak Settings',
   'customerSettings.notFound': 'Grahak malyo nathi.',

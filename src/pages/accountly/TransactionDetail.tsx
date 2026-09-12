@@ -48,7 +48,7 @@ const TransactionDetail = () => {
 
   const handleDelete = async () => {
     setConfirmDelete(false);
-    const result = await dispatch(deleteTransactionById(id));
+    const result = await dispatch(deleteTransactionById({ id, customerId: selectedTransaction?.customerId || '' }));
     if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
     else showSnackbar({ message: (result.payload as string) || t('payment.failedDeleteEntry'), type: 'error' });
   };

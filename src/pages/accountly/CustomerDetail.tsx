@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Skeleton, Stack, Typography } from '@mui/material';
-import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown } from 'lucide-react';
+import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
+import useAuth from 'hooks/useAuth';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -26,6 +27,7 @@ const CustomerDetail = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
+  const { business } = useAuth();
   const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
   const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -35,6 +37,16 @@ const CustomerDetail = () => {
   const balance = customerStats.customerBalance ?? customer?.balance ?? 0;
   const isCurrent = loadedCustomerId === id;
   const showSkeleton = !isCurrent && loading;
+
+  const reminderDisabled = balance === 0 || !customer?.phone;
+  const reminderPhone = (customer?.phone || '').replace(/[^0-9]/g, '');
+  const reminderMessage =
+    balance < 0
+      ? t('detail.reminderDue', { name: customer?.name || '', amount: fmt(Math.abs(balance)), business: business?.business_name || '' })
+      : t('detail.reminderOwed', { name: customer?.name || '', amount: fmt(Math.abs(balance)), business: business?.business_name || '' });
+  const whatsappHref = reminderDisabled ? undefined : `https://wa.me/${reminderPhone}?text=${encodeURIComponent(reminderMessage)}`;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const smsHref = reminderDisabled ? undefined : `sms:${customer?.phone}${isIOS ? '&' : '?'}body=${encodeURIComponent(reminderMessage)}`;
 
   useEffect(() => {
     if (!customersLoaded) dispatch(fetchCustomers());
@@ -134,9 +146,77 @@ const CustomerDetail = () => {
             </AppCard>
           </Fade>
 
+          <Stack direction="row" spacing={1}>
+            <Box
+              component="a"
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                if (reminderDisabled) e.preventDefault();
+              }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.5,
+                flex: 1,
+                px: 0.5,
+                py: 1.25,
+                border: `1px solid ${c.border}`,
+                borderRadius: '14px',
+                bgcolor: 'transparent',
+                color: reminderDisabled ? c.greyLight : c.ink,
+                fontWeight: 500,
+                fontSize: 12.5,
+                fontFamily: DISPLAY,
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                cursor: reminderDisabled ? 'not-allowed' : 'pointer',
+                opacity: reminderDisabled ? 0.5 : 1,
+                pointerEvents: reminderDisabled ? 'none' : 'auto'
+              }}
+            >
+              <MessageCircle size={16} color={reminderDisabled ? c.greyLight : '#25D366'} />
+              {t('detail.sendReminderWhatsapp')}
+            </Box>
+
+            <Box
+              component="a"
+              href={smsHref}
+              onClick={(e) => {
+                if (reminderDisabled) e.preventDefault();
+              }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.5,
+                flex: 1,
+                px: 0.5,
+                py: 1.25,
+                border: `1px solid ${c.border}`,
+                borderRadius: '14px',
+                bgcolor: 'transparent',
+                color: reminderDisabled ? c.greyLight : c.ink,
+                fontWeight: 500,
+                fontSize: 12.5,
+                fontFamily: DISPLAY,
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                cursor: reminderDisabled ? 'not-allowed' : 'pointer',
+                opacity: reminderDisabled ? 0.5 : 1,
+                pointerEvents: reminderDisabled ? 'none' : 'auto'
+              }}
+            >
+              <MessageSquare size={16} color={reminderDisabled ? c.greyLight : c.ink} />
+              {t('detail.sendReminderSms')}
+            </Box>
+          </Stack>
+
           {showSkeleton ? (
             <Box>
-              <SectionHeader title={t('detail.recentTransactions')} />
+              <SectionHeader title={t('detail.transactions')} />
               <AppCard sx={{ overflow: 'hidden' }}>
                 {[0, 1, 2].map((i) => (
                   <Box key={i}>
@@ -156,7 +236,7 @@ const CustomerDetail = () => {
           ) : customerTransactions.length > 0 ? (
             <Fade delay={0.05}>
               <Box>
-                <SectionHeader title={t('detail.recentTransactions')} />
+                <SectionHeader title={t('detail.transactions')} />
                 <AppCard sx={{ overflow: 'hidden' }}>
                   {customerTransactions.map((tx, i) => {
                     const sent = tx.transaction_type === 'debit';

@@ -104,13 +104,23 @@ const customerSlice = createSlice({
       action: PayloadAction<{ customerId: string; amount: number; transactionType: TransactionType }>
     ) => {
       const { customerId, amount, transactionType } = action.payload;
+      const balanceChange = transactionType === 'debit' ? -amount : amount;
       const customer = state.customers.find((c) => c.id === customerId);
-      if (customer) {
-        const balanceChange = transactionType === 'debit' ? -amount : amount;
-        customer.balance = customer.balance + balanceChange;
-        if (state.selectedCustomer?.id === customerId) {
-          state.selectedCustomer.balance = customer.balance;
-        }
+      if (customer) customer.balance = customer.balance + balanceChange;
+      const listItem = state.listItems.find((c) => c.id === customerId);
+      if (listItem) listItem.balance = listItem.balance + balanceChange;
+      if (state.selectedCustomer?.id === customerId) {
+        state.selectedCustomer.balance = state.selectedCustomer.balance + balanceChange;
+      }
+    },
+    setCustomerBalance: (state, action: PayloadAction<{ customerId: string; balance: number }>) => {
+      const { customerId, balance } = action.payload;
+      const customer = state.customers.find((c) => c.id === customerId);
+      if (customer) customer.balance = balance;
+      const listItem = state.listItems.find((c) => c.id === customerId);
+      if (listItem) listItem.balance = balance;
+      if (state.selectedCustomer?.id === customerId) {
+        state.selectedCustomer.balance = balance;
       }
     }
   },
@@ -195,5 +205,5 @@ const customerSlice = createSlice({
   }
 });
 
-export const { setSelectedCustomer, clearError, updateCustomerBalance } = customerSlice.actions;
+export const { setSelectedCustomer, clearError, updateCustomerBalance, setCustomerBalance } = customerSlice.actions;
 export default customerSlice.reducer;

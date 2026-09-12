@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import transactionService from 'services/accountly/transactionService';
 import { CreateTransactionRequest, TransactionFilter, Transaction } from 'services/accountly/types';
-import { updateCustomerBalance } from './customers';
+import { updateCustomerBalance, setCustomerBalance } from './customers';
 import { fetchDashboardStatistics } from './dashboard';
 
 interface TransactionState {
@@ -116,6 +116,9 @@ export const updateTransactionById = createAsyncThunk(
   async (params: { id: string; data: Partial<CreateTransactionRequest> }, { rejectWithValue, dispatch }) => {
     try {
       const res = await transactionService.updateTransaction(params.id, params.data);
+      if (res.customer_balance != null) {
+        dispatch(setCustomerBalance({ customerId: res.transaction.customer._id, balance: res.customer_balance }));
+      }
       dispatch(fetchDashboardStatistics() as any);
       return { transaction: res.transaction, customerBalance: res.customer_balance };
     } catch (error: any) {
@@ -126,11 +129,14 @@ export const updateTransactionById = createAsyncThunk(
 
 export const deleteTransactionById = createAsyncThunk(
   'transactions/deleteTransactionById',
-  async (transactionId: string, { rejectWithValue, dispatch }) => {
+  async (params: { id: string; customerId: string }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await transactionService.deleteTransaction(transactionId);
+      const res = await transactionService.deleteTransaction(params.id);
+      if (res?.customer_balance != null) {
+        dispatch(setCustomerBalance({ customerId: params.customerId, balance: res.customer_balance }));
+      }
       dispatch(fetchDashboardStatistics() as any);
-      return { transactionId, customerBalance: res?.customer_balance };
+      return { transactionId: params.id, customerBalance: res?.customer_balance };
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to delete transaction');
     }
