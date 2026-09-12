@@ -219,7 +219,7 @@ const Payment = () => {
             <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 24, color: c.greyLight }}>{currencySymbol}</Typography>
             <Typography
               sx={{
-                flex: 1,
+                flex: '0 1 auto',
                 minWidth: 0,
                 fontFamily: DISPLAY,
                 fontWeight: 500,
@@ -358,19 +358,8 @@ const Payment = () => {
         }}
       >
         <Container maxWidth="sm" sx={{ px: 2.25 }}>
-          <Button
-            fullWidth
-            size="large"
-            variant="contained"
-            disabled={loading}
-            onClick={handleSubmit}
-            sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
-          >
-            {loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
-          </Button>
-
-          {calculatorOpen && (
-            <Box sx={{ mt: 1 }}>
+          {calculatorOpen ? (
+            <Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 0.5 }}>
                 <Box
                   component="button"
@@ -391,8 +380,27 @@ const Payment = () => {
                   <ChevronDown size={20} />
                 </Box>
               </Box>
-              <CalculatorKeypad accent={accent} accentDeep={accentDeep} memory={calc.memory} {...keypadHandlers} />
+              <CalculatorKeypad
+                accent={accent}
+                accentDeep={accentDeep}
+                memory={calc.memory}
+                {...keypadHandlers}
+                onSubmit={handleSubmit}
+                submitDisabled={loading}
+                submitLabel={loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
+              />
             </Box>
+          ) : (
+            <Button
+              fullWidth
+              size="large"
+              variant="contained"
+              disabled={loading}
+              onClick={handleSubmit}
+              sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
+            >
+              {loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
+            </Button>
           )}
         </Container>
       </Box>
