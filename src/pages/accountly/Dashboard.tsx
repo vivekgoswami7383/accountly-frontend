@@ -108,8 +108,8 @@ const Dashboard = () => {
           <Fade>
             <AppCard sx={{ p: 1.75 }}>
               <Stack direction="row" spacing={1.5}>
-                <StatHalf tone="get" amount={receivable} loading={!hasLoaded} label={t('home.youllGet')} />
                 <StatHalf tone="give" amount={payable} loading={!hasLoaded} label={t('home.youllGive')} />
+                <StatHalf tone="get" amount={receivable} loading={!hasLoaded} label={t('home.youllGet')} />
               </Stack>
               <Box
                 component="button"
