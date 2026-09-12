@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { shadow, DISPLAY, useAccountlyColors } from 'themes/accountly';
 
-export const FOOTER_SPACE = 'calc(96px + env(safe-area-inset-bottom, 0px))';
+export const FOOTER_SPACE = 'calc(72px + env(safe-area-inset-bottom, 0px))';
 
 export const BottomActionBar = ({ children }: { children: ReactNode }) => {
   const c = useAccountlyColors();
@@ -17,7 +17,12 @@ export const BottomActionBar = ({ children }: { children: ReactNode }) => {
         right: 0,
         bottom: 0,
         zIndex: 25,
-        bgcolor: c.surface,
+        bgcolor: alpha(c.surface, 0.55),
+        backdropFilter: 'blur(22px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translate3d(0,0,0)',
+        willChange: 'backdrop-filter',
         borderTop: `1px solid ${c.line}`,
         boxShadow: '0 -8px 24px -12px rgba(20,23,26,0.12)',
         pt: 1.5,

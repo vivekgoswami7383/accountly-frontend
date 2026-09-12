@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Box, ButtonBase, Container, CssBaseline, Stack, ThemeProvider, Typography } from '@mui/material';
+import { alpha, Box, ButtonBase, Container, CssBaseline, Stack, ThemeProvider, Typography } from '@mui/material';
 import { Home, Users, ArrowRightLeft, LayoutGrid } from 'lucide-react';
 import { createAccountlyTheme, getAccountlyColors, shadow } from 'themes/accountly';
 import useConfig from 'hooks/useConfig';
@@ -47,7 +47,7 @@ const AppLayout = () => {
         <Box
           sx={{
             minHeight: '100vh',
-            pb: showNav ? `calc(96px + env(safe-area-inset-bottom, 0px))` : `calc(24px + env(safe-area-inset-bottom, 0px))`
+            pb: showNav ? `calc(72px + env(safe-area-inset-bottom, 0px))` : `calc(24px + env(safe-area-inset-bottom, 0px))`
           }}
         >
           <Outlet />
@@ -63,11 +63,26 @@ const AppLayout = () => {
               zIndex: 30,
               px: 1.5,
               pb: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              transform: 'translateZ(0)',
+              WebkitTransform: 'translate3d(0,0,0)'
             }}
           >
             <Container maxWidth="sm" disableGutters>
-              <Box sx={{ pointerEvents: 'auto', bgcolor: c.surface, borderRadius: '26px', boxShadow: shadow.nav, overflow: 'hidden' }}>
+              <Box
+                sx={{
+                  pointerEvents: 'auto',
+                  bgcolor: alpha(c.surface, 0.55),
+                  backdropFilter: 'blur(22px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+                  borderRadius: '26px',
+                  boxShadow: shadow.nav,
+                  overflow: 'hidden',
+                  transform: 'translateZ(0)',
+                  WebkitTransform: 'translate3d(0,0,0)',
+                  willChange: 'backdrop-filter'
+                }}
+              >
                 <Stack direction="row" sx={{ height: 62 }}>
                   {TABS.map((t, i) => {
                     const active = activeTab(location.pathname) === i;

@@ -150,7 +150,7 @@ const Transactions = () => {
     );
   }, [transactions, query]);
 
-  const hasNonDefaultFilter = appliedFilters.datePreset !== 'today' || appliedFilters.type !== 'all';
+  const hasNonDefaultFilter = appliedFilters.datePreset !== 'all' || appliedFilters.type !== 'all';
 
   const dateOptions: { value: DatePreset; label: string }[] = [
     { value: 'today', label: t('transactions.filterToday') },
@@ -218,20 +218,20 @@ const Transactions = () => {
             </IconButton>
           </Stack>
 
-          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
-            <FilterChip
-              c={c}
-              label={dateChipLabel}
-              onClear={
-                appliedFilters.datePreset !== 'today'
-                  ? () => setAppliedFilters((f) => ({ ...f, datePreset: 'today', customStart: '', customEnd: '' }))
-                  : undefined
-              }
-            />
-            {appliedFilters.type !== 'all' && (
-              <FilterChip c={c} label={typeChipLabel} onClear={() => setAppliedFilters((f) => ({ ...f, type: 'all' }))} />
-            )}
-          </Stack>
+          {hasNonDefaultFilter && (
+            <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
+              {appliedFilters.datePreset !== 'all' && (
+                <FilterChip
+                  c={c}
+                  label={dateChipLabel}
+                  onClear={() => setAppliedFilters((f) => ({ ...f, datePreset: 'all', customStart: '', customEnd: '' }))}
+                />
+              )}
+              {appliedFilters.type !== 'all' && (
+                <FilterChip c={c} label={typeChipLabel} onClear={() => setAppliedFilters((f) => ({ ...f, type: 'all' }))} />
+              )}
+            </Stack>
+          )}
 
           {loading ? (
             <AppCard sx={{ overflow: 'hidden' }}>

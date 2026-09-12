@@ -9,7 +9,7 @@ export interface AppliedFilters {
 }
 
 export const DEFAULT_FILTERS: AppliedFilters = {
-  datePreset: 'today',
+  datePreset: 'all',
   customStart: '',
   customEnd: '',
   type: 'all'

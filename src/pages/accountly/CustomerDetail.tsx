@@ -93,7 +93,7 @@ const CustomerDetail = () => {
   return (
     <>
       <AppHeader variant="screen" title={headerTitle} right={headerRight} />
-      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: `calc(96px + env(safe-area-inset-bottom, 0px))` }}>
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: `calc(72px + env(safe-area-inset-bottom, 0px))` }}>
         <Stack spacing={2.25}>
           <Fade>
             <AppCard sx={{ p: 0 }}>
@@ -206,6 +206,11 @@ const CustomerDetail = () => {
           pt: 1.5,
           pb: 'calc(12px + env(safe-area-inset-bottom, 0px))',
           background: `linear-gradient(180deg, rgba(238,241,245,0) 0%, ${c.bg} 40%)`,
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translate3d(0,0,0)',
+          willChange: 'backdrop-filter',
           pointerEvents: 'none'
         }}
       >
