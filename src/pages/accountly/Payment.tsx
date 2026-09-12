@@ -1,37 +1,36 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Stack,
-  Typography
-} from '@mui/material';
-import { FileText, Trash2, TriangleAlert } from 'lucide-react';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { Calendar, Camera, ChevronDown, FileText } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import {
-  createTransaction,
-  fetchTransactionById,
-  updateTransactionById,
-  deleteTransactionById
-} from 'store/reducers/accountly/transactions';
+import { createTransaction, fetchTransactionById, updateTransactionById } from 'store/reducers/accountly/transactions';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { TransactionType } from 'services/accountly/types';
-import { formatAmountInput } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
-import useConfig from 'hooks/useConfig';
+import useCalculatorInput from 'hooks/useCalculatorInput';
 import { getCurrency } from 'data/currencies';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import TransactionSuccessAnimation from 'components/accountly/TransactionSuccessAnimation';
-import { BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
+import CalculatorKeypad from 'components/accountly/CalculatorKeypad';
+import useConfig from 'hooks/useConfig';
+
+const toDateInputValue = (d: Date): string => {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const todayStr = () => toDateInputValue(new Date());
+
+const formatPillDate = (dateStr: string): string => {
+  const d = new Date(`${dateStr}T00:00:00`);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -51,11 +50,17 @@ const Payment = () => {
   const { customers } = useSelector((s) => s.customers);
   const { selectedTransaction, loading } = useSelector((s) => s.transactions);
 
-  const [amount, setAmount] = useState('');
+  const calc = useCalculatorInput();
   const [description, setDescription] = useState('');
+  const [date, setDate] = useState(todayStr());
+  const [initialDate, setInitialDate] = useState(todayStr());
   const [amountError, setAmountError] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [calculatorOpen, setCalculatorOpen] = useState(true);
+  const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
+  const loadedRef = useRef(false);
+  const amountBoxRef = useRef<HTMLElement | null>(null);
+  const bottomPanelRef = useRef<HTMLElement | null>(null);
 
   const isEdit = Boolean(transactionId);
 
@@ -68,10 +73,15 @@ const Payment = () => {
   }, [dispatch, transactionId]);
 
   useEffect(() => {
-    if (transactionId && selectedTransaction && selectedTransaction.id === transactionId) {
-      setAmount(String(selectedTransaction.amount));
+    if (transactionId && selectedTransaction && selectedTransaction.id === transactionId && !loadedRef.current) {
+      loadedRef.current = true;
+      calc.setFromAmount(selectedTransaction.amount);
       setDescription(selectedTransaction.description || '');
+      const loadedDate = toDateInputValue(new Date(selectedTransaction.createdAt));
+      setDate(loadedDate);
+      setInitialDate(loadedDate);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, selectedTransaction]);
 
   const customer = useMemo(() => {
@@ -96,9 +106,28 @@ const Payment = () => {
   const accent = isDebit ? c.red : c.green;
   const accentDeep = isDebit ? c.redDeep : c.greenDeep;
 
+  const openCalculator = () => {
+    setCalculatorOpen(true);
+    descriptionRef.current?.blur();
+  };
+
+  useEffect(() => {
+    if (!calculatorOpen) return undefined;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (amountBoxRef.current?.contains(target)) return;
+      if (bottomPanelRef.current?.contains(target)) return;
+      setCalculatorOpen(false);
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [calculatorOpen]);
+
+  const handleAttachBills = () => {};
+
   const handleSubmit = async () => {
-    const value = Number(amount);
-    if (!amount || isNaN(value) || value <= 0) {
+    const value = calc.amount;
+    if (!calc.expression || isNaN(value) || value <= 0) {
       setAmountError(true);
       return;
     }
@@ -107,11 +136,13 @@ const Payment = () => {
       return;
     }
 
+    const transaction_date = date !== initialDate ? new Date(`${date}T12:00:00`).toISOString() : undefined;
+
     if (isEdit && transactionId) {
       const result = await dispatch(
         updateTransactionById({
           id: transactionId,
-          data: { amount: value, description: description.trim() || undefined, transaction_type: transactionType }
+          data: { amount: value, description: description.trim() || undefined, transaction_type: transactionType, transaction_date }
         })
       );
       if (updateTransactionById.fulfilled.match(result)) navigate(-1);
@@ -128,73 +159,92 @@ const Payment = () => {
         customer: { _id: customer.id, name: customer.name },
         amount: value,
         transaction_type: transactionType,
-        description: description.trim() || ''
+        description: description.trim() || '',
+        transaction_date
       })
     );
     if (createTransaction.fulfilled.match(result)) setSuccess(true);
     else showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
   };
 
-  const handleDelete = async () => {
-    setConfirmDelete(false);
-    if (!transactionId) return;
-    const result = await dispatch(deleteTransactionById(transactionId));
-    if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || t('payment.failedDeleteEntry'), type: 'error' });
+  const keypadHandlers = {
+    onDigit: (d: string) => {
+      setAmountError(false);
+      calc.pressDigit(d);
+    },
+    onDot: () => {
+      setAmountError(false);
+      calc.pressDot();
+    },
+    onOperator: (op: string) => calc.pressOperator(op),
+    onClear: calc.pressClear,
+    onBackspace: calc.pressBackspace,
+    onEquals: calc.pressEquals,
+    onMemoryAdd: calc.pressMemoryAdd,
+    onMemorySubtract: calc.pressMemorySubtract,
+    onRecallMemory: calc.recallMemory
   };
 
   return (
     <>
-      <AppHeader variant="screen" title={title} />
-      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: FOOTER_SPACE }}>
-        <Stack spacing={3}>
-          {customer && (
-            <Typography sx={{ color: c.grey, fontSize: 14 }}>
-              {isDebit ? t('payment.to') : t('payment.from')}{' '}
-              <Box component="span" sx={{ color: c.ink, fontWeight: 500 }}>
-                {customer.name}
-              </Box>
-            </Typography>
-          )}
-
+      <AppHeader
+        variant="screen"
+        title={
+          <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17, color: accentDeep }} noWrap>
+            {title}
+          </Typography>
+        }
+      />
+      <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: 'calc(500px + env(safe-area-inset-bottom, 0px))' }}>
+        <Stack spacing={2.25}>
           <Box
+            component="button"
+            ref={amountBoxRef}
+            onClick={openCalculator}
             sx={{
               bgcolor: c.surface,
               borderRadius: '20px',
               boxShadow: '0 1px 2px rgba(20,23,26,0.04)',
-              border: `1.5px solid ${amountError ? c.red : c.border}`,
+              border: `1.5px solid ${amountError ? c.red : calculatorOpen ? accent : c.border}`,
               px: 2.5,
-              py: 3,
+              py: 1,
               display: 'flex',
               alignItems: 'center',
-              gap: 1
+              gap: 1,
+              cursor: 'pointer',
+              textAlign: 'left',
+              width: '100%'
             }}
           >
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 30, color: c.greyLight }}>{currencySymbol}</Typography>
-            <Box
-              component="input"
-              autoFocus
-              inputMode="decimal"
-              placeholder="0"
-              value={formatAmountInput(amount)}
-              onChange={(e: any) => {
-                setAmount(e.target.value.replace(/[^0-9.]/g, ''));
-                setAmountError(false);
-              }}
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 24, color: c.greyLight }}>{currencySymbol}</Typography>
+            <Typography
               sx={{
                 flex: 1,
                 minWidth: 0,
-                border: 'none',
-                outline: 'none',
-                bgcolor: 'transparent',
                 fontFamily: DISPLAY,
                 fontWeight: 500,
-                fontSize: 34,
+                fontSize: calc.display.length > 12 ? 18 : 26,
                 letterSpacing: '-0.02em',
                 color: accentDeep,
-                '::placeholder': { color: c.greyIcon }
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}
-            />
+            >
+              {calc.display || <Box component="span" sx={{ color: c.greyIcon }}>0</Box>}
+            </Typography>
+            {calculatorOpen && (
+              <Box
+                sx={{
+                  width: 2,
+                  height: 20,
+                  bgcolor: accentDeep,
+                  flexShrink: 0,
+                  animation: 'accountlyBlink 1s step-end infinite',
+                  '@keyframes accountlyBlink': { '50%': { opacity: 0 } }
+                }}
+              />
+            )}
           </Box>
 
           <Box
@@ -212,9 +262,11 @@ const Payment = () => {
             <FileText size={20} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
             <Box
               component="textarea"
-              rows={3}
+              ref={descriptionRef}
+              rows={2}
               placeholder={t('payment.addNote')}
               value={description}
+              onFocus={() => setCalculatorOpen(false)}
               onChange={(e: any) => setDescription(e.target.value)}
               maxLength={200}
               sx={{
@@ -232,33 +284,80 @@ const Payment = () => {
               }}
             />
           </Box>
+
+          <Stack direction="row" spacing={1.5}>
+            <Box
+              sx={{
+                position: 'relative',
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                borderRadius: '14px',
+                border: `1.5px solid ${c.border}`,
+                bgcolor: c.surface,
+                px: 1.5,
+                py: 1.25
+              }}
+            >
+              <Calendar size={16} color={c.greyLight} style={{ flexShrink: 0 }} />
+              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.ink }} noWrap>
+                {formatPillDate(date)}
+              </Typography>
+              <Box
+                component="input"
+                type="date"
+                value={date}
+                max={todayStr()}
+                onFocus={() => setCalculatorOpen(false)}
+                onChange={(e: any) => setDate(e.target.value)}
+                sx={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', border: 'none' }}
+              />
+            </Box>
+            <Box
+              component="button"
+              onClick={handleAttachBills}
+              sx={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.75,
+                borderRadius: '14px',
+                border: `1.5px solid ${c.border}`,
+                bgcolor: c.surface,
+                color: c.greyLight,
+                px: 1.5,
+                py: 1.25,
+                cursor: 'pointer',
+                fontFamily: DISPLAY
+              }}
+            >
+              <Camera size={16} />
+              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.greyLight }} noWrap>
+                {t('payment.attachBills')}
+              </Typography>
+            </Box>
+          </Stack>
         </Stack>
       </Container>
 
-      <BottomActionBar>
-        {isEdit ? (
-          <Stack direction="row" spacing={1.5}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<Trash2 size={18} />}
-              disabled={loading}
-              onClick={() => setConfirmDelete(true)}
-              sx={{ color: c.red, borderColor: c.border }}
-            >
-              {t('common.delete')}
-            </Button>
-            <Button
-              fullWidth
-              variant="contained"
-              disabled={loading}
-              onClick={handleSubmit}
-              sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
-            >
-              {loading ? t('common.saving') : t('payment.update')}
-            </Button>
-          </Stack>
-        ) : (
+      <Box
+        ref={bottomPanelRef}
+        sx={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 25,
+          bgcolor: c.surface,
+          borderTop: `1px solid ${c.line}`,
+          boxShadow: '0 -8px 24px -12px rgba(20,23,26,0.12)',
+          pt: 1.5,
+          pb: 'calc(14px + env(safe-area-inset-bottom, 0px))'
+        }}
+      >
+        <Container maxWidth="sm" sx={{ px: 2.25 }}>
           <Button
             fullWidth
             size="large"
@@ -267,28 +366,36 @@ const Payment = () => {
             onClick={handleSubmit}
             sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
           >
-            {loading ? t('common.saving') : t('payment.saveEntry')}
+            {loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
           </Button>
-        )}
-      </BottomActionBar>
 
-      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontFamily: DISPLAY }}>
-          <TriangleAlert size={18} color={c.red} style={{ marginRight: 8, verticalAlign: 'text-bottom' }} />
-          {t('payment.deleteEntryQ')}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: c.grey }}>{t('payment.deleteEntryBody')}</DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={() => setConfirmDelete(false)} variant="outlined">
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={handleDelete} variant="contained">
-            {t('common.delete')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          {calculatorOpen && (
+            <Box sx={{ mt: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 0.5 }}>
+                <Box
+                  component="button"
+                  onClick={() => setCalculatorOpen(false)}
+                  aria-label="Collapse calculator"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 22,
+                    border: 'none',
+                    bgcolor: 'transparent',
+                    color: c.greyIcon,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ChevronDown size={20} />
+                </Box>
+              </Box>
+              <CalculatorKeypad accent={accent} accentDeep={accentDeep} memory={calc.memory} {...keypadHandlers} />
+            </Box>
+          )}
+        </Container>
+      </Box>
 
       <TransactionSuccessAnimation visible={success} onComplete={() => navigate(-1)} />
     </>

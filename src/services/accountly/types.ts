@@ -56,6 +56,7 @@ export interface CreateTransactionRequest {
   amount: number;
   transaction_type: TransactionType;
   description?: string;
+  transaction_date?: string;
 }
 
 export interface FilterCondition {
