@@ -118,14 +118,16 @@ const CustomerSettings = () => {
       </Container>
 
       <Dialog open={confirm} onClose={() => setConfirm(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontFamily: DISPLAY }}>
+        <DialogTitle sx={{ fontFamily: DISPLAY, pt: 2.25, pb: 0.75, fontSize: '1.05rem' }}>
           <TriangleAlert size={18} color={c.red} style={{ marginRight: 8, verticalAlign: 'text-bottom' }} />
           {t('customerSettings.deleteQ')}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: c.grey }}>{t('customerSettings.deleteBody', { name: customer.name })}</DialogContentText>
+        <DialogContent sx={{ pt: '0 !important', pb: 1 }}>
+          <DialogContentText sx={{ color: c.grey, fontSize: 13.5, lineHeight: 1.45 }}>
+            {t('customerSettings.deleteBody', { name: customer.name })}
+          </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+        <DialogActions sx={{ px: 2.5, pb: 2, pt: 0.5 }}>
           <Button onClick={() => setConfirm(false)} variant="outlined">
             {t('common.cancel')}
           </Button>
