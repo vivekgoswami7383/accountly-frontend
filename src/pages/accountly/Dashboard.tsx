@@ -24,11 +24,11 @@ const StatHalf = ({ tone, amount, loading, label }: { tone: 'get' | 'give'; amou
   const fmt = useFormatAmount();
   return (
     <Box sx={{ flex: 1, minWidth: 0, p: 1.75, borderRadius: '16px', bgcolor: tone === 'get' ? c.greenSoft : c.redSoft }}>
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" alignItems="flex-start" spacing={1}>
         <IconDot size={26} bg={alpha(tone === 'get' ? c.green : c.red, 0.22)} fg={tone === 'get' ? c.greenDeep : c.red}>
           <ArrowUp />
         </IconDot>
-        <Typography sx={{ color: c.grey, fontSize: 13.5, fontWeight: 500 }} noWrap>
+        <Typography sx={{ flex: 1, minWidth: 0, color: c.grey, fontSize: 13.5, fontWeight: 500, lineHeight: 1.3 }}>
           {label}
         </Typography>
       </Stack>
