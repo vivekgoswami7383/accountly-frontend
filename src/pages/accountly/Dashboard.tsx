@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Skeleton, Stack, Typography, alpha } from '@mui/material';
 import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone } from 'lucide-react';
@@ -90,6 +90,7 @@ const Dashboard = () => {
   const t = useT();
   const fmt = useFormatAmount();
   const { stats, recentCustomers, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
+  const skipEnterRef = useRef(hasLoaded);
 
   useEffect(() => {
     if (!hasLoaded) dispatch(fetchDashboardStatistics());
@@ -105,7 +106,7 @@ const Dashboard = () => {
       <AppHeader variant="home" />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={2.25}>
-          <Fade>
+          <Fade skipEnter={skipEnterRef.current}>
             <AppCard sx={{ p: 1.75 }}>
               <Stack direction="row" spacing={1.5}>
                 <StatHalf tone="give" amount={payable} loading={!hasLoaded} label={t('home.youllGive')} />
@@ -139,7 +140,7 @@ const Dashboard = () => {
             </AppCard>
           </Fade>
 
-          <Fade delay={0.05}>
+          <Fade delay={0.05} skipEnter={skipEnterRef.current}>
             <Stack direction="row" spacing={1.5}>
               {[
                 { label: t('home.addCustomer'), sub: t('home.newContact'), icon: <UserPlus />, to: '/customer/add' },
@@ -180,7 +181,7 @@ const Dashboard = () => {
             </Stack>
           </Fade>
 
-          <Fade delay={0.1}>
+          <Fade delay={0.1} skipEnter={skipEnterRef.current}>
             <Box>
               <SectionHeader title={t('home.customers')} action={t('common.seeAll')} onAction={() => navigate('/customer')} />
               {!hasLoaded ? (
@@ -236,7 +237,7 @@ const Dashboard = () => {
             </Box>
           </Fade>
 
-          <Fade delay={0.15}>
+          <Fade delay={0.15} skipEnter={skipEnterRef.current}>
             <Box>
               <SectionHeader title={t('home.recentPayments')} action={hasTxns ? t('common.seeAll') : undefined} onAction={() => navigate('/transaction')} />
               {!hasLoaded ? (
