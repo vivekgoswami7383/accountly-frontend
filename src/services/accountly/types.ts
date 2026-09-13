@@ -102,3 +102,58 @@ export interface DashboardStatisticsResponse {
   recent_customers: RecentCustomer[];
   recent_transactions: ApiTransaction[];
 }
+
+export type ExpenseCategory = 'food' | 'travel' | 'rent' | 'utilities' | 'shopping' | 'other';
+
+export interface Expense {
+  id: string;
+  amount: number;
+  category: ExpenseCategory;
+  note: string;
+  expenseDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateExpenseRequest {
+  amount: number;
+  category: ExpenseCategory;
+  note?: string;
+  expense_date?: string;
+}
+
+export interface ExpenseFilter {
+  search: FilterCondition[][];
+  sort?: Record<string, 1 | -1>;
+}
+
+export interface ExpenseCategoryTotal {
+  category: ExpenseCategory;
+  total: number;
+  count: number;
+}
+
+export interface ExpenseSummary {
+  todayTotal: number;
+  weekTotal: number;
+  monthTotal: number;
+  monthCount: number;
+  categoryTotals: ExpenseCategoryTotal[];
+}
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateNoteRequest {
+  content: string;
+}
+
+export interface NoteFilter {
+  search: FilterCondition[][];
+  sort?: Record<string, 1 | -1>;
+}

@@ -17,17 +17,18 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { ArrowUp, ArrowDown, Calendar, FileText, Trash2, Pencil, MoreHorizontal, TriangleAlert, ChevronRight } from 'lucide-react';
+import { Calendar, FileText, Trash2, Pencil, MoreHorizontal, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
+import { fetchExpenseById, deleteExpenseById } from 'store/reducers/accountly/expenses';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
+import { EXPENSE_CATEGORY_ICONS, expenseCategoryLabelKey } from 'utils/accountly/expenseCategories';
 import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard, IconDot, ListRow } from 'components/accountly/kit';
+import { AppCard, IconDot } from 'components/accountly/kit';
 
-const TransactionDetail = () => {
+const ExpenseDetail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id = '' } = useParams();
@@ -36,26 +37,24 @@ const TransactionDetail = () => {
   const fmt = useFormatAmount();
   const { showSnackbar } = useSnackbar();
 
-  const { selectedTransaction, loading } = useSelector((s) => s.transactions);
+  const { selectedExpense, loading } = useSelector((s) => s.expenses);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
 
-  const isCurrent = selectedTransaction?.id === id;
+  const isCurrent = selectedExpense?.id === id;
 
   useEffect(() => {
-    dispatch(fetchTransactionById(id));
+    dispatch(fetchExpenseById(id));
   }, [dispatch, id]);
 
   const handleDelete = async () => {
     setConfirmDelete(false);
-    const result = await dispatch(deleteTransactionById({ id, customerId: selectedTransaction?.customerId || '' }));
-    if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || t('payment.failedDeleteEntry'), type: 'error' });
+    const result = await dispatch(deleteExpenseById({ id }));
+    if (deleteExpenseById.fulfilled.match(result)) navigate(-1);
+    else showSnackbar({ message: (result.payload as string) || t('expense.failedDeleteEntry'), type: 'error' });
   };
 
-  const sent = selectedTransaction?.transaction_type === 'debit';
-  const accentDeep = sent ? c.redDeep : c.greenDeep;
-  const accentSoft = sent ? c.redSoft : c.greenSoft;
+  const Icon = selectedExpense ? EXPENSE_CATEGORY_ICONS[selectedExpense.category] : null;
 
   const headerRight = (
     <IconButton
@@ -69,12 +68,12 @@ const TransactionDetail = () => {
 
   return (
     <>
-      <AppHeader variant="screen" title={t('transactionDetail.title')} right={headerRight} />
+      <AppHeader variant="screen" title={t('expenseDetail.title')} right={headerRight} />
       <Menu anchorEl={menuEl} open={Boolean(menuEl)} onClose={() => setMenuEl(null)}>
         <MenuItem
           onClick={() => {
             setMenuEl(null);
-            navigate(`/transaction/${id}/edit`);
+            navigate(`/expense/${id}/edit`);
           }}
           sx={{ gap: 1.25 }}
         >
@@ -91,7 +90,7 @@ const TransactionDetail = () => {
         </MenuItem>
       </Menu>
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}>
-        {!isCurrent || loading ? (
+        {!isCurrent || loading || !Icon ? (
           <Stack spacing={2.25} alignItems="center" sx={{ py: 4 }}>
             <Skeleton variant="circular" width={64} height={64} />
             <Skeleton variant="text" width={140} height={40} />
@@ -100,46 +99,34 @@ const TransactionDetail = () => {
         ) : (
           <Stack spacing={2.25}>
             <Stack alignItems="center" spacing={1} sx={{ pt: 1, pb: 0.5 }}>
-              <IconDot size={64} bg={accentSoft} fg={accentDeep} icon={28}>
-                {sent ? <ArrowUp /> : <ArrowDown />}
+              <IconDot size={64} bg={c.redSoft} fg={c.redDeep} icon={28}>
+                <Icon />
               </IconDot>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 32, letterSpacing: '-0.02em', color: accentDeep }}>
-                {fmt(selectedTransaction!.amount)}
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 32, letterSpacing: '-0.02em', color: c.redDeep }}>
+                {fmt(selectedExpense!.amount)}
               </Typography>
-              <Typography sx={{ color: c.grey, fontSize: 14 }}>
-                {sent ? t('detail.youGave') : t('detail.youGot')}
-              </Typography>
+              <Typography sx={{ color: c.grey, fontSize: 14 }}>{t(expenseCategoryLabelKey(selectedExpense!.category))}</Typography>
             </Stack>
 
             <AppCard sx={{ overflow: 'hidden' }}>
-              <ListRow onClick={() => navigate(`/customer/${selectedTransaction!.customerId}`)}>
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewCustomer')}</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
-                    {selectedTransaction!.customerName}
-                  </Typography>
-                </Box>
-                <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
-              </ListRow>
-              <Divider sx={{ borderColor: c.line, ml: 2 }} />
               <Stack direction="row" spacing={1.25} sx={{ px: 2, py: 1.75 }}>
                 <Calendar size={18} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
                 <Box sx={{ minWidth: 0 }}>
                   <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('payment.date')}</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink, mt: 0.25 }}>
-                    {formatDateTime(selectedTransaction!.createdAt)}
+                    {formatDateTime(selectedExpense!.expenseDate)}
                   </Typography>
                 </Box>
               </Stack>
-              {selectedTransaction!.description && (
+              {selectedExpense!.note && (
                 <>
                   <Divider sx={{ borderColor: c.line, ml: 2 }} />
                   <Stack direction="row" spacing={1.25} sx={{ px: 2, py: 1.75 }}>
                     <FileText size={18} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
                     <Box sx={{ minWidth: 0 }}>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.note')}</Typography>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('expenseDetail.note')}</Typography>
                       <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
-                        {selectedTransaction!.description}
+                        {selectedExpense!.note}
                       </Typography>
                     </Box>
                   </Stack>
@@ -153,10 +140,10 @@ const TransactionDetail = () => {
       <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ fontFamily: DISPLAY, pt: 2.25, pb: 0.75, fontSize: '1.05rem' }}>
           <TriangleAlert size={18} color={c.red} style={{ marginRight: 8, verticalAlign: 'text-bottom' }} />
-          {t('payment.deleteEntryQ')}
+          {t('expense.deleteEntryQ')}
         </DialogTitle>
         <DialogContent sx={{ pt: '0 !important', pb: 1 }}>
-          <DialogContentText sx={{ color: c.grey, fontSize: 13.5, lineHeight: 1.45 }}>{t('payment.deleteEntryBody')}</DialogContentText>
+          <DialogContentText sx={{ color: c.grey, fontSize: 13.5, lineHeight: 1.45 }}>{t('expense.deleteEntryBody')}</DialogContentText>
         </DialogContent>
         <DialogActions sx={{ px: 2.5, pb: 2, pt: 0.5 }}>
           <Button onClick={() => setConfirmDelete(false)} variant="outlined">
@@ -171,4 +158,4 @@ const TransactionDetail = () => {
   );
 };
 
-export default TransactionDetail;
+export default ExpenseDetail;

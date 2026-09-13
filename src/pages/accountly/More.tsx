@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material';
-import { User, Settings, BarChart3, LogOut, ChevronRight } from 'lucide-react';
+import { User, Settings, BarChart3, LogOut, ChevronRight, Wallet, NotebookPen } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -21,6 +21,8 @@ const More = () => {
   const items = [
     { label: t('menu.profile'), desc: t('more.profileDesc'), icon: <User />, path: '/profile' },
     { label: t('menu.settings'), desc: t('more.settingsDesc'), icon: <Settings />, path: '/settings' },
+    { label: t('more.personalExpenses'), desc: t('more.personalExpensesDesc'), icon: <Wallet />, path: '/expense' },
+    { label: t('more.notes'), desc: t('more.notesDesc'), icon: <NotebookPen />, path: '/note' },
     { label: t('more.reports'), desc: t('more.reportsComingSoon'), icon: <BarChart3 />, path: '/reports' }
   ];
 

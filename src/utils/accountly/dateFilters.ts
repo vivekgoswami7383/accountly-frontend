@@ -1,3 +1,5 @@
+import { ExpenseCategory } from 'services/accountly/types';
+
 export type DatePreset = 'today' | 'yesterday' | 'week' | 'month' | 'all' | 'custom';
 export type TypeFilter = 'all' | 'debit' | 'credit';
 
@@ -13,6 +15,22 @@ export const DEFAULT_FILTERS: AppliedFilters = {
   customStart: '',
   customEnd: '',
   type: 'all'
+};
+
+export type ExpenseCategoryFilter = 'all' | ExpenseCategory;
+
+export interface ExpenseAppliedFilters {
+  datePreset: DatePreset;
+  customStart: string;
+  customEnd: string;
+  category: ExpenseCategoryFilter;
+}
+
+export const DEFAULT_EXPENSE_FILTERS: ExpenseAppliedFilters = {
+  datePreset: 'all',
+  customStart: '',
+  customEnd: '',
+  category: 'all'
 };
 
 const startOfDay = (d: Date) => {

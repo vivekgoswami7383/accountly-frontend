@@ -120,8 +120,8 @@ export const SectionHeader = ({ title, action, onAction }: { title: string; acti
   );
 };
 
-export const Fade = ({ children, delay = 0 }: { children: ReactNode; delay?: number }) => (
-  <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}>
+export const Fade = ({ children, delay = 0, skipEnter = false }: { children: ReactNode; delay?: number; skipEnter?: boolean }) => (
+  <motion.div initial={skipEnter ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}>
     {children}
   </motion.div>
 );
