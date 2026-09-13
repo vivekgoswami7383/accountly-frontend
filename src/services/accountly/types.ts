@@ -49,6 +49,7 @@ export interface Transaction {
   description: string;
   createdAt: string;
   updatedAt: string;
+  balanceAfter?: number;
 }
 
 export interface CreateTransactionRequest {
@@ -156,4 +157,30 @@ export interface CreateNoteRequest {
 export interface NoteFilter {
   search: FilterCondition[][];
   sort?: Record<string, 1 | -1>;
+}
+
+export interface ReportTotals {
+  collected: number;
+  given: number;
+  net: number;
+  transactionCount: number;
+}
+
+export interface ReportDailyPoint {
+  date: string;
+  collected: number;
+  given: number;
+}
+
+export interface ReportTopCustomer {
+  id: string;
+  name: string;
+  phone: string;
+  balance: number;
+}
+
+export interface BusinessReport {
+  totals: ReportTotals;
+  daily: ReportDailyPoint[];
+  topCustomers: ReportTopCustomer[];
 }

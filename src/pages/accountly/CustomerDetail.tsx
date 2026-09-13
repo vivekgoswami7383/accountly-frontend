@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Skeleton, Stack, Typography } from '@mui/material';
-import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare } from 'lucide-react';
+import { pdf } from '@react-pdf/renderer';
+import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare, Share2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
-import { useFormatAmount, formatPhone } from 'utils/accountly/format';
+import { useFormatAmount, formatPhone, formatDate } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
+import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot, SectionHeader } from 'components/accountly/kit';
+import LedgerDocument from 'components/accountly/LedgerDocument';
 import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
 
 const fmtWhen = (iso?: string) => {
@@ -28,6 +31,7 @@ const CustomerDetail = () => {
   const t = useT();
   const fmt = useFormatAmount();
   const { business } = useAuth();
+  const { showSnackbar } = useSnackbar();
   const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
   const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
@@ -60,6 +64,71 @@ const CustomerDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
+  const handleShareLedger = async () => {
+    setMenuEl(null);
+    try {
+      const businessName = business?.business_name || 'My Business';
+      const rows = [...customerTransactions].reverse().map((tx) => {
+        const sent = tx.transaction_type === 'debit';
+        return {
+          date: formatDate(tx.createdAt),
+          label: sent ? t('detail.youGave') : t('detail.youGot'),
+          note: tx.description || undefined,
+          debit: sent ? tx.amount : 0,
+          credit: sent ? 0 : tx.amount,
+          balance: tx.balanceAfter ?? 0
+        };
+      });
+
+      const blob = await pdf(
+        <LedgerDocument
+          businessName={businessName}
+          businessAddress={business?.address}
+          businessGst={business?.gst_number}
+          customerName={customer?.name || 'Customer'}
+          customerPhone={formatPhone(customer?.phone)}
+          customerAddress={customer?.address}
+          currentBalance={balance}
+          balanceLabel={balance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
+          formatAmount={fmt}
+          rows={rows}
+          labels={{
+            statementTitle: t('ledger.statementTitle'),
+            generatedOn: t('ledger.generatedOn'),
+            currentBalance: t('ledger.currentBalance'),
+            transactions: t('detail.transactions'),
+            date: t('ledger.date'),
+            description: t('ledger.description'),
+            debit: t('ledger.debit'),
+            credit: t('ledger.credit'),
+            balance: t('ledger.balance'),
+            footer: t('ledger.footer')
+          }}
+        />
+      ).toBlob();
+
+      const filename = `${(customer?.name || 'customer').replace(/\s+/g, '-')}-ledger.pdf`;
+      const file = new File([blob], filename, { type: 'application/pdf' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: businessName });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+    } catch (error: any) {
+      if (error?.name !== 'AbortError') {
+        showSnackbar({ message: t('detail.failedGenerateLedger'), type: 'error' });
+      }
+    }
+  };
+
   const headerTitle = (
     <Stack direction="row" alignItems="center" spacing={1.25} sx={{ minWidth: 0 }}>
       <Box
@@ -89,6 +158,9 @@ const CustomerDetail = () => {
         <MoreHorizontal size={20} />
       </IconButton>
       <Menu anchorEl={menuEl} open={Boolean(menuEl)} onClose={() => setMenuEl(null)}>
+        <MenuItem onClick={handleShareLedger} disabled={customerTransactions.length === 0} sx={{ gap: 1.25 }}>
+          <Share2 size={16} /> {t('detail.shareLedger')}
+        </MenuItem>
         <MenuItem
           onClick={() => {
             setMenuEl(null);

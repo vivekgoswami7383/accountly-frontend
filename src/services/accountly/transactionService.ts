@@ -39,6 +39,12 @@ export const transactionService = {
   async deleteTransaction(id: string) {
     const res = await axios.delete(`/api/transaction/${id}`);
     return unwrap(res);
+  },
+
+  async getReport(params: { start: string; end: string }) {
+    const query = new URLSearchParams({ start: params.start, end: params.end });
+    const res = await axios.get(`/api/transaction/report?${query.toString()}`);
+    return unwrap(res);
   }
 };
 
