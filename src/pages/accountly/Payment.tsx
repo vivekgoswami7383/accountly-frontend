@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
-import { Calendar, Camera, ChevronDown, FileText } from 'lucide-react';
+import { Calendar, Camera, Check, ChevronDown, FileText, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { createTransaction, fetchTransactionById, updateTransactionById } from 'store/reducers/accountly/transactions';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { TransactionType } from 'services/accountly/types';
+import uploadService from 'services/accountly/uploadService';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import useCalculatorInput from 'hooks/useCalculatorInput';
@@ -61,6 +62,11 @@ const Payment = () => {
   const loadedRef = useRef(false);
   const amountBoxRef = useRef<HTMLElement | null>(null);
   const bottomPanelRef = useRef<HTMLElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
+  const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
+  const [attachmentCleared, setAttachmentCleared] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const isEdit = Boolean(transactionId);
 
@@ -80,6 +86,7 @@ const Payment = () => {
       const loadedDate = toDateInputValue(new Date(selectedTransaction.createdAt));
       setDate(loadedDate);
       setInitialDate(loadedDate);
+      setAttachmentUrl(selectedTransaction.attachmentUrl || null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, selectedTransaction]);
@@ -123,7 +130,24 @@ const Payment = () => {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [calculatorOpen]);
 
-  const handleAttachBills = () => {};
+  const handleAttachBills = () => fileInputRef.current?.click();
+
+  const handleAttachmentFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setAttachmentFile(file);
+    setAttachmentCleared(false);
+    setAttachmentUrl(URL.createObjectURL(file));
+  };
+
+  const handleRemoveAttachment = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAttachmentFile(null);
+    setAttachmentUrl(null);
+    setAttachmentCleared(true);
+  };
 
   const handleSubmit = async () => {
     const value = calc.amount;
@@ -138,33 +162,71 @@ const Payment = () => {
 
     const transaction_date = date !== initialDate ? new Date(`${date}T12:00:00`).toISOString() : undefined;
 
-    if (isEdit && transactionId) {
+    setSubmitting(true);
+    try {
+      if (isEdit && transactionId) {
+        let attachmentPatch: { attachment_key?: string } = {};
+        if (attachmentFile) {
+          try {
+            const uploaded = await uploadService.uploadFile(attachmentFile, 'attachment', transactionId);
+            attachmentPatch = { attachment_key: uploaded.key };
+          } catch (error) {
+            showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+            return;
+          }
+        } else if (attachmentCleared) {
+          attachmentPatch = { attachment_key: '' };
+        }
+
+        const result = await dispatch(
+          updateTransactionById({
+            id: transactionId,
+            data: {
+              amount: value,
+              description: description.trim() || undefined,
+              transaction_type: transactionType,
+              transaction_date,
+              ...attachmentPatch
+            }
+          })
+        );
+        if (updateTransactionById.fulfilled.match(result)) navigate(-1);
+        else showSnackbar({ message: (result.payload as string) || t('payment.failedUpdateEntry'), type: 'error' });
+        return;
+      }
+
+      if (!user?.business_id) {
+        showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
+        return;
+      }
       const result = await dispatch(
-        updateTransactionById({
-          id: transactionId,
-          data: { amount: value, description: description.trim() || undefined, transaction_type: transactionType, transaction_date }
+        createTransaction({
+          customer: { _id: customer.id, name: customer.name },
+          amount: value,
+          transaction_type: transactionType,
+          description: description.trim() || '',
+          transaction_date
         })
       );
-      if (updateTransactionById.fulfilled.match(result)) navigate(-1);
-      else showSnackbar({ message: (result.payload as string) || t('payment.failedUpdateEntry'), type: 'error' });
-      return;
-    }
+      if (!createTransaction.fulfilled.match(result)) {
+        showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
+        return;
+      }
 
-    if (!user?.business_id) {
-      showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
-      return;
+      if (attachmentFile) {
+        try {
+          const newTransactionId = result.payload.transaction._id;
+          const uploaded = await uploadService.uploadFile(attachmentFile, 'attachment', newTransactionId);
+          await dispatch(updateTransactionById({ id: newTransactionId, data: { attachment_key: uploaded.key } }));
+        } catch (error) {
+          showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+        }
+      }
+
+      setSuccess(true);
+    } finally {
+      setSubmitting(false);
     }
-    const result = await dispatch(
-      createTransaction({
-        customer: { _id: customer.id, name: customer.name },
-        amount: value,
-        transaction_type: transactionType,
-        description: description.trim() || '',
-        transaction_date
-      })
-    );
-    if (createTransaction.fulfilled.match(result)) setSuccess(true);
-    else showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
   };
 
   const keypadHandlers = {
@@ -317,27 +379,71 @@ const Payment = () => {
             <Box
               component="button"
               onClick={handleAttachBills}
+              disabled={submitting}
               sx={{
                 flex: 1,
+                minWidth: 0,
+                position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
                 gap: 0.75,
                 borderRadius: '14px',
-                border: `1.5px solid ${c.border}`,
+                border: `1.5px solid ${attachmentUrl ? accent : c.border}`,
                 bgcolor: c.surface,
-                color: c.greyLight,
-                px: 1.5,
+                color: attachmentUrl ? accentDeep : c.ink,
+                pl: 1.5,
+                pr: attachmentUrl ? 4 : 1.5,
                 py: 1.25,
-                cursor: 'pointer',
+                cursor: submitting ? 'default' : 'pointer',
                 fontFamily: DISPLAY
               }}
             >
-              <Camera size={16} />
-              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.greyLight }} noWrap>
-                {t('payment.attachBills')}
+              {attachmentUrl ? (
+                <Check size={16} color={accentDeep} style={{ flexShrink: 0 }} />
+              ) : (
+                <Camera size={16} color={c.greyLight} style={{ flexShrink: 0 }} />
+              )}
+              <Typography
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  textAlign: 'center',
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  color: attachmentUrl ? accentDeep : c.ink,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {attachmentUrl ? t('payment.imageAttached') : t('payment.attachBills')}
               </Typography>
+              {attachmentUrl && !submitting && (
+                <Box
+                  component="span"
+                  onClick={handleRemoveAttachment}
+                  sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    color: c.greyLight,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <X size={14} />
+                </Box>
+              )}
             </Box>
+            <Box
+              component="input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,application/pdf"
+              ref={fileInputRef}
+              onChange={handleAttachmentFileChange}
+              sx={{ display: 'none' }}
+            />
           </Stack>
         </Stack>
       </Container>
@@ -386,8 +492,8 @@ const Payment = () => {
                 memory={calc.memory}
                 {...keypadHandlers}
                 onSubmit={handleSubmit}
-                submitDisabled={loading}
-                submitLabel={loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
+                submitDisabled={loading || submitting}
+                submitLabel={loading || submitting ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
               />
             </Box>
           ) : (
@@ -395,11 +501,11 @@ const Payment = () => {
               fullWidth
               size="large"
               variant="contained"
-              disabled={loading}
+              disabled={loading || submitting}
               onClick={handleSubmit}
               sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
             >
-              {loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
+              {loading || submitting ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
             </Button>
           )}
         </Container>
