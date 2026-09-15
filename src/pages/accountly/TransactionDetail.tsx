@@ -17,7 +17,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { ArrowUp, ArrowDown, Calendar, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Calendar, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
@@ -149,6 +149,23 @@ const TransactionDetail = () => {
                     {selectedTransaction!.description}
                   </Typography>
                 </Box>
+              </AppCard>
+            )}
+
+            {selectedTransaction!.receiptUrl && (
+              <AppCard sx={{ overflow: 'hidden' }}>
+                <ListRow onClick={() => window.open(selectedTransaction!.receiptUrl, '_blank', 'noopener,noreferrer')}>
+                  <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                    <Paperclip />
+                  </IconDot>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.receipt')}</Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
+                      {t('transactionDetail.viewReceipt')}
+                    </Typography>
+                  </Box>
+                  <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
+                </ListRow>
               </AppCard>
             )}
           </Stack>

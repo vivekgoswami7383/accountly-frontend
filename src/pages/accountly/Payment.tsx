@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
-import { Calendar, Camera, ChevronDown, FileText } from 'lucide-react';
+import { Calendar, Camera, Check, ChevronDown, FileText, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { createTransaction, fetchTransactionById, updateTransactionById } from 'store/reducers/accountly/transactions';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { TransactionType } from 'services/accountly/types';
+import uploadService from 'services/accountly/uploadService';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import useCalculatorInput from 'hooks/useCalculatorInput';
@@ -61,6 +62,10 @@ const Payment = () => {
   const loadedRef = useRef(false);
   const amountBoxRef = useRef<HTMLElement | null>(null);
   const bottomPanelRef = useRef<HTMLElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [receiptKey, setReceiptKey] = useState<string | null>(null);
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [receiptUploading, setReceiptUploading] = useState(false);
 
   const isEdit = Boolean(transactionId);
 
@@ -80,6 +85,7 @@ const Payment = () => {
       const loadedDate = toDateInputValue(new Date(selectedTransaction.createdAt));
       setDate(loadedDate);
       setInitialDate(loadedDate);
+      setReceiptUrl(selectedTransaction.receiptUrl || null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, selectedTransaction]);
@@ -123,7 +129,30 @@ const Payment = () => {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [calculatorOpen]);
 
-  const handleAttachBills = () => {};
+  const handleAttachBills = () => fileInputRef.current?.click();
+
+  const handleReceiptFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setReceiptUploading(true);
+    try {
+      const result = await uploadService.uploadFile(file, 'receipt', isEdit ? transactionId : undefined);
+      setReceiptKey(result.key);
+      setReceiptUrl(result.url);
+    } catch (error) {
+      showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+    } finally {
+      setReceiptUploading(false);
+    }
+  };
+
+  const handleRemoveReceipt = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setReceiptKey('');
+    setReceiptUrl(null);
+  };
 
   const handleSubmit = async () => {
     const value = calc.amount;
@@ -142,7 +171,13 @@ const Payment = () => {
       const result = await dispatch(
         updateTransactionById({
           id: transactionId,
-          data: { amount: value, description: description.trim() || undefined, transaction_type: transactionType, transaction_date }
+          data: {
+            amount: value,
+            description: description.trim() || undefined,
+            transaction_type: transactionType,
+            transaction_date,
+            ...(receiptKey != null ? { receipt_key: receiptKey } : {})
+          }
         })
       );
       if (updateTransactionById.fulfilled.match(result)) navigate(-1);
@@ -160,7 +195,8 @@ const Payment = () => {
         amount: value,
         transaction_type: transactionType,
         description: description.trim() || '',
-        transaction_date
+        transaction_date,
+        ...(receiptKey ? { receipt_key: receiptKey } : {})
       })
     );
     if (createTransaction.fulfilled.match(result)) setSuccess(true);
@@ -317,27 +353,46 @@ const Payment = () => {
             <Box
               component="button"
               onClick={handleAttachBills}
+              disabled={receiptUploading}
               sx={{
                 flex: 1,
+                position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 0.75,
                 borderRadius: '14px',
-                border: `1.5px solid ${c.border}`,
+                border: `1.5px solid ${receiptUrl ? accent : c.border}`,
                 bgcolor: c.surface,
-                color: c.greyLight,
+                color: receiptUrl ? accentDeep : c.greyLight,
                 px: 1.5,
                 py: 1.25,
-                cursor: 'pointer',
+                cursor: receiptUploading ? 'default' : 'pointer',
                 fontFamily: DISPLAY
               }}
             >
-              <Camera size={16} />
-              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.greyLight }} noWrap>
-                {t('payment.attachBills')}
+              {receiptUrl ? <Check size={16} color={accentDeep} /> : <Camera size={16} />}
+              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: receiptUrl ? accentDeep : c.greyLight }} noWrap>
+                {receiptUploading ? t('payment.uploadingImage') : receiptUrl ? t('payment.imageAttached') : t('payment.attachBills')}
               </Typography>
+              {receiptUrl && !receiptUploading && (
+                <Box
+                  component="span"
+                  onClick={handleRemoveReceipt}
+                  sx={{ position: 'absolute', right: 8, top: 8, display: 'flex', color: c.greyLight, cursor: 'pointer' }}
+                >
+                  <X size={14} />
+                </Box>
+              )}
             </Box>
+            <Box
+              component="input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,application/pdf"
+              ref={fileInputRef}
+              onChange={handleReceiptFileChange}
+              sx={{ display: 'none' }}
+            />
           </Stack>
         </Stack>
       </Container>
