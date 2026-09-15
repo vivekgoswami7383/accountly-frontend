@@ -390,7 +390,7 @@ const Payment = () => {
                 borderRadius: '14px',
                 border: `1.5px solid ${attachmentUrl ? accent : c.border}`,
                 bgcolor: c.surface,
-                color: attachmentUrl ? accentDeep : c.greyLight,
+                color: attachmentUrl ? accentDeep : c.ink,
                 pl: 1.5,
                 pr: attachmentUrl ? 4 : 1.5,
                 py: 1.25,
@@ -398,7 +398,11 @@ const Payment = () => {
                 fontFamily: DISPLAY
               }}
             >
-              {attachmentUrl ? <Check size={16} color={accentDeep} style={{ flexShrink: 0 }} /> : <Camera size={16} style={{ flexShrink: 0 }} />}
+              {attachmentUrl ? (
+                <Check size={16} color={accentDeep} style={{ flexShrink: 0 }} />
+              ) : (
+                <Camera size={16} color={c.greyLight} style={{ flexShrink: 0 }} />
+              )}
               <Typography
                 sx={{
                   flex: 1,
@@ -406,7 +410,7 @@ const Payment = () => {
                   textAlign: 'center',
                   fontSize: 13.5,
                   fontWeight: 500,
-                  color: attachmentUrl ? accentDeep : c.greyLight,
+                  color: attachmentUrl ? accentDeep : c.ink,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap'
