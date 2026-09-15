@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
 import useSnackbar from 'hooks/useSnackbar';
-import { DISPLAY, useAccountlyColors } from 'themes/accountly';
+import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, IconDot, ListRow } from 'components/accountly/kit';
@@ -113,6 +113,9 @@ const TransactionDetail = () => {
 
             <AppCard sx={{ overflow: 'hidden' }}>
               <ListRow onClick={() => navigate(`/customer/${selectedTransaction!.customerId}`)}>
+                <IconDot size={40} bg={avatarTint(selectedTransaction!.customerName).bg} fg={avatarTint(selectedTransaction!.customerName).fg}>
+                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 13 }}>{initials(selectedTransaction!.customerName)}</Typography>
+                </IconDot>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewCustomer')}</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
