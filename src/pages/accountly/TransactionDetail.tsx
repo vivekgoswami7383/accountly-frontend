@@ -17,7 +17,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { ArrowUp, ArrowDown, Calendar, FileText, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Calendar, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
@@ -99,17 +99,19 @@ const TransactionDetail = () => {
           </Stack>
         ) : (
           <Stack spacing={2.25}>
-            <Stack alignItems="center" spacing={1} sx={{ pt: 1, pb: 0.5 }}>
-              <IconDot size={64} bg={accentSoft} fg={accentDeep} icon={28}>
+            <Box sx={{ bgcolor: accentSoft, borderRadius: '24px', px: 2.5, py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <IconDot size={56} bg={c.surface} fg={accentDeep} icon={24}>
                 {sent ? <ArrowUp /> : <ArrowDown />}
               </IconDot>
-              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 32, letterSpacing: '-0.02em', color: accentDeep }}>
+              <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 34, letterSpacing: '-0.02em', color: accentDeep, mt: 1.75 }}>
                 {fmt(selectedTransaction!.amount)}
               </Typography>
-              <Typography sx={{ color: c.grey, fontSize: 14 }}>
-                {sent ? t('detail.youGave') : t('detail.youGot')}
-              </Typography>
-            </Stack>
+              <Box sx={{ bgcolor: c.surface, borderRadius: '8px', px: 1.5, py: 0.5, mt: 1.25 }}>
+                <Typography sx={{ fontSize: 12, fontWeight: 500, color: accentDeep, letterSpacing: '0.02em' }}>
+                  {sent ? t('detail.youGave') : t('detail.youGot')}
+                </Typography>
+              </Box>
+            </Box>
 
             <AppCard sx={{ overflow: 'hidden' }}>
               <ListRow onClick={() => navigate(`/customer/${selectedTransaction!.customerId}`)}>
@@ -125,8 +127,10 @@ const TransactionDetail = () => {
                 <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
               </ListRow>
               <Divider sx={{ borderColor: c.line, ml: 2 }} />
-              <Stack direction="row" spacing={1.25} sx={{ px: 2, py: 1.75 }}>
-                <Calendar size={18} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
+              <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                  <Calendar />
+                </IconDot>
                 <Box sx={{ minWidth: 0 }}>
                   <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('payment.date')}</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink, mt: 0.25 }}>
@@ -134,21 +138,19 @@ const TransactionDetail = () => {
                   </Typography>
                 </Box>
               </Stack>
-              {selectedTransaction!.description && (
-                <>
-                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
-                  <Stack direction="row" spacing={1.25} sx={{ px: 2, py: 1.75 }}>
-                    <FileText size={18} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.note')}</Typography>
-                      <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
-                        {selectedTransaction!.description}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </>
-              )}
             </AppCard>
+
+            {selectedTransaction!.description && (
+              <AppCard sx={{ display: 'flex', gap: 1.5, p: 2 }}>
+                <Box sx={{ width: 3, borderRadius: '3px', bgcolor: accentDeep, flexShrink: 0 }} />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.note')}</Typography>
+                  <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                    {selectedTransaction!.description}
+                  </Typography>
+                </Box>
+              </AppCard>
+            )}
           </Stack>
         )}
       </Container>
