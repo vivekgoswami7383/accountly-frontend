@@ -63,9 +63,9 @@ const Payment = () => {
   const amountBoxRef = useRef<HTMLElement | null>(null);
   const bottomPanelRef = useRef<HTMLElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [receiptKey, setReceiptKey] = useState<string | null>(null);
-  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
-  const [receiptUploading, setReceiptUploading] = useState(false);
+  const [attachmentKey, setAttachmentKey] = useState<string | null>(null);
+  const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
+  const [attachmentUploading, setAttachmentUploading] = useState(false);
 
   const isEdit = Boolean(transactionId);
 
@@ -85,7 +85,7 @@ const Payment = () => {
       const loadedDate = toDateInputValue(new Date(selectedTransaction.createdAt));
       setDate(loadedDate);
       setInitialDate(loadedDate);
-      setReceiptUrl(selectedTransaction.receiptUrl || null);
+      setAttachmentUrl(selectedTransaction.attachmentUrl || null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, selectedTransaction]);
@@ -131,27 +131,27 @@ const Payment = () => {
 
   const handleAttachBills = () => fileInputRef.current?.click();
 
-  const handleReceiptFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAttachmentFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
 
-    setReceiptUploading(true);
+    setAttachmentUploading(true);
     try {
-      const result = await uploadService.uploadFile(file, 'receipt', isEdit ? transactionId : undefined);
-      setReceiptKey(result.key);
-      setReceiptUrl(result.url);
+      const result = await uploadService.uploadFile(file, 'attachment', isEdit ? transactionId : undefined);
+      setAttachmentKey(result.key);
+      setAttachmentUrl(result.url);
     } catch (error) {
       showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
     } finally {
-      setReceiptUploading(false);
+      setAttachmentUploading(false);
     }
   };
 
-  const handleRemoveReceipt = (e: React.MouseEvent) => {
+  const handleRemoveAttachment = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setReceiptKey('');
-    setReceiptUrl(null);
+    setAttachmentKey('');
+    setAttachmentUrl(null);
   };
 
   const handleSubmit = async () => {
@@ -176,7 +176,7 @@ const Payment = () => {
             description: description.trim() || undefined,
             transaction_type: transactionType,
             transaction_date,
-            ...(receiptKey != null ? { receipt_key: receiptKey } : {})
+            ...(attachmentKey != null ? { attachment_key: attachmentKey } : {})
           }
         })
       );
@@ -196,7 +196,7 @@ const Payment = () => {
         transaction_type: transactionType,
         description: description.trim() || '',
         transaction_date,
-        ...(receiptKey ? { receipt_key: receiptKey } : {})
+        ...(attachmentKey ? { attachment_key: attachmentKey } : {})
       })
     );
     if (createTransaction.fulfilled.match(result)) setSuccess(true);
@@ -353,7 +353,7 @@ const Payment = () => {
             <Box
               component="button"
               onClick={handleAttachBills}
-              disabled={receiptUploading}
+              disabled={attachmentUploading}
               sx={{
                 flex: 1,
                 position: 'relative',
@@ -362,23 +362,23 @@ const Payment = () => {
                 justifyContent: 'center',
                 gap: 0.75,
                 borderRadius: '14px',
-                border: `1.5px solid ${receiptUrl ? accent : c.border}`,
+                border: `1.5px solid ${attachmentUrl ? accent : c.border}`,
                 bgcolor: c.surface,
-                color: receiptUrl ? accentDeep : c.greyLight,
+                color: attachmentUrl ? accentDeep : c.greyLight,
                 px: 1.5,
                 py: 1.25,
-                cursor: receiptUploading ? 'default' : 'pointer',
+                cursor: attachmentUploading ? 'default' : 'pointer',
                 fontFamily: DISPLAY
               }}
             >
-              {receiptUrl ? <Check size={16} color={accentDeep} /> : <Camera size={16} />}
-              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: receiptUrl ? accentDeep : c.greyLight }} noWrap>
-                {receiptUploading ? t('payment.uploadingImage') : receiptUrl ? t('payment.imageAttached') : t('payment.attachBills')}
+              {attachmentUrl ? <Check size={16} color={accentDeep} /> : <Camera size={16} />}
+              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: attachmentUrl ? accentDeep : c.greyLight }} noWrap>
+                {attachmentUploading ? t('payment.uploadingImage') : attachmentUrl ? t('payment.imageAttached') : t('payment.attachBills')}
               </Typography>
-              {receiptUrl && !receiptUploading && (
+              {attachmentUrl && !attachmentUploading && (
                 <Box
                   component="span"
-                  onClick={handleRemoveReceipt}
+                  onClick={handleRemoveAttachment}
                   sx={{ position: 'absolute', right: 8, top: 8, display: 'flex', color: c.greyLight, cursor: 'pointer' }}
                 >
                   <X size={14} />
@@ -390,7 +390,7 @@ const Payment = () => {
               type="file"
               accept="image/jpeg,image/png,image/webp,application/pdf"
               ref={fileInputRef}
-              onChange={handleReceiptFileChange}
+              onChange={handleAttachmentFileChange}
               sx={{ display: 'none' }}
             />
           </Stack>

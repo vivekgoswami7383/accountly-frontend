@@ -47,7 +47,7 @@ const mapTx = (tx: any): Transaction => ({
   createdAt: tx.created_at || tx.createdAt,
   updatedAt: tx.updated_at || tx.updatedAt,
   ...(tx.balance_after != null ? { balanceAfter: tx.balance_after } : {}),
-  ...(tx.receipt_url ? { receiptUrl: tx.receipt_url } : {})
+  ...(tx.attachment_url ? { attachmentUrl: tx.attachment_url } : {})
 });
 
 export const createTransaction = createAsyncThunk(

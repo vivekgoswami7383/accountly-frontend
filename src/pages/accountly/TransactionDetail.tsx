@@ -152,16 +152,16 @@ const TransactionDetail = () => {
               </AppCard>
             )}
 
-            {selectedTransaction!.receiptUrl && (
+            {selectedTransaction!.attachmentUrl && (
               <AppCard sx={{ overflow: 'hidden' }}>
-                <ListRow onClick={() => window.open(selectedTransaction!.receiptUrl, '_blank', 'noopener,noreferrer')}>
+                <ListRow onClick={() => window.open(selectedTransaction!.attachmentUrl, '_blank', 'noopener,noreferrer')}>
                   <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
                     <Paperclip />
                   </IconDot>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.receipt')}</Typography>
+                    <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.attachment')}</Typography>
                     <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
-                      {t('transactionDetail.viewReceipt')}
+                      {t('transactionDetail.viewAttachment')}
                     </Typography>
                   </Box>
                   <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />

@@ -50,7 +50,7 @@ export interface Transaction {
   createdAt: string;
   updatedAt: string;
   balanceAfter?: number;
-  receiptUrl?: string;
+  attachmentUrl?: string;
 }
 
 export interface CreateTransactionRequest {
@@ -59,7 +59,7 @@ export interface CreateTransactionRequest {
   transaction_type: TransactionType;
   description?: string;
   transaction_date?: string;
-  receipt_key?: string;
+  attachment_key?: string;
 }
 
 export interface FilterCondition {
@@ -98,10 +98,10 @@ export interface ApiTransaction {
   created_at: string;
   updated_at: string;
   balance_after?: number;
-  receipt_url?: string;
+  attachment_url?: string;
 }
 
-export type UploadCategory = 'logo' | 'avatar' | 'customer' | 'receipt';
+export type UploadCategory = 'logo' | 'avatar' | 'customer' | 'attachment';
 
 export interface DashboardStatisticsResponse {
   stats: DashboardStats;
