@@ -186,6 +186,9 @@ const CustomerDetail = () => {
           <Phone size={18} />
         </IconButton>
       )}
+      <IconButton onClick={handleShareLedger} disabled={ledgerDisabled} sx={{ color: c.ink }}>
+        <Share2 size={18} />
+      </IconButton>
       <IconButton onClick={(e) => setMenuEl(e.currentTarget)} sx={{ color: c.ink }}>
         <MoreVertical size={20} />
       </IconButton>
@@ -316,37 +319,6 @@ const CustomerDetail = () => {
             >
               <MessageSquare size={16} color={reminderDisabled ? c.greyLight : c.ink} />
               {t('detail.sendReminderSms')}
-            </Box>
-
-            <Box
-              component="button"
-              type="button"
-              disabled={ledgerDisabled}
-              onClick={handleShareLedger}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 0.5,
-                flex: 1,
-                px: 0.5,
-                py: 1.25,
-                border: `1px solid ${c.border}`,
-                borderRadius: '14px',
-                bgcolor: 'transparent',
-                color: ledgerDisabled ? c.greyLight : c.ink,
-                fontWeight: 500,
-                fontSize: 12.5,
-                fontFamily: DISPLAY,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                cursor: ledgerDisabled ? 'not-allowed' : 'pointer',
-                opacity: ledgerDisabled ? 0.5 : 1
-              }}
-            >
-              <Share2 size={16} color={ledgerDisabled ? c.greyLight : c.ink} />
-              {t('detail.shareLedger')}
             </Box>
           </Stack>
 
