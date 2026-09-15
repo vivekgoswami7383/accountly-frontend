@@ -8,6 +8,7 @@ import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatPhone, formatDate } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
+import useConfig from 'hooks/useConfig';
 import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -31,6 +32,7 @@ const CustomerDetail = () => {
   const t = useT();
   const fmt = useFormatAmount();
   const { business } = useAuth();
+  const { currency } = useConfig();
   const { showSnackbar } = useSnackbar();
   const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
   const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
@@ -79,11 +81,12 @@ const CustomerDetail = () => {
       };
 
       const businessName = business?.business_name || 'My Business';
+      const customerLabel = customer?.name || 'Customer';
       const rows = [...rawTransactions].reverse().map((tx) => {
         const sent = tx.transaction_type === 'debit';
         return {
           date: formatDate(tx.created_at),
-          label: sent ? t('ledger.paymentGiven') : t('ledger.paymentReceived'),
+          label: sent ? t('ledger.givenTo', { name: customerLabel }) : t('ledger.receivedFrom', { name: customerLabel }),
           note: tx.description || undefined,
           debit: sent ? tx.amount : 0,
           credit: sent ? 0 : tx.amount,
@@ -92,6 +95,17 @@ const CustomerDetail = () => {
       });
 
       const customerOwesBusiness = freshBalance < 0;
+
+      const ASCII_CURRENCY_FALLBACK: Record<string, string> = { INR: 'Rs. ', NPR: 'Rs. ', LKR: 'Rs. ', PKR: 'Rs. ' };
+      const pdfFormatAmount = (value: number) => {
+        const raw = fmt(value);
+        const symbolMatch = raw.match(/^(\D+)/);
+        if (!symbolMatch) return raw;
+        const symbol = symbolMatch[1];
+        const isAsciiSafe = [...symbol].every((ch) => ch.charCodeAt(0) <= 255);
+        if (isAsciiSafe) return raw;
+        return raw.replace(symbol, ASCII_CURRENCY_FALLBACK[currency] || `${currency} `);
+      };
 
       const blob = await pdf(
         <LedgerDocument
@@ -104,7 +118,7 @@ const CustomerDetail = () => {
           currentBalance={freshBalance}
           balanceLabel={customerOwesBusiness ? t('ledger.amountDue') : t('ledger.creditBalance')}
           balanceTone={customerOwesBusiness ? 'due' : 'credit'}
-          formatAmount={fmt}
+          formatAmount={pdfFormatAmount}
           rows={rows}
           labels={{
             statementTitle: t('ledger.statementTitle'),
