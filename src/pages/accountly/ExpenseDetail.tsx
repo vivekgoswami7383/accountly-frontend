@@ -17,7 +17,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { Calendar, FileText, Trash2, Pencil, MoreHorizontal, TriangleAlert } from 'lucide-react';
+import { Calendar, FileText, Trash2, Pencil, MoreVertical, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchExpenseById, deleteExpenseById } from 'store/reducers/accountly/expenses';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
@@ -62,7 +62,7 @@ const ExpenseDetail = () => {
       disabled={!isCurrent || loading}
       sx={{ color: c.ink }}
     >
-      <MoreHorizontal size={20} />
+      <MoreVertical size={20} />
     </IconButton>
   );
 

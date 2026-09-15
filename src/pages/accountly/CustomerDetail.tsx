@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Skeleton, Stack, Typography } from '@mui/material';
 import { pdf } from '@react-pdf/renderer';
-import { Phone, MoreHorizontal, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare, Share2 } from 'lucide-react';
+import { Phone, MoreVertical, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare, Share2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
@@ -66,8 +66,9 @@ const CustomerDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
+  const ledgerDisabled = customerTransactions.length === 0;
+
   const handleShareLedger = async () => {
-    setMenuEl(null);
     try {
       const result = await dispatch(fetchCustomerTransactions(id));
       if (!fetchCustomerTransactions.fulfilled.match(result)) {
@@ -186,12 +187,9 @@ const CustomerDetail = () => {
         </IconButton>
       )}
       <IconButton onClick={(e) => setMenuEl(e.currentTarget)} sx={{ color: c.ink }}>
-        <MoreHorizontal size={20} />
+        <MoreVertical size={20} />
       </IconButton>
       <Menu anchorEl={menuEl} open={Boolean(menuEl)} onClose={() => setMenuEl(null)}>
-        <MenuItem onClick={handleShareLedger} disabled={customerTransactions.length === 0} sx={{ gap: 1.25 }}>
-          <Share2 size={16} /> {t('detail.shareLedger')}
-        </MenuItem>
         <MenuItem
           onClick={() => {
             setMenuEl(null);
@@ -275,6 +273,8 @@ const CustomerDetail = () => {
                 fontFamily: DISPLAY,
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
                 cursor: reminderDisabled ? 'not-allowed' : 'pointer',
                 opacity: reminderDisabled ? 0.5 : 1,
                 pointerEvents: reminderDisabled ? 'none' : 'auto'
@@ -307,6 +307,8 @@ const CustomerDetail = () => {
                 fontFamily: DISPLAY,
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
                 cursor: reminderDisabled ? 'not-allowed' : 'pointer',
                 opacity: reminderDisabled ? 0.5 : 1,
                 pointerEvents: reminderDisabled ? 'none' : 'auto'
@@ -314,6 +316,37 @@ const CustomerDetail = () => {
             >
               <MessageSquare size={16} color={reminderDisabled ? c.greyLight : c.ink} />
               {t('detail.sendReminderSms')}
+            </Box>
+
+            <Box
+              component="button"
+              type="button"
+              disabled={ledgerDisabled}
+              onClick={handleShareLedger}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.5,
+                flex: 1,
+                px: 0.5,
+                py: 1.25,
+                border: `1px solid ${c.border}`,
+                borderRadius: '14px',
+                bgcolor: 'transparent',
+                color: ledgerDisabled ? c.greyLight : c.ink,
+                fontWeight: 500,
+                fontSize: 12.5,
+                fontFamily: DISPLAY,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                cursor: ledgerDisabled ? 'not-allowed' : 'pointer',
+                opacity: ledgerDisabled ? 0.5 : 1
+              }}
+            >
+              <Share2 size={16} color={ledgerDisabled ? c.greyLight : c.ink} />
+              {t('detail.shareLedger')}
             </Box>
           </Stack>
 

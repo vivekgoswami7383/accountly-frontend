@@ -17,7 +17,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { ArrowUp, ArrowDown, Calendar, FileText, Trash2, Pencil, MoreHorizontal, TriangleAlert, ChevronRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Calendar, FileText, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
@@ -63,7 +63,7 @@ const TransactionDetail = () => {
       disabled={!isCurrent || loading}
       sx={{ color: c.ink }}
     >
-      <MoreHorizontal size={20} />
+      <MoreVertical size={20} />
     </IconButton>
   );
 
