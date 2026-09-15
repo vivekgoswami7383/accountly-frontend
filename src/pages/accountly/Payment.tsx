@@ -356,30 +356,51 @@ const Payment = () => {
               disabled={attachmentUploading}
               sx={{
                 flex: 1,
+                minWidth: 0,
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
                 gap: 0.75,
                 borderRadius: '14px',
                 border: `1.5px solid ${attachmentUrl ? accent : c.border}`,
                 bgcolor: c.surface,
                 color: attachmentUrl ? accentDeep : c.greyLight,
-                px: 1.5,
+                pl: 1.5,
+                pr: attachmentUrl && !attachmentUploading ? 4 : 1.5,
                 py: 1.25,
                 cursor: attachmentUploading ? 'default' : 'pointer',
                 fontFamily: DISPLAY
               }}
             >
-              {attachmentUrl ? <Check size={16} color={accentDeep} /> : <Camera size={16} />}
-              <Typography sx={{ fontSize: 13.5, fontWeight: 500, color: attachmentUrl ? accentDeep : c.greyLight }} noWrap>
+              {attachmentUrl ? <Check size={16} color={accentDeep} style={{ flexShrink: 0 }} /> : <Camera size={16} style={{ flexShrink: 0 }} />}
+              <Typography
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  textAlign: 'center',
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  color: attachmentUrl ? accentDeep : c.greyLight,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
                 {attachmentUploading ? t('payment.uploadingImage') : attachmentUrl ? t('payment.imageAttached') : t('payment.attachBills')}
               </Typography>
               {attachmentUrl && !attachmentUploading && (
                 <Box
                   component="span"
                   onClick={handleRemoveAttachment}
-                  sx={{ position: 'absolute', right: 8, top: 8, display: 'flex', color: c.greyLight, cursor: 'pointer' }}
+                  sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    color: c.greyLight,
+                    cursor: 'pointer'
+                  }}
                 >
                   <X size={14} />
                 </Box>
