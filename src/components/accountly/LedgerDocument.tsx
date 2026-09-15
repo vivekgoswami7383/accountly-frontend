@@ -71,7 +71,7 @@ export interface LedgerDocumentProps {
   customerAddress?: string;
   currentBalance: number;
   balanceLabel: string;
-  balanceTone: 'get' | 'give';
+  balanceTone: 'due' | 'credit';
   formatAmount: (value: number) => string;
   rows: LedgerRow[];
   labels: {
@@ -135,7 +135,7 @@ const LedgerDocument = ({
       <View style={styles.summaryCard}>
         <View style={styles.summaryHalf}>
           <Text style={styles.summaryLabel}>{labels.currentBalance.toUpperCase()}</Text>
-          <Text style={[styles.summaryValue, { color: balanceTone === 'get' ? COLORS.greenDeep : COLORS.redDeep }]}>
+          <Text style={[styles.summaryValue, { color: balanceTone === 'credit' ? COLORS.greenDeep : COLORS.redDeep }]}>
             {formatAmount(currentBalance)}
           </Text>
           <Text style={styles.muted}>{balanceLabel}</Text>
