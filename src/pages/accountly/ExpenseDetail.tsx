@@ -16,7 +16,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { Calendar, Trash2, Pencil, MoreVertical, TriangleAlert } from 'lucide-react';
+import { Calendar, FileText, Trash2, Pencil, MoreVertical, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchExpenseById, deleteExpenseById } from 'store/reducers/accountly/expenses';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
@@ -122,8 +122,10 @@ const ExpenseDetail = () => {
             </AppCard>
 
             {selectedExpense!.note && (
-              <AppCard sx={{ display: 'flex', gap: 1.5, p: 2 }}>
-                <Box sx={{ width: 3, borderRadius: '3px', bgcolor: c.redDeep, flexShrink: 0 }} />
+              <AppCard sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2 }}>
+                <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                  <FileText />
+                </IconDot>
                 <Box sx={{ minWidth: 0 }}>
                   <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('expenseDetail.note')}</Typography>
                   <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
