@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -17,7 +16,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { Calendar, FileText, Trash2, Pencil, MoreVertical, TriangleAlert } from 'lucide-react';
+import { Calendar, Trash2, Pencil, MoreVertical, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchExpenseById, deleteExpenseById } from 'store/reducers/accountly/expenses';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
@@ -109,8 +108,10 @@ const ExpenseDetail = () => {
             </Stack>
 
             <AppCard sx={{ overflow: 'hidden' }}>
-              <Stack direction="row" spacing={1.25} sx={{ px: 2, py: 1.75 }}>
-                <Calendar size={18} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
+              <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                  <Calendar />
+                </IconDot>
                 <Box sx={{ minWidth: 0 }}>
                   <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('payment.date')}</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink, mt: 0.25 }}>
@@ -118,21 +119,19 @@ const ExpenseDetail = () => {
                   </Typography>
                 </Box>
               </Stack>
-              {selectedExpense!.note && (
-                <>
-                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
-                  <Stack direction="row" spacing={1.25} sx={{ px: 2, py: 1.75 }}>
-                    <FileText size={18} color={c.greyLight} style={{ marginTop: 2, flexShrink: 0 }} />
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('expenseDetail.note')}</Typography>
-                      <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
-                        {selectedExpense!.note}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </>
-              )}
             </AppCard>
+
+            {selectedExpense!.note && (
+              <AppCard sx={{ display: 'flex', gap: 1.5, p: 2 }}>
+                <Box sx={{ width: 3, borderRadius: '3px', bgcolor: c.redDeep, flexShrink: 0 }} />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('expenseDetail.note')}</Typography>
+                  <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                    {selectedExpense!.note}
+                  </Typography>
+                </Box>
+              </AppCard>
+            )}
           </Stack>
         )}
       </Container>
