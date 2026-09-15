@@ -233,6 +233,9 @@ const en: Dict = {
   'ledger.credit': 'Credit',
   'ledger.balance': 'Balance',
   'ledger.footer': 'Generated via Accountly',
+  'ledger.billTo': 'Bill To',
+  'ledger.page': 'Page',
+  'ledger.of': 'of',
 
   'auth.welcomeBack': 'Welcome back',
   'auth.signInToKhata': 'Sign in to your khata',
@@ -482,6 +485,9 @@ const hi: Dict = {
   'ledger.credit': 'क्रेडिट',
   'ledger.balance': 'शेष',
   'ledger.footer': 'Accountly के माध्यम से बनाया गया',
+  'ledger.billTo': 'बिल प्राप्तकर्ता',
+  'ledger.page': 'पृष्ठ',
+  'ledger.of': 'में से',
 
   'auth.welcomeBack': 'वापसी पर स्वागत है',
   'auth.signInToKhata': 'अपने खाते में साइन इन करें',
@@ -731,6 +737,9 @@ const gu: Dict = {
   'ledger.credit': 'ક્રેડિટ',
   'ledger.balance': 'બાકી',
   'ledger.footer': 'Accountly દ્વારા બનાવેલ',
+  'ledger.billTo': 'બિલ પ્રાપ્તકર્તા',
+  'ledger.page': 'પાનું',
+  'ledger.of': 'માંથી',
 
   'auth.welcomeBack': 'પાછા સ્વાગત છે',
   'auth.signInToKhata': 'તમારા ખાતામાં સાઇન ઇન કરો',
@@ -980,6 +989,9 @@ const hiLatn: Dict = {
   'ledger.credit': 'Credit',
   'ledger.balance': 'Balance',
   'ledger.footer': 'Accountly se generate kiya gaya',
+  'ledger.billTo': 'Bill To',
+  'ledger.page': 'Page',
+  'ledger.of': 'of',
 
   'auth.welcomeBack': 'Wapas aane ka swagat hai',
   'auth.signInToKhata': 'Apne khata mein sign in karo',
@@ -1229,6 +1241,9 @@ const guLatn: Dict = {
   'ledger.credit': 'Credit',
   'ledger.balance': 'Balance',
   'ledger.footer': 'Accountly dwara banavelu',
+  'ledger.billTo': 'Bill To',
+  'ledger.page': 'Page',
+  'ledger.of': 'of',
 
   'auth.welcomeBack': 'Pacha aavva badal aavkar',
   'auth.signInToKhata': 'Tamara khata ma sign in karo',

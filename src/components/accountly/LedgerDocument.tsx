@@ -1,25 +1,56 @@
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 
+const COLORS = {
+  red: '#E23744',
+  redDeep: '#C4303B',
+  green: '#1FA971',
+  greenDeep: '#178A5C',
+  ink: '#1A1D1F',
+  grey: '#6F767E',
+  greyLight: '#9AA0A6',
+  line: '#EFF1F3',
+  bg: '#F7F8FA',
+  white: '#FFFFFF'
+};
+
 const styles = StyleSheet.create({
-  page: { padding: 28, fontSize: 9.5, fontFamily: 'Helvetica', color: '#1A1D1F' },
-  businessName: { fontSize: 16, fontWeight: 700, marginBottom: 2 },
-  muted: { fontSize: 9, color: '#6F767E' },
-  divider: { borderBottomWidth: 1, borderBottomColor: '#E6E8EC', marginVertical: 12 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  sectionTitle: { fontSize: 11, fontWeight: 700, marginBottom: 6 },
-  summaryCard: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#F6F7F9', borderRadius: 8, padding: 12, marginBottom: 16 },
-  summaryLabel: { fontSize: 8.5, color: '#6F767E', marginBottom: 2 },
-  summaryValue: { fontSize: 14, fontWeight: 700 },
-  tableHeader: { flexDirection: 'row', backgroundColor: '#1A1D1F', paddingVertical: 6, paddingHorizontal: 6, borderRadius: 4 },
-  tableHeaderCell: { color: '#FFFFFF', fontSize: 8.5, fontWeight: 700 },
-  tableRow: { flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: '#F0F1F3' },
-  tableCell: { fontSize: 8.5 },
-  colDate: { width: '16%' },
-  colDesc: { width: '38%' },
+  page: { paddingTop: 0, paddingBottom: 48, paddingHorizontal: 32, fontSize: 9.5, fontFamily: 'Helvetica', color: COLORS.ink },
+  accentBar: { height: 6, backgroundColor: COLORS.red, marginBottom: 28 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  businessName: { fontSize: 19, fontFamily: 'Helvetica-Bold', marginBottom: 3 },
+  muted: { fontSize: 9, color: COLORS.grey, lineHeight: 1.5 },
+  statementTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.red, letterSpacing: 1 },
+  divider: { borderBottomWidth: 1, borderBottomColor: COLORS.line, marginTop: 18, marginBottom: 18 },
+  eyebrow: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: COLORS.greyLight, letterSpacing: 1, marginBottom: 5 },
+  customerName: { fontSize: 13, fontFamily: 'Helvetica-Bold', marginBottom: 3 },
+  summaryCard: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.bg,
+    borderRadius: 10,
+    marginTop: 20,
+    marginBottom: 24,
+    overflow: 'hidden'
+  },
+  summaryHalf: { flex: 1, paddingVertical: 16, paddingHorizontal: 18 },
+  summaryDivider: { width: 1, backgroundColor: COLORS.line },
+  summaryLabel: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: COLORS.greyLight, letterSpacing: 0.5, marginBottom: 4 },
+  summaryValue: { fontSize: 18, fontFamily: 'Helvetica-Bold', marginBottom: 2 },
+  tableHeader: { flexDirection: 'row', backgroundColor: COLORS.ink, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 6 },
+  tableHeaderCell: { color: COLORS.white, fontSize: 8, fontFamily: 'Helvetica-Bold', letterSpacing: 0.5 },
+  tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: COLORS.line },
+  tableRowAlt: { backgroundColor: COLORS.bg },
+  tableCell: { fontSize: 9 },
+  tableCellNote: { fontSize: 8, color: COLORS.grey, marginTop: 1.5 },
+  colDate: { width: '15%' },
+  colDesc: { width: '37%' },
   colDebit: { width: '15%', textAlign: 'right' },
   colCredit: { width: '15%', textAlign: 'right' },
-  colBalance: { width: '16%', textAlign: 'right' },
-  footer: { position: 'absolute', bottom: 20, left: 28, right: 28, fontSize: 8, color: '#9AA0A6', textAlign: 'center' }
+  colBalance: { width: '18%', textAlign: 'right' },
+  amountDebit: { color: COLORS.redDeep, fontFamily: 'Helvetica-Bold' },
+  amountCredit: { color: COLORS.greenDeep, fontFamily: 'Helvetica-Bold' },
+  amountBalance: { fontFamily: 'Helvetica-Bold' },
+  footer: { position: 'absolute', bottom: 22, left: 32, right: 32, flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: COLORS.line, paddingTop: 10 },
+  footerText: { fontSize: 8, color: COLORS.greyLight }
 });
 
 export interface LedgerRow {
@@ -40,11 +71,13 @@ export interface LedgerDocumentProps {
   customerAddress?: string;
   currentBalance: number;
   balanceLabel: string;
+  balanceTone: 'get' | 'give';
   formatAmount: (value: number) => string;
   rows: LedgerRow[];
   labels: {
     statementTitle: string;
     generatedOn: string;
+    billTo: string;
     currentBalance: string;
     transactions: string;
     date: string;
@@ -53,6 +86,8 @@ export interface LedgerDocumentProps {
     credit: string;
     balance: string;
     footer: string;
+    page: string;
+    of: string;
   };
 }
 
@@ -65,21 +100,24 @@ const LedgerDocument = ({
   customerAddress,
   currentBalance,
   balanceLabel,
+  balanceTone,
   formatAmount,
   rows,
   labels
 }: LedgerDocumentProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <View style={styles.row}>
+      <View style={styles.accentBar} fixed />
+
+      <View style={styles.header}>
         <View>
           <Text style={styles.businessName}>{businessName}</Text>
           {businessAddress ? <Text style={styles.muted}>{businessAddress}</Text> : null}
           {businessGst ? <Text style={styles.muted}>GSTIN: {businessGst}</Text> : null}
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 12, fontWeight: 700 }}>{labels.statementTitle}</Text>
-          <Text style={styles.muted}>
+          <Text style={styles.statementTitle}>{labels.statementTitle.toUpperCase()}</Text>
+          <Text style={[styles.muted, { marginTop: 4 }]}>
             {labels.generatedOn} {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
           </Text>
         </View>
@@ -87,50 +125,57 @@ const LedgerDocument = ({
 
       <View style={styles.divider} />
 
-      <View style={styles.row}>
-        <View>
-          <Text style={{ fontSize: 12, fontWeight: 700, marginBottom: 2 }}>{customerName}</Text>
-          {customerPhone ? <Text style={styles.muted}>{customerPhone}</Text> : null}
-          {customerAddress ? <Text style={styles.muted}>{customerAddress}</Text> : null}
-        </View>
+      <View>
+        <Text style={styles.eyebrow}>{labels.billTo.toUpperCase()}</Text>
+        <Text style={styles.customerName}>{customerName}</Text>
+        {customerPhone ? <Text style={styles.muted}>{customerPhone}</Text> : null}
+        {customerAddress ? <Text style={styles.muted}>{customerAddress}</Text> : null}
       </View>
 
       <View style={styles.summaryCard}>
-        <View>
-          <Text style={styles.summaryLabel}>{labels.currentBalance}</Text>
-          <Text style={styles.summaryValue}>{formatAmount(currentBalance)}</Text>
+        <View style={styles.summaryHalf}>
+          <Text style={styles.summaryLabel}>{labels.currentBalance.toUpperCase()}</Text>
+          <Text style={[styles.summaryValue, { color: balanceTone === 'get' ? COLORS.greenDeep : COLORS.redDeep }]}>
+            {formatAmount(currentBalance)}
+          </Text>
           <Text style={styles.muted}>{balanceLabel}</Text>
         </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Text style={styles.summaryLabel}>{labels.transactions}</Text>
+        <View style={styles.summaryDivider} />
+        <View style={[styles.summaryHalf, { alignItems: 'flex-end' }]}>
+          <Text style={styles.summaryLabel}>{labels.transactions.toUpperCase()}</Text>
           <Text style={styles.summaryValue}>{rows.length}</Text>
         </View>
       </View>
 
       <View style={styles.tableHeader}>
-        <Text style={[styles.tableHeaderCell, styles.colDate]}>{labels.date}</Text>
-        <Text style={[styles.tableHeaderCell, styles.colDesc]}>{labels.description}</Text>
-        <Text style={[styles.tableHeaderCell, styles.colDebit]}>{labels.debit}</Text>
-        <Text style={[styles.tableHeaderCell, styles.colCredit]}>{labels.credit}</Text>
-        <Text style={[styles.tableHeaderCell, styles.colBalance]}>{labels.balance}</Text>
+        <Text style={[styles.tableHeaderCell, styles.colDate]}>{labels.date.toUpperCase()}</Text>
+        <Text style={[styles.tableHeaderCell, styles.colDesc]}>{labels.description.toUpperCase()}</Text>
+        <Text style={[styles.tableHeaderCell, styles.colDebit]}>{labels.debit.toUpperCase()}</Text>
+        <Text style={[styles.tableHeaderCell, styles.colCredit]}>{labels.credit.toUpperCase()}</Text>
+        <Text style={[styles.tableHeaderCell, styles.colBalance]}>{labels.balance.toUpperCase()}</Text>
       </View>
 
       {rows.map((row, i) => (
-        <View style={styles.tableRow} key={i} wrap={false}>
+        <View style={[styles.tableRow, i % 2 === 1 ? styles.tableRowAlt : {}]} key={i} wrap={false}>
           <Text style={[styles.tableCell, styles.colDate]}>{row.date}</Text>
           <View style={styles.colDesc}>
             <Text style={styles.tableCell}>{row.label}</Text>
-            {row.note ? <Text style={[styles.tableCell, styles.muted]}>{row.note}</Text> : null}
+            {row.note ? <Text style={styles.tableCellNote}>{row.note}</Text> : null}
           </View>
-          <Text style={[styles.tableCell, styles.colDebit]}>{row.debit ? formatAmount(row.debit) : ''}</Text>
-          <Text style={[styles.tableCell, styles.colCredit]}>{row.credit ? formatAmount(row.credit) : ''}</Text>
-          <Text style={[styles.tableCell, styles.colBalance]}>{formatAmount(row.balance)}</Text>
+          <Text style={[styles.tableCell, styles.colDebit, row.debit ? styles.amountDebit : {}]}>
+            {row.debit ? formatAmount(row.debit) : '—'}
+          </Text>
+          <Text style={[styles.tableCell, styles.colCredit, row.credit ? styles.amountCredit : {}]}>
+            {row.credit ? formatAmount(row.credit) : '—'}
+          </Text>
+          <Text style={[styles.tableCell, styles.colBalance, styles.amountBalance]}>{formatAmount(row.balance)}</Text>
         </View>
       ))}
 
-      <Text style={styles.footer} fixed>
-        {labels.footer}
-      </Text>
+      <View style={styles.footer} fixed>
+        <Text style={styles.footerText}>{labels.footer}</Text>
+        <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`} />
+      </View>
     </Page>
   </Document>
 );

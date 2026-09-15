@@ -67,16 +67,27 @@ const CustomerDetail = () => {
   const handleShareLedger = async () => {
     setMenuEl(null);
     try {
+      const result = await dispatch(fetchCustomerTransactions(id));
+      if (!fetchCustomerTransactions.fulfilled.match(result)) {
+        showSnackbar({ message: t('detail.failedGenerateLedger'), type: 'error' });
+        return;
+      }
+
+      const { transactions: rawTransactions, customer_balance: freshBalance } = result.payload.response as {
+        transactions: any[];
+        customer_balance: number;
+      };
+
       const businessName = business?.business_name || 'My Business';
-      const rows = [...customerTransactions].reverse().map((tx) => {
+      const rows = [...rawTransactions].reverse().map((tx) => {
         const sent = tx.transaction_type === 'debit';
         return {
-          date: formatDate(tx.createdAt),
+          date: formatDate(tx.created_at),
           label: sent ? t('detail.youGave') : t('detail.youGot'),
           note: tx.description || undefined,
           debit: sent ? tx.amount : 0,
           credit: sent ? 0 : tx.amount,
-          balance: tx.balanceAfter ?? 0
+          balance: tx.balance_after ?? 0
         };
       });
 
@@ -88,13 +99,15 @@ const CustomerDetail = () => {
           customerName={customer?.name || 'Customer'}
           customerPhone={formatPhone(customer?.phone)}
           customerAddress={customer?.address}
-          currentBalance={balance}
-          balanceLabel={balance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
+          currentBalance={freshBalance}
+          balanceLabel={freshBalance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
+          balanceTone={freshBalance < 0 ? 'get' : 'give'}
           formatAmount={fmt}
           rows={rows}
           labels={{
             statementTitle: t('ledger.statementTitle'),
             generatedOn: t('ledger.generatedOn'),
+            billTo: t('ledger.billTo'),
             currentBalance: t('ledger.currentBalance'),
             transactions: t('detail.transactions'),
             date: t('ledger.date'),
@@ -102,7 +115,9 @@ const CustomerDetail = () => {
             debit: t('ledger.debit'),
             credit: t('ledger.credit'),
             balance: t('ledger.balance'),
-            footer: t('ledger.footer')
+            footer: t('ledger.footer'),
+            page: t('ledger.page'),
+            of: t('ledger.of')
           }}
         />
       ).toBlob();
