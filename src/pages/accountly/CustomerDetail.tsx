@@ -83,13 +83,15 @@ const CustomerDetail = () => {
         const sent = tx.transaction_type === 'debit';
         return {
           date: formatDate(tx.created_at),
-          label: sent ? t('detail.youGave') : t('detail.youGot'),
+          label: sent ? t('ledger.paymentGiven') : t('ledger.paymentReceived'),
           note: tx.description || undefined,
           debit: sent ? tx.amount : 0,
           credit: sent ? 0 : tx.amount,
           balance: tx.balance_after ?? 0
         };
       });
+
+      const customerOwesBusiness = freshBalance < 0;
 
       const blob = await pdf(
         <LedgerDocument
@@ -100,8 +102,8 @@ const CustomerDetail = () => {
           customerPhone={formatPhone(customer?.phone)}
           customerAddress={customer?.address}
           currentBalance={freshBalance}
-          balanceLabel={freshBalance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
-          balanceTone={freshBalance < 0 ? 'get' : 'give'}
+          balanceLabel={customerOwesBusiness ? t('ledger.amountDue') : t('ledger.creditBalance')}
+          balanceTone={customerOwesBusiness ? 'due' : 'credit'}
           formatAmount={fmt}
           rows={rows}
           labels={{
