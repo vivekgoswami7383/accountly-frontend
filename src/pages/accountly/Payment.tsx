@@ -63,9 +63,10 @@ const Payment = () => {
   const amountBoxRef = useRef<HTMLElement | null>(null);
   const bottomPanelRef = useRef<HTMLElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [attachmentKey, setAttachmentKey] = useState<string | null>(null);
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
-  const [attachmentUploading, setAttachmentUploading] = useState(false);
+  const [attachmentCleared, setAttachmentCleared] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const isEdit = Boolean(transactionId);
 
@@ -131,27 +132,21 @@ const Payment = () => {
 
   const handleAttachBills = () => fileInputRef.current?.click();
 
-  const handleAttachmentFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAttachmentFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
 
-    setAttachmentUploading(true);
-    try {
-      const result = await uploadService.uploadFile(file, 'attachment', isEdit ? transactionId : undefined);
-      setAttachmentKey(result.key);
-      setAttachmentUrl(result.url);
-    } catch (error) {
-      showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
-    } finally {
-      setAttachmentUploading(false);
-    }
+    setAttachmentFile(file);
+    setAttachmentCleared(false);
+    setAttachmentUrl(URL.createObjectURL(file));
   };
 
   const handleRemoveAttachment = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setAttachmentKey('');
+    setAttachmentFile(null);
     setAttachmentUrl(null);
+    setAttachmentCleared(true);
   };
 
   const handleSubmit = async () => {
@@ -167,40 +162,71 @@ const Payment = () => {
 
     const transaction_date = date !== initialDate ? new Date(`${date}T12:00:00`).toISOString() : undefined;
 
-    if (isEdit && transactionId) {
-      const result = await dispatch(
-        updateTransactionById({
-          id: transactionId,
-          data: {
-            amount: value,
-            description: description.trim() || undefined,
-            transaction_type: transactionType,
-            transaction_date,
-            ...(attachmentKey != null ? { attachment_key: attachmentKey } : {})
+    setSubmitting(true);
+    try {
+      if (isEdit && transactionId) {
+        let attachmentPatch: { attachment_key?: string } = {};
+        if (attachmentFile) {
+          try {
+            const uploaded = await uploadService.uploadFile(attachmentFile, 'attachment', transactionId);
+            attachmentPatch = { attachment_key: uploaded.key };
+          } catch (error) {
+            showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+            return;
           }
+        } else if (attachmentCleared) {
+          attachmentPatch = { attachment_key: '' };
+        }
+
+        const result = await dispatch(
+          updateTransactionById({
+            id: transactionId,
+            data: {
+              amount: value,
+              description: description.trim() || undefined,
+              transaction_type: transactionType,
+              transaction_date,
+              ...attachmentPatch
+            }
+          })
+        );
+        if (updateTransactionById.fulfilled.match(result)) navigate(-1);
+        else showSnackbar({ message: (result.payload as string) || t('payment.failedUpdateEntry'), type: 'error' });
+        return;
+      }
+
+      if (!user?.business_id) {
+        showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
+        return;
+      }
+      const result = await dispatch(
+        createTransaction({
+          customer: { _id: customer.id, name: customer.name },
+          amount: value,
+          transaction_type: transactionType,
+          description: description.trim() || '',
+          transaction_date
         })
       );
-      if (updateTransactionById.fulfilled.match(result)) navigate(-1);
-      else showSnackbar({ message: (result.payload as string) || t('payment.failedUpdateEntry'), type: 'error' });
-      return;
-    }
+      if (!createTransaction.fulfilled.match(result)) {
+        showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
+        return;
+      }
 
-    if (!user?.business_id) {
-      showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
-      return;
+      if (attachmentFile) {
+        try {
+          const newTransactionId = result.payload.transaction._id;
+          const uploaded = await uploadService.uploadFile(attachmentFile, 'attachment', newTransactionId);
+          await dispatch(updateTransactionById({ id: newTransactionId, data: { attachment_key: uploaded.key } }));
+        } catch (error) {
+          showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+        }
+      }
+
+      setSuccess(true);
+    } finally {
+      setSubmitting(false);
     }
-    const result = await dispatch(
-      createTransaction({
-        customer: { _id: customer.id, name: customer.name },
-        amount: value,
-        transaction_type: transactionType,
-        description: description.trim() || '',
-        transaction_date,
-        ...(attachmentKey ? { attachment_key: attachmentKey } : {})
-      })
-    );
-    if (createTransaction.fulfilled.match(result)) setSuccess(true);
-    else showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
   };
 
   const keypadHandlers = {
@@ -353,7 +379,7 @@ const Payment = () => {
             <Box
               component="button"
               onClick={handleAttachBills}
-              disabled={attachmentUploading}
+              disabled={submitting}
               sx={{
                 flex: 1,
                 minWidth: 0,
@@ -366,9 +392,9 @@ const Payment = () => {
                 bgcolor: c.surface,
                 color: attachmentUrl ? accentDeep : c.greyLight,
                 pl: 1.5,
-                pr: attachmentUrl && !attachmentUploading ? 4 : 1.5,
+                pr: attachmentUrl ? 4 : 1.5,
                 py: 1.25,
-                cursor: attachmentUploading ? 'default' : 'pointer',
+                cursor: submitting ? 'default' : 'pointer',
                 fontFamily: DISPLAY
               }}
             >
@@ -386,9 +412,9 @@ const Payment = () => {
                   whiteSpace: 'nowrap'
                 }}
               >
-                {attachmentUploading ? t('payment.uploadingImage') : attachmentUrl ? t('payment.imageAttached') : t('payment.attachBills')}
+                {attachmentUrl ? t('payment.imageAttached') : t('payment.attachBills')}
               </Typography>
-              {attachmentUrl && !attachmentUploading && (
+              {attachmentUrl && !submitting && (
                 <Box
                   component="span"
                   onClick={handleRemoveAttachment}
@@ -462,8 +488,8 @@ const Payment = () => {
                 memory={calc.memory}
                 {...keypadHandlers}
                 onSubmit={handleSubmit}
-                submitDisabled={loading}
-                submitLabel={loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
+                submitDisabled={loading || submitting}
+                submitLabel={loading || submitting ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
               />
             </Box>
           ) : (
@@ -471,11 +497,11 @@ const Payment = () => {
               fullWidth
               size="large"
               variant="contained"
-              disabled={loading}
+              disabled={loading || submitting}
               onClick={handleSubmit}
               sx={{ bgcolor: accent, boxShadow: 'none', '&:hover': { bgcolor: accentDeep } }}
             >
-              {loading ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
+              {loading || submitting ? t('common.saving') : isEdit ? t('payment.update') : t('payment.saveEntry')}
             </Button>
           )}
         </Container>
