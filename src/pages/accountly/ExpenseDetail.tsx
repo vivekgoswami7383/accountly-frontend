@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -119,21 +120,24 @@ const ExpenseDetail = () => {
                   </Typography>
                 </Box>
               </Stack>
-            </AppCard>
 
-            {selectedExpense!.note && (
-              <AppCard sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2 }}>
-                <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
-                  <FileText />
-                </IconDot>
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('expenseDetail.note')}</Typography>
-                  <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
-                    {selectedExpense!.note}
-                  </Typography>
-                </Box>
-              </AppCard>
-            )}
+              {selectedExpense!.note && (
+                <>
+                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                    <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                      <FileText />
+                    </IconDot>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('expenseDetail.note')}</Typography>
+                      <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                        {selectedExpense!.note}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </>
+              )}
+            </AppCard>
           </Stack>
         )}
       </Container>

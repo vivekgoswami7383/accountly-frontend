@@ -138,38 +138,42 @@ const TransactionDetail = () => {
                   </Typography>
                 </Box>
               </Stack>
+
+              {selectedTransaction!.description && (
+                <>
+                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                    <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                      <FileText />
+                    </IconDot>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.note')}</Typography>
+                      <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                        {selectedTransaction!.description}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </>
+              )}
+
+              {selectedTransaction!.attachmentUrl && (
+                <>
+                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
+                  <ListRow onClick={() => window.open(selectedTransaction!.attachmentUrl, '_blank', 'noopener,noreferrer')}>
+                    <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
+                      <Paperclip />
+                    </IconDot>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.attachment')}</Typography>
+                      <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
+                        {t('transactionDetail.viewAttachment')}
+                      </Typography>
+                    </Box>
+                    <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
+                  </ListRow>
+                </>
+              )}
             </AppCard>
-
-            {selectedTransaction!.description && (
-              <AppCard sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2 }}>
-                <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
-                  <FileText />
-                </IconDot>
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.note')}</Typography>
-                  <Typography sx={{ fontSize: 14, color: c.ink, mt: 0.25, lineHeight: 1.5, wordBreak: 'break-word' }}>
-                    {selectedTransaction!.description}
-                  </Typography>
-                </Box>
-              </AppCard>
-            )}
-
-            {selectedTransaction!.attachmentUrl && (
-              <AppCard sx={{ overflow: 'hidden' }}>
-                <ListRow onClick={() => window.open(selectedTransaction!.attachmentUrl, '_blank', 'noopener,noreferrer')}>
-                  <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
-                    <Paperclip />
-                  </IconDot>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.attachment')}</Typography>
-                    <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
-                      {t('transactionDetail.viewAttachment')}
-                    </Typography>
-                  </Box>
-                  <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
-                </ListRow>
-              </AppCard>
-            )}
           </Stack>
         )}
       </Container>
