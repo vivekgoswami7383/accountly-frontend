@@ -1,7 +1,7 @@
-import { ReactNode, MouseEvent, useState } from 'react';
+import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Container, Divider, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { Store, ArrowLeft, User, Settings, LogOut } from 'lucide-react';
+import { Avatar, Box, Container, IconButton, Stack, Typography } from '@mui/material';
+import { Store, ArrowLeft } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -16,16 +16,9 @@ interface AppHeaderProps {
 
 const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps) => {
   const navigate = useNavigate();
-  const { user, business, logout } = useAuth();
+  const { user, business } = useAuth();
   const c = useAccountlyColors();
   const t = useT();
-  const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
-
-  const doLogout = async () => {
-    setMenuEl(null);
-    await logout();
-    navigate('/login', { state: { from: '' } });
-  };
 
   const roleLabel = t(`role.${user?.role || 'owner'}`);
 
@@ -55,7 +48,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                   {roleLabel} · {t('header.manageKhata')}
                 </Typography>
               </Box>
-              <IconButton onClick={(e: MouseEvent<HTMLElement>) => setMenuEl(e.currentTarget)} sx={{ p: 0.5 }}>
+              <IconButton onClick={() => navigate('/more')} sx={{ p: 0.5 }}>
                 <Box sx={{ position: 'relative' }}>
                   <Avatar sx={{ width: 38, height: 38, bgcolor: c.redDeep, fontFamily: DISPLAY, fontWeight: 500, fontSize: 15 }}>
                     {(user?.name || 'U')[0].toUpperCase()}
@@ -74,25 +67,6 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                   />
                 </Box>
               </IconButton>
-              <Menu
-                anchorEl={menuEl}
-                open={Boolean(menuEl)}
-                onClose={() => setMenuEl(null)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                PaperProps={{ sx: { minWidth: 220, py: 0.5 } }}
-              >
-                <MenuItem onClick={() => { setMenuEl(null); navigate('/profile'); }} sx={{ gap: 1.5, py: 1.25 }}>
-                  <User size={18} /> {t('menu.profile')}
-                </MenuItem>
-                <MenuItem onClick={() => { setMenuEl(null); navigate('/settings'); }} sx={{ gap: 1.5, py: 1.25 }}>
-                  <Settings size={18} /> {t('menu.settings')}
-                </MenuItem>
-                <Divider sx={{ my: 0.5 }} />
-                <MenuItem onClick={doLogout} sx={{ color: c.red, gap: 1.5, py: 1.25 }}>
-                  <LogOut size={18} /> {t('menu.logout')}
-                </MenuItem>
-              </Menu>
             </>
           ) : (
             <>
