@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ComponentProps, ReactNode, forwardRef } from 'react';
 import { Box, ButtonBase, Container, Stack, Typography, alpha } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -43,7 +43,7 @@ export const AppCard = styled(Box)(({ theme }) => ({
   color: (theme as any).accountly.ink
 }));
 
-export const ListRow = styled(ButtonBase)(({ theme }) => {
+const StyledListRow = styled(ButtonBase)(({ theme }) => {
   const c = (theme as any).accountly;
   return {
     width: '100%',
@@ -56,12 +56,17 @@ export const ListRow = styled(ButtonBase)(({ theme }) => {
     color: c.ink,
     transition: 'background-color .15s ease',
     WebkitTapHighlightColor: 'transparent',
+    touchAction: 'manipulation',
     '@media (hover: hover) and (pointer: fine)': {
       '&:hover': { backgroundColor: alpha(c.ink, 0.04) }
     },
     '&:active': { backgroundColor: alpha(c.ink, 0.08) }
   };
 });
+
+export const ListRow = forwardRef<HTMLButtonElement, ComponentProps<typeof StyledListRow>>((props, ref) => (
+  <StyledListRow ref={ref} disableRipple disableTouchRipple {...props} />
+));
 
 export const BalanceTag = styled(Box)<{ tone: 'get' | 'give' }>(({ theme, tone }) => {
   const c = (theme as any).accountly;
