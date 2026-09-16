@@ -126,10 +126,16 @@ export const createAccountlyTheme = (mode: AccountlyMode): Theme => {
       MuiCssBaseline: {
         styleOverrides: {
           body: { fontFamily: FONT },
-          'input, textarea, select, button': { fontFamily: FONT }
+          'input, textarea, select, button': { fontFamily: FONT },
+          'a, button, [role="button"]': { WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }
         }
       },
       MuiInputBase: { styleOverrides: { root: { fontFamily: FONT } } },
+      MuiButtonBase: {
+        styleOverrides: {
+          root: { WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }
+        }
+      },
       MuiButton: {
         defaultProps: { disableElevation: true },
         styleOverrides: {

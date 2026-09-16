@@ -55,7 +55,10 @@ export const ListRow = styled(ButtonBase)(({ theme }) => {
     textAlign: 'left',
     color: c.ink,
     transition: 'background-color .15s ease',
-    '&:hover': { backgroundColor: alpha(c.ink, 0.04) },
+    WebkitTapHighlightColor: 'transparent',
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': { backgroundColor: alpha(c.ink, 0.04) }
+    },
     '&:active': { backgroundColor: alpha(c.ink, 0.08) }
   };
 });

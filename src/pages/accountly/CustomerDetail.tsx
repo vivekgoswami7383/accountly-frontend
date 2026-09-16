@@ -345,7 +345,15 @@ const CustomerDetail = () => {
             <Fade delay={0.05}>
               <Box>
                 <SectionHeader title={t('detail.transactions')} />
-                <AppCard sx={{ overflowX: 'hidden', overflowY: 'auto', maxHeight: 'clamp(220px, calc(100dvh - 420px), 480px)' }}>
+                <AppCard
+                  sx={{
+                    overflowX: 'hidden',
+                    overflowY: 'auto',
+                    maxHeight: 'clamp(220px, calc(100dvh - 420px), 480px)',
+                    WebkitOverflowScrolling: 'touch',
+                    overscrollBehavior: 'contain'
+                  }}
+                >
                   {customerTransactions.map((tx, i) => {
                     const sent = tx.transaction_type === 'debit';
                     return (
