@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { evaluateExpression, formatExpression, OPERATORS } from 'utils/accountly/calculator';
+import { evaluateExpression, formatExpression, MAX_AMOUNT, OPERATORS } from 'utils/accountly/calculator';
 
 export default function useCalculatorInput() {
   const [expression, setExpression] = useState('');
@@ -16,7 +16,10 @@ export default function useCalculatorInput() {
   }, []);
 
   const pressDigit = useCallback((d: string) => {
-    setExpression((e) => (justEvaluated ? d : e + d));
+    setExpression((e) => {
+      const next = justEvaluated ? d : e + d;
+      return evaluateExpression(next) > MAX_AMOUNT ? e : next;
+    });
     setJustEvaluated(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [justEvaluated]);
@@ -65,7 +68,8 @@ export default function useCalculatorInput() {
   const pressEquals = useCallback(() => {
     setExpression((e) => {
       if (!e || !OPERATORS.some((op) => e.includes(op))) return e;
-      return String(evaluateExpression(e));
+      const result = evaluateExpression(e);
+      return result > MAX_AMOUNT ? e : String(result);
     });
     setJustEvaluated(true);
   }, []);

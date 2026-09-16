@@ -7,6 +7,7 @@ import { createExpense, fetchExpenseById, updateExpenseById } from 'store/reduce
 import { ExpenseCategory } from 'services/accountly/types';
 import useSnackbar from 'hooks/useSnackbar';
 import useCalculatorInput from 'hooks/useCalculatorInput';
+import { MAX_AMOUNT } from 'utils/accountly/calculator';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_LIST, expenseCategoryLabelKey } from 'utils/accountly/expenseCategories';
 import { getCurrency } from 'data/currencies';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
@@ -98,7 +99,7 @@ const AddExpense = () => {
   const handleSubmit = async () => {
     const value = calc.amount;
     let hasError = false;
-    if (!calc.expression || isNaN(value) || value <= 0) {
+    if (!calc.expression || isNaN(value) || value <= 0 || value > MAX_AMOUNT) {
       setAmountError(true);
       hasError = true;
     }

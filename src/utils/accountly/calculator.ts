@@ -1,5 +1,7 @@
 import { formatAmountInput } from './format';
 
+export const MAX_AMOUNT = 999999999999;
+
 export const OPERATORS = ['+', '-', '×', '÷', '%'];
 const OPERATOR_REGEX = /[+\-×÷%]/;
 

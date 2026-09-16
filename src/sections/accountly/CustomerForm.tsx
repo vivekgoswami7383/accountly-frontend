@@ -6,6 +6,7 @@ import { CountryType } from 'data/countries';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
+import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 export interface CustomerFormValues {
   name: string;
@@ -70,6 +71,7 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
             error={errors.name}
             helperText={errors.name ? t('customerForm.nameRequired') : undefined}
             onChange={(e) => setName(e.target.value)}
+            inputProps={{ maxLength: MAX_NAME_LENGTH }}
             InputProps={{ startAdornment: <InputAdornment position="start"><User size={18} color={c.greyLight} /></InputAdornment> }}
           />
         </Box>

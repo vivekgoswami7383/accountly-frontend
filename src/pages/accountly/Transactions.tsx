@@ -356,7 +356,14 @@ const Transactions = () => {
                     component="input"
                     type="date"
                     value={draftFilters.customStart}
-                    onChange={(e: any) => setDraftFilters((f) => ({ ...f, customStart: e.target.value }))}
+                    max={draftFilters.customEnd || undefined}
+                    onChange={(e: any) =>
+                      setDraftFilters((f) => ({
+                        ...f,
+                        customStart: e.target.value,
+                        customEnd: f.customEnd && e.target.value > f.customEnd ? e.target.value : f.customEnd
+                      }))
+                    }
                     sx={{
                       flex: 1,
                       minWidth: 0,
@@ -389,7 +396,13 @@ const Transactions = () => {
                     component="input"
                     type="date"
                     value={draftFilters.customEnd}
-                    onChange={(e: any) => setDraftFilters((f) => ({ ...f, customEnd: e.target.value }))}
+                    min={draftFilters.customStart || undefined}
+                    onChange={(e: any) =>
+                      setDraftFilters((f) => ({
+                        ...f,
+                        customEnd: f.customStart && e.target.value < f.customStart ? f.customStart : e.target.value
+                      }))
+                    }
                     sx={{
                       flex: 1,
                       minWidth: 0,
