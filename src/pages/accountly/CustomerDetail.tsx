@@ -350,7 +350,6 @@ const CustomerDetail = () => {
                     overflowX: 'hidden',
                     overflowY: 'auto',
                     maxHeight: 'clamp(220px, calc(100dvh - 420px), 480px)',
-                    WebkitOverflowScrolling: 'touch',
                     overscrollBehavior: 'contain'
                   }}
                 >
@@ -402,11 +401,8 @@ const CustomerDetail = () => {
           pt: 1.5,
           pb: 'calc(12px + env(safe-area-inset-bottom, 0px))',
           background: `linear-gradient(180deg, rgba(238,241,245,0) 0%, ${c.bg} 40%)`,
-          backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
           transform: 'translateZ(0)',
           WebkitTransform: 'translate3d(0,0,0)',
-          willChange: 'backdrop-filter',
           pointerEvents: 'none'
         }}
       >
