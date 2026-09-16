@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ComponentProps, ReactNode, forwardRef } from 'react';
 import { Box, ButtonBase, Container, Stack, Typography, alpha } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -17,12 +17,9 @@ export const BottomActionBar = ({ children }: { children: ReactNode }) => {
         right: 0,
         bottom: 0,
         zIndex: 25,
-        bgcolor: alpha(c.surface, 0.55),
-        backdropFilter: 'blur(22px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+        bgcolor: c.surface,
         transform: 'translateZ(0)',
         WebkitTransform: 'translate3d(0,0,0)',
-        willChange: 'backdrop-filter',
         borderTop: `1px solid ${c.line}`,
         boxShadow: '0 -8px 24px -12px rgba(20,23,26,0.12)',
         pt: 1.5,
@@ -43,7 +40,7 @@ export const AppCard = styled(Box)(({ theme }) => ({
   color: (theme as any).accountly.ink
 }));
 
-export const ListRow = styled(ButtonBase)(({ theme }) => {
+const StyledListRow = styled(ButtonBase)(({ theme }) => {
   const c = (theme as any).accountly;
   return {
     width: '100%',
@@ -55,10 +52,18 @@ export const ListRow = styled(ButtonBase)(({ theme }) => {
     textAlign: 'left',
     color: c.ink,
     transition: 'background-color .15s ease',
-    '&:hover': { backgroundColor: alpha(c.ink, 0.04) },
+    WebkitTapHighlightColor: 'transparent',
+    touchAction: 'manipulation',
+    '@media (hover: hover) and (pointer: fine)': {
+      '&:hover': { backgroundColor: alpha(c.ink, 0.04) }
+    },
     '&:active': { backgroundColor: alpha(c.ink, 0.08) }
   };
 });
+
+export const ListRow = forwardRef<HTMLButtonElement, ComponentProps<typeof StyledListRow>>((props, ref) => (
+  <StyledListRow ref={ref} disableRipple disableTouchRipple {...props} />
+));
 
 export const BalanceTag = styled(Box)<{ tone: 'get' | 'give' }>(({ theme, tone }) => {
   const c = (theme as any).accountly;

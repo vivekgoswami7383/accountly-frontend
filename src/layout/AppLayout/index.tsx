@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { alpha, Box, ButtonBase, Container, CssBaseline, Stack, ThemeProvider, Typography } from '@mui/material';
+import { Box, ButtonBase, Container, CssBaseline, Stack, ThemeProvider, Typography } from '@mui/material';
 import { Home, Users, ArrowRightLeft, LayoutGrid } from 'lucide-react';
 import { createAccountlyTheme, getAccountlyColors, shadow } from 'themes/accountly';
 import useConfig from 'hooks/useConfig';
@@ -72,15 +72,10 @@ const AppLayout = () => {
               <Box
                 sx={{
                   pointerEvents: 'auto',
-                  bgcolor: alpha(c.surface, 0.55),
-                  backdropFilter: 'blur(22px) saturate(180%)',
-                  WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+                  bgcolor: c.surface,
                   borderRadius: '26px',
                   boxShadow: shadow.nav,
-                  overflow: 'hidden',
-                  transform: 'translateZ(0)',
-                  WebkitTransform: 'translate3d(0,0,0)',
-                  willChange: 'backdrop-filter'
+                  overflow: 'hidden'
                 }}
               >
                 <Stack direction="row" sx={{ height: 62 }}>
