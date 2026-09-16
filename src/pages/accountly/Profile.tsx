@@ -8,6 +8,7 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
+import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 const Label = ({ children }: { children: string }) => {
   const c = useAccountlyColors();
@@ -62,7 +63,9 @@ const Profile = () => {
             >
               {(user?.name || 'U')[0].toUpperCase()}
             </Box>
-            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17 }}>{user?.name || 'User'}</Typography>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17, wordBreak: 'break-word' }}>
+              {user?.name || 'User'}
+            </Typography>
             <Typography sx={{ color: c.grey, fontSize: 13 }}>{t(`role.${user?.role || 'owner'}`)}</Typography>
           </AppCard>
 
@@ -83,11 +86,18 @@ const Profile = () => {
                   value={businessName}
                   disabled={!editing || !isOwner}
                   onChange={(e) => setBusinessName(e.target.value)}
+                  inputProps={{ maxLength: MAX_NAME_LENGTH }}
                 />
               </Box>
               <Box>
                 <Label>{t('common.name')}</Label>
-                <TextField fullWidth value={name} disabled={!editing} onChange={(e) => setName(e.target.value)} />
+                <TextField
+                  fullWidth
+                  value={name}
+                  disabled={!editing}
+                  onChange={(e) => setName(e.target.value)}
+                  inputProps={{ maxLength: MAX_NAME_LENGTH }}
+                />
               </Box>
               <Box>
                 <Label>{t('common.phone')}</Label>

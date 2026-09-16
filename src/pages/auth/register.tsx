@@ -22,6 +22,7 @@ import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/Country
 import { CountryType } from 'data/countries';
 import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
+import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ const Register = () => {
                 value={form.business_name}
                 error={errors.business_name}
                 onChange={set('business_name')}
+                inputProps={{ maxLength: MAX_NAME_LENGTH }}
                 InputProps={{ startAdornment: <InputAdornment position="start"><Store size={18} color={c.greyLight} /></InputAdornment> }}
               />
               <TextField
@@ -89,6 +91,7 @@ const Register = () => {
                 value={form.name}
                 error={errors.name}
                 onChange={set('name')}
+                inputProps={{ maxLength: MAX_NAME_LENGTH }}
                 InputProps={{ startAdornment: <InputAdornment position="start"><User size={18} color={c.greyLight} /></InputAdornment> }}
               />
               <TextField

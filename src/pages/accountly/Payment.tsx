@@ -10,6 +10,7 @@ import uploadService from 'services/accountly/uploadService';
 import useAuth from 'hooks/useAuth';
 import useSnackbar from 'hooks/useSnackbar';
 import useCalculatorInput from 'hooks/useCalculatorInput';
+import { MAX_AMOUNT } from 'utils/accountly/calculator';
 import { getCurrency } from 'data/currencies';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -151,7 +152,7 @@ const Payment = () => {
 
   const handleSubmit = async () => {
     const value = calc.amount;
-    if (!calc.expression || isNaN(value) || value <= 0) {
+    if (!calc.expression || isNaN(value) || value <= 0 || value > MAX_AMOUNT) {
       setAmountError(true);
       return;
     }
