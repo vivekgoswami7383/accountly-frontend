@@ -134,7 +134,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
       name: payload.name ?? state.user?.name ?? '',
       phone: payload.phone ?? state.user?.phone ?? '',
       theme: payload.theme ?? state.user?.theme ?? 'dark',
-      language: payload.language ?? state.user?.language ?? 'en'
+      language: payload.language ?? state.user?.language ?? 'en',
+      avatar_key: payload.avatar_key ?? state.user?.avatar_key ?? ''
     };
     await axios.patch(`/api/user/${userId}`, body);
     const response = await axios.get('/api/auth/me');

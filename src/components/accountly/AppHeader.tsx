@@ -50,7 +50,10 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
               </Box>
               <IconButton onClick={() => navigate('/more')} sx={{ p: 0.5 }}>
                 <Box sx={{ position: 'relative' }}>
-                  <Avatar sx={{ width: 38, height: 38, bgcolor: c.redDeep, fontFamily: DISPLAY, fontWeight: 500, fontSize: 15 }}>
+                  <Avatar
+                    src={user?.avatar_url || undefined}
+                    sx={{ width: 38, height: 38, bgcolor: c.redDeep, fontFamily: DISPLAY, fontWeight: 500, fontSize: 15 }}
+                  >
                     {(user?.name || 'U')[0].toUpperCase()}
                   </Avatar>
                   <Box

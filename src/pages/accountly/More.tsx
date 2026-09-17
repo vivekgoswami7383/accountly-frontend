@@ -33,9 +33,26 @@ const More = () => {
         <Stack spacing={2.5}>
           <AppCard sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
-              sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 500, fontSize: 22, flexShrink: 0 }}
+              sx={{
+                width: 56,
+                height: 56,
+                borderRadius: '50%',
+                bgcolor: user?.avatar_url ? 'transparent' : c.redDeep,
+                color: '#fff',
+                display: 'grid',
+                placeItems: 'center',
+                fontFamily: DISPLAY,
+                fontWeight: 500,
+                fontSize: 22,
+                flexShrink: 0,
+                overflow: 'hidden'
+              }}
             >
-              {(user?.name || 'U')[0].toUpperCase()}
+              {user?.avatar_url ? (
+                <Box component="img" src={user.avatar_url} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                (user?.name || 'U')[0].toUpperCase()
+              )}
             </Box>
             <Box sx={{ minWidth: 0 }}>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }} noWrap>

@@ -6,6 +6,7 @@ import { CountryType } from 'data/countries';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { BottomActionBar, FOOTER_SPACE, FormAlert } from 'components/accountly/kit';
+import UploadableAvatar from 'components/accountly/UploadableAvatar';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 export interface CustomerFormValues {
@@ -20,6 +21,9 @@ interface CustomerFormProps {
   submitLabel: string;
   loading?: boolean;
   error?: string | null;
+  imageUrl?: string | null;
+  imageUploading?: boolean;
+  onImageSelect?: (file: File) => void;
   onSubmit: (values: { name: string; phone: string; address: string }) => void;
 }
 
@@ -34,7 +38,7 @@ const Label = ({ children }: { children: string }) => {
   );
 };
 
-const CustomerForm = ({ initial, submitLabel, loading, error, onSubmit }: CustomerFormProps) => {
+const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, imageUploading, onImageSelect, onSubmit }: CustomerFormProps) => {
   const c = useAccountlyColors();
   const t = useT();
   const [name, setName] = useState(initial?.name || '');
@@ -55,11 +59,23 @@ const CustomerForm = ({ initial, submitLabel, loading, error, onSubmit }: Custom
   return (
     <Box sx={{ pb: FOOTER_SPACE }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3.5 }}>
-        <Box
-          sx={{ width: 84, height: 84, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 30 }}
-        >
-          {initials(name || 'C')}
-        </Box>
+        {onImageSelect ? (
+          <UploadableAvatar
+            size={84}
+            imageUrl={imageUrl}
+            fallback={initials(name || 'C')}
+            bg={av.bg}
+            fg={av.fg}
+            uploading={imageUploading}
+            onSelect={onImageSelect}
+          />
+        ) : (
+          <Box
+            sx={{ width: 84, height: 84, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 30 }}
+          >
+            {initials(name || 'C')}
+          </Box>
+        )}
       </Box>
 
       <Stack spacing={2.5}>

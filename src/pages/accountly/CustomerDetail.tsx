@@ -164,9 +164,26 @@ const CustomerDetail = () => {
   const headerTitle = (
     <Stack direction="row" alignItems="center" spacing={1.25} sx={{ minWidth: 0 }}>
       <Box
-        sx={{ width: 38, height: 38, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 13, flexShrink: 0 }}
+        sx={{
+          width: 38,
+          height: 38,
+          borderRadius: '50%',
+          display: 'grid',
+          placeItems: 'center',
+          bgcolor: customer?.imageUrl ? 'transparent' : av.bg,
+          color: av.fg,
+          fontFamily: DISPLAY,
+          fontWeight: 500,
+          fontSize: 13,
+          flexShrink: 0,
+          overflow: 'hidden'
+        }}
       >
-        {initials(customer?.name || 'C')}
+        {customer?.imageUrl ? (
+          <Box component="img" src={customer.imageUrl} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          initials(customer?.name || 'C')
+        )}
       </Box>
       <Box sx={{ minWidth: 0 }}>
         <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15.5, color: c.ink, lineHeight: 1.15 }} noWrap>

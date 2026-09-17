@@ -195,9 +195,26 @@ const Dashboard = () => {
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
                         <ListRow onClick={() => navigate(`/customer/${cust._id}`)}>
                           <Box
-                            sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 14, flexShrink: 0 }}
+                            sx={{
+                              width: 44,
+                              height: 44,
+                              borderRadius: '50%',
+                              display: 'grid',
+                              placeItems: 'center',
+                              bgcolor: cust.image_url ? 'transparent' : av.bg,
+                              color: av.fg,
+                              fontFamily: DISPLAY,
+                              fontWeight: 500,
+                              fontSize: 14,
+                              flexShrink: 0,
+                              overflow: 'hidden'
+                            }}
                           >
-                            {initials(cust.name)}
+                            {cust.image_url ? (
+                              <Box component="img" src={cust.image_url} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              initials(cust.name)
+                            )}
                           </Box>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
                             <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>

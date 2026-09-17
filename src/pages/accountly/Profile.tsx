@@ -7,7 +7,9 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BottomActionBar, FOOTER_SPACE, FormAlert } from 'components/accountly/kit';
+import UploadableAvatar from 'components/accountly/UploadableAvatar';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
+import uploadService from 'services/accountly/uploadService';
 
 const Label = ({ children }: { children: string }) => {
   const c = useAccountlyColors();
@@ -29,11 +31,28 @@ const Profile = () => {
   const [name, setName] = useState(user?.name || '');
   const [error, setError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => {
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
   }, []);
+
+  const userId = (user as any)?._id || user?.id;
+
+  const handleAvatarSelect = async (file: File) => {
+    if (!userId) return;
+    setError(null);
+    setAvatarUploading(true);
+    try {
+      const uploaded = await uploadService.uploadFile(file, 'avatar', userId);
+      await updateProfile({ avatar_key: uploaded.key });
+    } catch (e: any) {
+      setError(e?.message || t('profile.failedAvatarUpload'));
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -68,10 +87,16 @@ const Profile = () => {
         <Stack spacing={2.5}>
           <FormAlert message={error} />
           <AppCard sx={{ p: 3, textAlign: 'center' }}>
-            <Box
-              sx={{ width: 76, height: 76, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 500, fontSize: 28, mx: 'auto', mb: 1.5 }}
-            >
-              {(user?.name || 'U')[0].toUpperCase()}
+            <Box sx={{ mb: 1.5 }}>
+              <UploadableAvatar
+                size={76}
+                imageUrl={user?.avatar_url}
+                fallback={(user?.name || 'U')[0].toUpperCase()}
+                bg={c.redDeep}
+                fg="#fff"
+                uploading={avatarUploading}
+                onSelect={handleAvatarSelect}
+              />
             </Box>
             <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17, wordBreak: 'break-word' }}>
               {user?.name || 'User'}

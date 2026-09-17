@@ -5,6 +5,8 @@ export interface ApiCustomer {
   address?: string;
   balance: number;
   business_id: string;
+  image_key?: string;
+  image_url?: string;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
@@ -21,6 +23,7 @@ export interface Customer {
   totalAmount: number;
   paidAmount: number;
   pendingAmount: number;
+  imageUrl: string;
   status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
@@ -36,6 +39,7 @@ export interface UpdateCustomerRequest {
   name?: string;
   phone?: string;
   address?: string;
+  image_key?: string;
 }
 
 export type TransactionType = 'debit' | 'credit';
@@ -87,6 +91,7 @@ export interface RecentCustomer {
   balance: number;
   status: number;
   business_id: string;
+  image_url?: string;
 }
 
 export interface ApiTransaction {

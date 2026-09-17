@@ -11,6 +11,8 @@ export type UserProfile = {
   _id?: string;
   email?: string;
   avatar?: string;
+  avatar_key?: string;
+  avatar_url?: string;
   image?: string;
   name?: string;
   first_name?: string;
@@ -30,6 +32,7 @@ export type BusinessProfile = {
   business_type?: string;
   address?: string;
   logo?: string;
+  logo_url?: string;
   gst_number?: string;
   currency?: string;
 };

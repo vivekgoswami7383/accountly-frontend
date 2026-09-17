@@ -46,6 +46,7 @@ export const customerService = {
       totalAmount: apiCustomer.balance,
       paidAmount: apiCustomer.balance,
       pendingAmount: 0,
+      imageUrl: apiCustomer.image_url || '',
       status: 'active',
       createdAt,
       updatedAt
