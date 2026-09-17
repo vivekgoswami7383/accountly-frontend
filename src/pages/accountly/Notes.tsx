@@ -10,7 +10,7 @@ import { useT } from 'i18n/accountly';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, IconDot, ListRow } from 'components/accountly/kit';
-import trade from 'assets/images/accountly/illustrations/trade.png';
+import { NotesEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const notePreview = (content: string, title: string) => {
   const rest = content.startsWith(title) ? content.slice(title.length) : content;
@@ -104,7 +104,9 @@ const Notes = () => {
             </AppCard>
           ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
-              <Box component="img" src={trade} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
+              <Box sx={{ mb: 1.75 }}>
+                <NotesEmptyIllustration />
+              </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
                 {query ? t('customers.noMatches') : t('notes.noNotesYet')}
               </Typography>

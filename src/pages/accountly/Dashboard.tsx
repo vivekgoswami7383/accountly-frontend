@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Skeleton, Stack, Typography, alpha } from '@mui/material';
 import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone } from 'lucide-react';
@@ -9,8 +9,7 @@ import { DISPLAY, shadow, avatarTint, initials, useAccountlyColors } from 'theme
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, IconDot, ListRow, MotionButton, SectionHeader } from 'components/accountly/kit';
-import trade from 'assets/images/accountly/illustrations/trade.png';
-import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
+import { CustomersEmptyIllustration, TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -67,11 +66,11 @@ const ListSkeleton = ({ rows = 3 }: { rows?: number }) => {
   );
 };
 
-const EmptyBlock = ({ img, title, sub, cta, onCta }: { img: string; title: string; sub: string; cta?: string; onCta?: () => void }) => {
+const EmptyBlock = ({ img, title, sub, cta, onCta }: { img: ReactNode; title: string; sub: string; cta?: string; onCta?: () => void }) => {
   const c = useAccountlyColors();
   return (
     <AppCard sx={{ px: 3, py: 4.5, textAlign: 'center' }}>
-      <Box component="img" src={img} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
+      <Box sx={{ mb: 1.75 }}>{img}</Box>
       <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16, color: c.ink }}>{title}</Typography>
       <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5, maxWidth: 260, mx: 'auto', lineHeight: 1.5 }}>{sub}</Typography>
       {cta && (
@@ -227,7 +226,7 @@ const Dashboard = () => {
                 </AppCard>
               ) : (
                 <EmptyBlock
-                  img={trade}
+                  img={<CustomersEmptyIllustration />}
                   title={t('home.noCustomersYet')}
                   sub={t('home.noCustomersSub')}
                   cta={t('home.addCustomerCta')}
@@ -270,7 +269,7 @@ const Dashboard = () => {
                   })}
                 </AppCard>
               ) : (
-                <EmptyBlock img={onlinePayment} title={t('home.noPaymentsYet')} sub={t('home.noPaymentsSub')} />
+                <EmptyBlock img={<TransactionsEmptyIllustration />} title={t('home.noPaymentsYet')} sub={t('home.noPaymentsSub')} />
               )}
             </Box>
           </Fade>

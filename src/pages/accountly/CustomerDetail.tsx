@@ -14,7 +14,7 @@ import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'components/accountly/kit';
 import LedgerDocument from 'components/accountly/LedgerDocument';
-import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
+import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -383,7 +383,9 @@ const CustomerDetail = () => {
             </Fade>
           ) : (
             <AppCard sx={{ px: 3, py: 4.5, textAlign: 'center' }}>
-              <Box component="img" src={onlinePayment} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.5, opacity: 0.95 }} />
+              <Box sx={{ mb: 1.5 }}>
+                <TransactionsEmptyIllustration />
+              </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15.5 }}>{t('detail.noTransactionsYet')}</Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('detail.recordBelow')}</Typography>
             </AppCard>

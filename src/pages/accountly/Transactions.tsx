@@ -25,7 +25,7 @@ import { useT } from 'i18n/accountly';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot } from 'components/accountly/kit';
-import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
+import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -251,7 +251,9 @@ const Transactions = () => {
             </AppCard>
           ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
-              <Box component="img" src={onlinePayment} alt="" sx={{ width: 100, height: 100, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
+              <Box sx={{ mb: 1.75 }}>
+                <TransactionsEmptyIllustration size={100} />
+              </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
                 {query || hasNonDefaultFilter ? t('customers.noMatches') : t('home.noPaymentsYet')}
               </Typography>

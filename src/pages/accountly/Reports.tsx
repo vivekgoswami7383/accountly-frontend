@@ -11,7 +11,7 @@ import { AccountlyColors, DISPLAY, shadow, avatarTint, initials, useAccountlyCol
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow, SectionHeader } from 'components/accountly/kit';
-import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
+import { ReportsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const SectionLabel = ({ children, c }: { children: ReactNode; c: AccountlyColors }) => (
   <Typography sx={{ fontWeight: 500, fontSize: 11.5, color: c.grey, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.25 }}>
@@ -203,7 +203,7 @@ const Reports = () => {
                   <Skeleton variant="rectangular" height={220} sx={{ borderRadius: '12px' }} />
                 ) : daily.length === 0 ? (
                   <Stack alignItems="center" spacing={1} sx={{ py: 3 }}>
-                    <Box component="img" src={onlinePayment} alt="" sx={{ width: 72, height: 72, objectFit: 'contain', opacity: 0.9 }} />
+                    <ReportsEmptyIllustration size={72} />
                     <Typography sx={{ fontWeight: 500, fontSize: 14, color: c.ink }}>{t('reports.noDataYet')}</Typography>
                     <Typography sx={{ color: c.grey, fontSize: 12.5 }}>{t('reports.noDataSub')}</Typography>
                   </Stack>

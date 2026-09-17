@@ -10,7 +10,7 @@ import { useT } from 'i18n/accountly';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
-import trade from 'assets/images/accountly/illustrations/trade.png';
+import { CustomersEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const Customers = () => {
   const navigate = useNavigate();
@@ -101,7 +101,9 @@ const Customers = () => {
             </AppCard>
           ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
-              <Box component="img" src={trade} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 1.75, opacity: 0.95 }} />
+              <Box sx={{ mb: 1.75 }}>
+                <CustomersEmptyIllustration />
+              </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
                 {query ? t('customers.noMatches') : t('home.noCustomersYet')}
               </Typography>
