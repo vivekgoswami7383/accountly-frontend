@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import { Search, SlidersHorizontal, X, Calendar, ListFilter, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchExpenses } from 'store/reducers/accountly/expenses';
-import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
+import { fetchExpenses, fetchExpenseSummary } from 'store/reducers/accountly/expenses';
+import { useFormatAmount, formatDateTime, formatDate } from 'utils/accountly/format';
 import {
   DatePreset,
   ExpenseAppliedFilters,
@@ -26,7 +26,7 @@ import {
   getDateRangeForPreset
 } from 'utils/accountly/dateFilters';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_LIST, expenseCategoryLabelKey } from 'utils/accountly/expenseCategories';
-import { FilterCondition, ExpenseFilter } from 'services/accountly/types';
+import { FilterCondition, ExpenseFilter, Expense } from 'services/accountly/types';
 import { AccountlyColors, DISPLAY, shadow, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
@@ -120,13 +120,66 @@ const ChipButton = ({
   </Box>
 );
 
+const StatCell = ({ label, amount, loading, fmt, c }: { label: string; amount: number; loading: boolean; fmt: (v: number) => string; c: AccountlyColors }) => (
+  <Box sx={{ flex: 1, p: 1.5, textAlign: 'center' }}>
+    <Typography sx={{ fontSize: 11.5, color: c.grey, fontWeight: 500, mb: 0.375 }}>{label}</Typography>
+    {loading ? (
+      <Skeleton variant="text" width={70} height={24} sx={{ mx: 'auto' }} />
+    ) : (
+      <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17, color: c.redDeep }} noWrap>
+        {fmt(amount)}
+      </Typography>
+    )}
+  </Box>
+);
+
+interface ExpenseDayGroup {
+  key: string;
+  label: string;
+  total: number;
+  items: Expense[];
+}
+
+const groupExpensesByDay = (items: Expense[], t: (key: string) => string): ExpenseDayGroup[] => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const groups: ExpenseDayGroup[] = [];
+  const groupByKey = new Map<string, ExpenseDayGroup>();
+
+  items.forEach((ex) => {
+    const d = new Date(ex.expenseDate);
+    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const key = dayStart.toDateString();
+
+    let group = groupByKey.get(key);
+    if (!group) {
+      const label =
+        dayStart.getTime() === today.getTime()
+          ? t('transactions.filterToday')
+          : dayStart.getTime() === yesterday.getTime()
+            ? t('transactions.filterYesterday')
+            : formatDate(ex.expenseDate);
+      group = { key, label, total: 0, items: [] };
+      groupByKey.set(key, group);
+      groups.push(group);
+    }
+    group.total += Number(ex.amount) || 0;
+    group.items.push(ex);
+  });
+
+  return groups;
+};
+
 const Expenses = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { expenses, loading, page, hasMore, loadingMore } = useSelector((s) => s.expenses);
+  const { expenses, loading, page, hasMore, loadingMore, summary, summaryLoading } = useSelector((s) => s.expenses);
   const [query, setQuery] = useState('');
   const [appliedFilters, setAppliedFilters] = useState<ExpenseAppliedFilters>(DEFAULT_EXPENSE_FILTERS);
   const [draftFilters, setDraftFilters] = useState<ExpenseAppliedFilters>(DEFAULT_EXPENSE_FILTERS);
@@ -135,6 +188,10 @@ const Expenses = () => {
   useEffect(() => {
     dispatch(fetchExpenses({ filter: buildFilter(appliedFilters), page: 1 }));
   }, [dispatch, appliedFilters]);
+
+  useEffect(() => {
+    dispatch(fetchExpenseSummary());
+  }, [dispatch]);
 
   const loadMore = () => {
     if (hasMore && !loadingMore) dispatch(fetchExpenses({ filter: buildFilter(appliedFilters), page: page + 1, append: true }));
@@ -150,6 +207,8 @@ const Expenses = () => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expenses, query]);
+
+  const groups = useMemo(() => groupExpensesByDay(filtered, t), [filtered, t]);
 
   const hasNonDefaultFilter = appliedFilters.datePreset !== 'all' || appliedFilters.category !== 'all';
 
@@ -214,6 +273,14 @@ const Expenses = () => {
       <AppHeader variant="screen" title={t('expenses.title')} right={addBtn} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={1.5}>
+          <AppCard sx={{ p: 0, overflow: 'hidden' }}>
+            <Stack direction="row" divider={<Divider orientation="vertical" flexItem sx={{ borderColor: c.line }} />}>
+              <StatCell label={t('transactions.filterToday')} amount={summary?.todayTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
+              <StatCell label={t('transactions.filterThisWeek')} amount={summary?.weekTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
+              <StatCell label={t('transactions.filterThisMonth')} amount={summary?.monthTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
+            </Stack>
+          </AppCard>
+
           <Stack direction="row" spacing={1}>
             <TextField
               fullWidth
@@ -286,32 +353,52 @@ const Expenses = () => {
             </AppCard>
           ) : (
             <Fade>
-              <AppCard sx={{ overflow: 'hidden' }}>
-                {filtered.map((ex, i) => {
-                  const Icon = EXPENSE_CATEGORY_ICONS[ex.category];
-                  return (
-                    <Box key={ex.id}>
-                      {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                      <ListRow onClick={() => navigate(`/expense/${ex.id}`)}>
-                        <IconDot size={44} bg={c.redSoft} fg={c.redDeep}>
-                          <Icon />
-                        </IconDot>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
-                            {t(expenseCategoryLabelKey(ex.category))}
-                          </Typography>
-                          <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
-                            {ex.note || formatDateTime(ex.expenseDate)}
-                          </Typography>
+              {groups.map((group) => (
+                <Box key={group.key} sx={{ mb: 1.5 }}>
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 0.5, mb: 0.75 }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: 11.5, color: c.grey, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {group.label}
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, fontSize: 12.5, color: c.greyLight }}>{fmt(group.total)}</Typography>
+                  </Stack>
+                  <AppCard sx={{ overflow: 'hidden' }}>
+                    {group.items.map((ex, i) => {
+                      const Icon = EXPENSE_CATEGORY_ICONS[ex.category];
+                      return (
+                        <Box key={ex.id}>
+                          {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
+                          <ListRow onClick={() => navigate(`/expense/${ex.id}`)}>
+                            <IconDot size={44} bg={c.redSoft} fg={c.redDeep}>
+                              <Icon />
+                            </IconDot>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
+                                {t(expenseCategoryLabelKey(ex.category))}
+                              </Typography>
+                              <Stack direction="row" spacing={0.5} sx={{ minWidth: 0 }}>
+                                {ex.note && (
+                                  <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500, minWidth: 0, flexShrink: 1 }} noWrap>
+                                    {ex.note}
+                                  </Typography>
+                                )}
+                                {ex.note && (
+                                  <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500, flexShrink: 0 }}>•</Typography>
+                                )}
+                                <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500, flexShrink: 0 }} noWrap>
+                                  {formatDateTime(ex.expenseDate)}
+                                </Typography>
+                              </Stack>
+                            </Box>
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: c.redDeep }} noWrap>
+                              {fmt(ex.amount)}
+                            </Typography>
+                          </ListRow>
                         </Box>
-                        <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: c.redDeep }} noWrap>
-                          {fmt(ex.amount)}
-                        </Typography>
-                      </ListRow>
-                    </Box>
-                  );
-                })}
-              </AppCard>
+                      );
+                    })}
+                  </AppCard>
+                </Box>
+              ))}
 
               {hasMore && !query && (
                 <Box ref={sentinelRef} sx={{ display: 'flex', justifyContent: 'center', py: 2.5 }}>
