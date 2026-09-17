@@ -375,19 +375,9 @@ const Expenses = () => {
                               <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
                                 {t(expenseCategoryLabelKey(ex.category))}
                               </Typography>
-                              <Stack direction="row" spacing={0.5} sx={{ minWidth: 0 }}>
-                                {ex.note && (
-                                  <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500, minWidth: 0, flexShrink: 1 }} noWrap>
-                                    {ex.note}
-                                  </Typography>
-                                )}
-                                {ex.note && (
-                                  <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500, flexShrink: 0 }}>•</Typography>
-                                )}
-                                <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500, flexShrink: 0 }} noWrap>
-                                  {formatDateTime(ex.expenseDate)}
-                                </Typography>
-                              </Stack>
+                              <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
+                                {formatDateTime(ex.expenseDate)}
+                              </Typography>
                             </Box>
                             <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: c.redDeep }} noWrap>
                               {fmt(ex.amount)}
