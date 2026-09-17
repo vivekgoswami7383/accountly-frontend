@@ -8,7 +8,6 @@ import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { TransactionType } from 'services/accountly/types';
 import uploadService from 'services/accountly/uploadService';
 import useAuth from 'hooks/useAuth';
-import useSnackbar from 'hooks/useSnackbar';
 import useCalculatorInput from 'hooks/useCalculatorInput';
 import { MAX_AMOUNT } from 'utils/accountly/calculator';
 import { getCurrency } from 'data/currencies';
@@ -18,6 +17,7 @@ import AppHeader from 'components/accountly/AppHeader';
 import TransactionSuccessAnimation from 'components/accountly/TransactionSuccessAnimation';
 import CalculatorKeypad from 'components/accountly/CalculatorKeypad';
 import useConfig from 'hooks/useConfig';
+import { FormAlert } from 'components/accountly/kit';
 
 const toDateInputValue = (d: Date): string => {
   const yyyy = d.getFullYear();
@@ -40,7 +40,6 @@ const Payment = () => {
   const { id: transactionId } = useParams();
   const [params] = useSearchParams();
   const { user } = useAuth();
-  const { showSnackbar } = useSnackbar();
   const c = useAccountlyColors();
   const t = useT();
   const { currency } = useConfig();
@@ -68,6 +67,7 @@ const Payment = () => {
   const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
   const [attachmentCleared, setAttachmentCleared] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const isEdit = Boolean(transactionId);
 
@@ -151,13 +151,14 @@ const Payment = () => {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     const value = calc.amount;
     if (!calc.expression || isNaN(value) || value <= 0 || value > MAX_AMOUNT) {
       setAmountError(true);
       return;
     }
     if (!customer) {
-      showSnackbar({ message: t('payment.customerNotFound'), type: 'error' });
+      setFormError(t('payment.customerNotFound'));
       return;
     }
 
@@ -172,7 +173,7 @@ const Payment = () => {
             const uploaded = await uploadService.uploadFile(attachmentFile, 'attachment', transactionId);
             attachmentPatch = { attachment_key: uploaded.key };
           } catch (error) {
-            showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+            setFormError(t('payment.failedAttachImage'));
             return;
           }
         } else if (attachmentCleared) {
@@ -192,12 +193,12 @@ const Payment = () => {
           })
         );
         if (updateTransactionById.fulfilled.match(result)) navigate(-1);
-        else showSnackbar({ message: (result.payload as string) || t('payment.failedUpdateEntry'), type: 'error' });
+        else setFormError((result.payload as string) || t('payment.failedUpdateEntry'));
         return;
       }
 
       if (!user?.business_id) {
-        showSnackbar({ message: t('customerForm.businessInfoNotFound'), type: 'error' });
+        setFormError(t('customerForm.businessInfoNotFound'));
         return;
       }
       const result = await dispatch(
@@ -210,7 +211,7 @@ const Payment = () => {
         })
       );
       if (!createTransaction.fulfilled.match(result)) {
-        showSnackbar({ message: (result.payload as string) || t('payment.failedRecordEntry'), type: 'error' });
+        setFormError((result.payload as string) || t('payment.failedRecordEntry'));
         return;
       }
 
@@ -220,7 +221,7 @@ const Payment = () => {
           const uploaded = await uploadService.uploadFile(attachmentFile, 'attachment', newTransactionId);
           await dispatch(updateTransactionById({ id: newTransactionId, data: { attachment_key: uploaded.key } }));
         } catch (error) {
-          showSnackbar({ message: t('payment.failedAttachImage'), type: 'error' });
+          setFormError(t('payment.failedAttachImage'));
         }
       }
 
@@ -260,6 +261,7 @@ const Payment = () => {
       />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: 'calc(500px + env(safe-area-inset-bottom, 0px))' }}>
         <Stack spacing={2.25}>
+          <FormAlert message={formError} />
           <Box
             component="button"
             ref={amountBoxRef}

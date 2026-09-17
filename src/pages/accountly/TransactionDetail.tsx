@@ -21,11 +21,10 @@ import { ArrowUp, ArrowDown, Calendar, FileText, Paperclip, Trash2, Pencil, More
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
-import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard, IconDot, ListRow } from 'components/accountly/kit';
+import { AppCard, IconDot, ListRow, FormAlert } from 'components/accountly/kit';
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -34,11 +33,11 @@ const TransactionDetail = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { showSnackbar } = useSnackbar();
 
   const { selectedTransaction, loading } = useSelector((s) => s.transactions);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const isCurrent = selectedTransaction?.id === id;
 
@@ -48,9 +47,10 @@ const TransactionDetail = () => {
 
   const handleDelete = async () => {
     setConfirmDelete(false);
+    setError(null);
     const result = await dispatch(deleteTransactionById({ id, customerId: selectedTransaction?.customerId || '' }));
     if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || t('payment.failedDeleteEntry'), type: 'error' });
+    else setError((result.payload as string) || t('payment.failedDeleteEntry'));
   };
 
   const sent = selectedTransaction?.transaction_type === 'debit';
@@ -91,6 +91,9 @@ const TransactionDetail = () => {
         </MenuItem>
       </Menu>
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}>
+        <Box sx={{ mb: error ? 2.25 : 0 }}>
+          <FormAlert message={error} />
+        </Box>
         {!isCurrent || loading ? (
           <Stack spacing={2.25} alignItems="center" sx={{ py: 4 }}>
             <Skeleton variant="circular" width={64} height={64} />

@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, Button, Container, Stack, TextField, Typography } from '@mui/material';
-import { SquarePen } from 'lucide-react';
+import { Check, SquarePen } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
-import useSnackbar from 'hooks/useSnackbar';
 import { formatPhone } from 'utils/accountly/format';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard, BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
+import { AppCard, BottomActionBar, FOOTER_SPACE, FormAlert } from 'components/accountly/kit';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 const Label = ({ children }: { children: string }) => {
@@ -21,7 +20,6 @@ const Label = ({ children }: { children: string }) => {
 
 const Profile = () => {
   const { user, business, updateProfile, updateBusiness } = useAuth();
-  const { showSnackbar } = useSnackbar();
   const c = useAccountlyColors();
   const t = useT();
   const isOwner = user?.role === 'owner';
@@ -29,18 +27,28 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [businessName, setBusinessName] = useState(business?.business_name || '');
   const [name, setName] = useState(user?.name || '');
+  const [error, setError] = useState<string | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
+    setError(null);
     try {
       if (isOwner && user?.business_id && businessName.trim() !== (business?.business_name || '')) {
         await updateBusiness({ business_name: businessName.trim() });
       }
       await updateProfile({ name: name.trim() });
-      showSnackbar({ message: t('profile.updated'), type: 'success' });
       setEditing(false);
+      setJustSaved(true);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      savedTimerRef.current = setTimeout(() => setJustSaved(false), 2000);
     } catch (e: any) {
-      showSnackbar({ message: e?.message || t('profile.failedUpdate'), type: 'error' });
+      setError(e?.message || t('profile.failedUpdate'));
     } finally {
       setSaving(false);
     }
@@ -49,6 +57,7 @@ const Profile = () => {
   const handleCancel = () => {
     setBusinessName(business?.business_name || '');
     setName(user?.name || '');
+    setError(null);
     setEditing(false);
   };
 
@@ -57,6 +66,7 @@ const Profile = () => {
       <AppHeader variant="screen" title={t('profile.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: editing ? FOOTER_SPACE : undefined }}>
         <Stack spacing={2.5}>
+          <FormAlert message={error} />
           <AppCard sx={{ p: 3, textAlign: 'center' }}>
             <Box
               sx={{ width: 76, height: 76, borderRadius: '50%', bgcolor: c.redDeep, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 500, fontSize: 28, mx: 'auto', mb: 1.5 }}
@@ -72,8 +82,22 @@ const Profile = () => {
           <AppCard sx={{ p: 3 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2.5 }}>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15 }}>{t('common.details')}</Typography>
-              {!editing && (
-                <Button size="small" variant="outlined" startIcon={<SquarePen size={15} />} onClick={() => setEditing(true)}>
+              {!editing && justSaved && (
+                <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: c.greenDeep }}>
+                  <Check size={15} />
+                  <Typography sx={{ fontWeight: 500, fontSize: 13 }}>{t('profile.updated')}</Typography>
+                </Stack>
+              )}
+              {!editing && !justSaved && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<SquarePen size={15} />}
+                  onClick={() => {
+                    setJustSaved(false);
+                    setEditing(true);
+                  }}
+                >
                   {t('common.edit')}
                 </Button>
               )}

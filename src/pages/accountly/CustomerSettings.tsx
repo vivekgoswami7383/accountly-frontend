@@ -16,12 +16,11 @@ import {
 import { SquarePen, Trash2, ChevronRight, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomers, deleteCustomer } from 'store/reducers/accountly/customers';
-import useSnackbar from 'hooks/useSnackbar';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard, ListRow, IconDot, SectionHeader } from 'components/accountly/kit';
+import { AppCard, ListRow, IconDot, SectionHeader, FormAlert } from 'components/accountly/kit';
 
 const CustomerSettings = () => {
   const { id = '' } = useParams();
@@ -30,9 +29,9 @@ const CustomerSettings = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { showSnackbar } = useSnackbar();
   const { customers } = useSelector((s) => s.customers);
   const [confirm, setConfirm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const customer = customers.find((x) => x.id === id);
 
@@ -42,9 +41,10 @@ const CustomerSettings = () => {
 
   const handleDelete = async () => {
     setConfirm(false);
+    setError(null);
     const result = await dispatch(deleteCustomer(id));
     if (deleteCustomer.fulfilled.match(result)) navigate('/customer');
-    else showSnackbar({ message: (result.payload as string) || t('customerSettings.failedDelete'), type: 'error' });
+    else setError((result.payload as string) || t('customerSettings.failedDelete'));
   };
 
   if (!customer) {
@@ -69,6 +69,7 @@ const CustomerSettings = () => {
       <AppHeader variant="screen" title={t('customerSettings.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: 4 }}>
         <Stack spacing={2.5}>
+          <FormAlert message={error} />
           <Box>
             <SectionHeader title={t('common.details')} />
             <AppCard sx={{ px: 2, py: 0.5 }}>

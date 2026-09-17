@@ -5,7 +5,7 @@ import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/Country
 import { CountryType } from 'data/countries';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
-import { BottomActionBar, FOOTER_SPACE } from 'components/accountly/kit';
+import { BottomActionBar, FOOTER_SPACE, FormAlert } from 'components/accountly/kit';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 export interface CustomerFormValues {
@@ -19,6 +19,7 @@ interface CustomerFormProps {
   initial?: Partial<CustomerFormValues>;
   submitLabel: string;
   loading?: boolean;
+  error?: string | null;
   onSubmit: (values: { name: string; phone: string; address: string }) => void;
 }
 
@@ -33,7 +34,7 @@ const Label = ({ children }: { children: string }) => {
   );
 };
 
-const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormProps) => {
+const CustomerForm = ({ initial, submitLabel, loading, error, onSubmit }: CustomerFormProps) => {
   const c = useAccountlyColors();
   const t = useT();
   const [name, setName] = useState(initial?.name || '');
@@ -62,6 +63,7 @@ const CustomerForm = ({ initial, submitLabel, loading, onSubmit }: CustomerFormP
       </Box>
 
       <Stack spacing={2.5}>
+        {error && <FormAlert message={error} />}
         <Box>
           <Label>{t('customerForm.customerName')}</Label>
           <TextField

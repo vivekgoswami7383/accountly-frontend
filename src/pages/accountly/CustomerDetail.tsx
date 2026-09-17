@@ -9,11 +9,10 @@ import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/acc
 import { useFormatAmount, formatPhone, formatDate } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
 import useConfig from 'hooks/useConfig';
-import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard, Fade, ListRow, IconDot, SectionHeader } from 'components/accountly/kit';
+import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'components/accountly/kit';
 import LedgerDocument from 'components/accountly/LedgerDocument';
 import onlinePayment from 'assets/images/accountly/illustrations/online-payment.png';
 
@@ -33,10 +32,10 @@ const CustomerDetail = () => {
   const fmt = useFormatAmount();
   const { business } = useAuth();
   const { currency } = useConfig();
-  const { showSnackbar } = useSnackbar();
   const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
   const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
+  const [ledgerError, setLedgerError] = useState<string | null>(null);
 
   const customer = customers.find((x) => x.id === id);
   const av = avatarTint(customer?.name || 'Customer');
@@ -69,10 +68,11 @@ const CustomerDetail = () => {
   const ledgerDisabled = customerTransactions.length === 0;
 
   const handleShareLedger = async () => {
+    setLedgerError(null);
     try {
       const result = await dispatch(fetchCustomerTransactions(id));
       if (!fetchCustomerTransactions.fulfilled.match(result)) {
-        showSnackbar({ message: t('detail.failedGenerateLedger'), type: 'error' });
+        setLedgerError(t('detail.failedGenerateLedger'));
         return;
       }
 
@@ -156,7 +156,7 @@ const CustomerDetail = () => {
       }
     } catch (error: any) {
       if (error?.name !== 'AbortError') {
-        showSnackbar({ message: t('detail.failedGenerateLedger'), type: 'error' });
+        setLedgerError(t('detail.failedGenerateLedger'));
       }
     }
   };
@@ -211,6 +211,7 @@ const CustomerDetail = () => {
       <AppHeader variant="screen" title={headerTitle} right={headerRight} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: `calc(72px + env(safe-area-inset-bottom, 0px))` }}>
         <Stack spacing={2.25}>
+          <FormAlert message={ledgerError} />
           <Fade>
             <AppCard sx={{ p: 0 }}>
               <Stack direction="row" divider={<Divider orientation="vertical" flexItem sx={{ borderColor: c.line }} />}>

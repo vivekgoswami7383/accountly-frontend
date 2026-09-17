@@ -22,11 +22,10 @@ import { useDispatch, useSelector } from 'store';
 import { fetchExpenseById, deleteExpenseById } from 'store/reducers/accountly/expenses';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
 import { EXPENSE_CATEGORY_ICONS, expenseCategoryLabelKey } from 'utils/accountly/expenseCategories';
-import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard, IconDot } from 'components/accountly/kit';
+import { AppCard, IconDot, FormAlert } from 'components/accountly/kit';
 
 const ExpenseDetail = () => {
   const navigate = useNavigate();
@@ -35,11 +34,11 @@ const ExpenseDetail = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { showSnackbar } = useSnackbar();
 
   const { selectedExpense, loading } = useSelector((s) => s.expenses);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const isCurrent = selectedExpense?.id === id;
 
@@ -49,9 +48,10 @@ const ExpenseDetail = () => {
 
   const handleDelete = async () => {
     setConfirmDelete(false);
+    setError(null);
     const result = await dispatch(deleteExpenseById({ id }));
     if (deleteExpenseById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || t('expense.failedDeleteEntry'), type: 'error' });
+    else setError((result.payload as string) || t('expense.failedDeleteEntry'));
   };
 
   const Icon = selectedExpense ? EXPENSE_CATEGORY_ICONS[selectedExpense.category] : null;
@@ -90,6 +90,9 @@ const ExpenseDetail = () => {
         </MenuItem>
       </Menu>
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}>
+        <Box sx={{ mb: error ? 2.25 : 0 }}>
+          <FormAlert message={error} />
+        </Box>
         {!isCurrent || loading || !Icon ? (
           <Stack spacing={2.25} alignItems="center" sx={{ py: 4 }}>
             <Skeleton variant="circular" width={64} height={64} />

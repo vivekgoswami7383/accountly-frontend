@@ -2,7 +2,7 @@ import { ComponentProps, ReactNode, forwardRef } from 'react';
 import { Box, ButtonBase, Container, Stack, Typography, alpha } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, AlertCircle } from 'lucide-react';
 import { shadow, DISPLAY, useAccountlyColors } from 'themes/accountly';
 
 export const FOOTER_SPACE = 'calc(72px + env(safe-area-inset-bottom, 0px))';
@@ -132,3 +132,25 @@ export const Fade = ({ children, delay = 0, skipEnter = false }: { children: Rea
 );
 
 export const MotionButton = motion(ButtonBase);
+
+export const FormAlert = ({ message }: { message?: string | null }) => {
+  const c = useAccountlyColors();
+  if (!message) return null;
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 1,
+        px: 1.5,
+        py: 1.25,
+        borderRadius: '14px',
+        bgcolor: c.redSoft,
+        color: c.redDeep
+      }}
+    >
+      <AlertCircle size={17} style={{ flexShrink: 0, marginTop: 1 }} />
+      <Typography sx={{ fontSize: 13, fontWeight: 500, lineHeight: 1.4 }}>{message}</Typography>
+    </Box>
+  );
+};

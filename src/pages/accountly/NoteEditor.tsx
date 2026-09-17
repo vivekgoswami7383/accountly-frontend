@@ -16,10 +16,10 @@ import {
 import { Trash2, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { createNote, fetchNoteById, updateNoteById, deleteNoteById, setSelectedNote } from 'store/reducers/accountly/notes';
-import useSnackbar from 'hooks/useSnackbar';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
+import { FormAlert } from 'components/accountly/kit';
 
 const AUTOSAVE_DELAY = 800;
 
@@ -35,7 +35,6 @@ const NoteEditor = () => {
   const isNew = !id;
   const c = useAccountlyColors();
   const t = useT();
-  const { showSnackbar } = useSnackbar();
 
   const { selectedNote } = useSelector((s) => s.notes);
 
@@ -44,6 +43,7 @@ const NoteEditor = () => {
   const [noteId, setNoteId] = useState<string | null>(isNew ? null : id || null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const content = title + (body ? `\n${body}` : '');
 
@@ -85,6 +85,7 @@ const NoteEditor = () => {
     }
     savingRef.current = true;
     setSaveStatus('saving');
+    setError(null);
     try {
       if (!noteIdRef.current) {
         const result = await dispatch(createNote({ content: text }));
@@ -97,7 +98,7 @@ const NoteEditor = () => {
           navigate(`/note/${newId}`, { replace: true });
         } else {
           setSaveStatus('idle');
-          showSnackbar({ message: t('note.failedSave'), type: 'error' });
+          setError(t('note.failedSave'));
         }
       } else {
         const result = await dispatch(updateNoteById({ id: noteIdRef.current, data: { content: text } }));
@@ -106,7 +107,7 @@ const NoteEditor = () => {
           setSaveStatus('saved');
         } else {
           setSaveStatus('idle');
-          showSnackbar({ message: t('note.failedSave'), type: 'error' });
+          setError(t('note.failedSave'));
         }
       }
     } finally {
@@ -144,10 +145,11 @@ const NoteEditor = () => {
 
   const handleDelete = async () => {
     setConfirmDelete(false);
+    setError(null);
     if (!noteId) return;
     const result = await dispatch(deleteNoteById({ id: noteId }));
     if (deleteNoteById.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || t('note.failedDelete'), type: 'error' });
+    else setError((result.payload as string) || t('note.failedDelete'));
   };
 
   const handleTitleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -187,6 +189,11 @@ const NoteEditor = () => {
     <>
       <AppHeader variant="screen" onBack={handleBack} right={headerRight} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 1.5, pb: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}>
+        {error && (
+          <Stack sx={{ mb: 1.5 }}>
+            <FormAlert message={error} />
+          </Stack>
+        )}
         <TextField
           autoFocus={isNew}
           fullWidth

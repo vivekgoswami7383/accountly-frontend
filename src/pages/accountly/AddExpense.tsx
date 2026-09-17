@@ -5,7 +5,6 @@ import { Calendar, ChevronDown, FileText } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { createExpense, fetchExpenseById, updateExpenseById } from 'store/reducers/accountly/expenses';
 import { ExpenseCategory } from 'services/accountly/types';
-import useSnackbar from 'hooks/useSnackbar';
 import useCalculatorInput from 'hooks/useCalculatorInput';
 import { MAX_AMOUNT } from 'utils/accountly/calculator';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_LIST, expenseCategoryLabelKey } from 'utils/accountly/expenseCategories';
@@ -15,6 +14,7 @@ import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import CalculatorKeypad from 'components/accountly/CalculatorKeypad';
 import useConfig from 'hooks/useConfig';
+import { FormAlert } from 'components/accountly/kit';
 
 const toDateInputValue = (d: Date): string => {
   const yyyy = d.getFullYear();
@@ -35,7 +35,6 @@ const AddExpense = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id: expenseId } = useParams();
-  const { showSnackbar } = useSnackbar();
   const c = useAccountlyColors();
   const t = useT();
   const { currency } = useConfig();
@@ -50,6 +49,7 @@ const AddExpense = () => {
   const [initialDate, setInitialDate] = useState(todayStr());
   const [amountError, setAmountError] = useState(false);
   const [categoryError, setCategoryError] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [calculatorOpen, setCalculatorOpen] = useState(true);
   const noteRef = useRef<HTMLTextAreaElement | null>(null);
   const loadedRef = useRef(false);
@@ -97,6 +97,7 @@ const AddExpense = () => {
   }, [calculatorOpen]);
 
   const handleSubmit = async () => {
+    setFormError(null);
     const value = calc.amount;
     let hasError = false;
     if (!calc.expression || isNaN(value) || value <= 0 || value > MAX_AMOUNT) {
@@ -119,7 +120,7 @@ const AddExpense = () => {
         })
       );
       if (updateExpenseById.fulfilled.match(result)) navigate(-1);
-      else showSnackbar({ message: (result.payload as string) || t('expense.failedUpdateEntry'), type: 'error' });
+      else setFormError((result.payload as string) || t('expense.failedUpdateEntry'));
       return;
     }
 
@@ -132,7 +133,7 @@ const AddExpense = () => {
       })
     );
     if (createExpense.fulfilled.match(result)) navigate(-1);
-    else showSnackbar({ message: (result.payload as string) || t('expense.failedRecordEntry'), type: 'error' });
+    else setFormError((result.payload as string) || t('expense.failedRecordEntry'));
   };
 
   const keypadHandlers = {
@@ -165,6 +166,7 @@ const AddExpense = () => {
       />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.5, pb: 'calc(500px + env(safe-area-inset-bottom, 0px))' }}>
         <Stack spacing={2.25}>
+          <FormAlert message={formError} />
           <Box
             component="button"
             ref={amountBoxRef}

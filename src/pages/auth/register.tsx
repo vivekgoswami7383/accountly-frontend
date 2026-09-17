@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import { Eye, EyeOff, Store, User, Lock } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
-import useSnackbar from 'hooks/useSnackbar';
 import useConfig from 'hooks/useConfig';
 import { ThemeMode } from 'types/config';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
@@ -23,11 +22,11 @@ import { CountryType } from 'data/countries';
 import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
+import { FormAlert } from 'components/accountly/kit';
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const { showSnackbar } = useSnackbar();
   const { mode } = useConfig();
   const t = useT();
   const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
@@ -38,6 +37,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [formError, setFormError] = useState<string | null>(null);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = k === 'phone' ? e.target.value.replace(/[^0-9]/g, '').slice(0, 10) : e.target.value;
@@ -52,13 +52,14 @@ const Register = () => {
       password: form.password.length < 8
     };
     setErrors(next);
+    setFormError(null);
     if (Object.values(next).some(Boolean)) return;
     setSubmitting(true);
     try {
       await register(form.business_name.trim(), form.name.trim(), `${country.phone}${form.phone}`, form.password);
       navigate('/', { replace: true });
     } catch (err: any) {
-      showSnackbar({ message: err?.message || t('auth.registrationFailed'), type: 'error' });
+      setFormError(err?.message || t('auth.registrationFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -70,12 +71,16 @@ const Register = () => {
       <Box sx={{ minHeight: '100vh', bgcolor: c.bg, display: 'flex', alignItems: 'center', py: 5 }}>
         <Container maxWidth="xs">
           <Stack spacing={3.5}>
-            <Stack alignItems="center" spacing={1}>
+            <Stack alignItems="center" spacing={1.5}>
+              <Box sx={{ width: 60, height: 60, borderRadius: '18px', bgcolor: c.redSoft, color: c.red, display: 'grid', placeItems: 'center' }}>
+                <Store size={28} />
+              </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 24, color: c.ink }}>{t('auth.createYourAccount')}</Typography>
               <Typography sx={{ color: c.grey, fontSize: 13.5 }}>{t('auth.startManaging')}</Typography>
             </Stack>
 
             <Stack spacing={2}>
+              <FormAlert message={formError} />
               <TextField
                 fullWidth
                 placeholder={t('auth.businessName')}

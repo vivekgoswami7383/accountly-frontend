@@ -1,13 +1,13 @@
+import { useState } from 'react';
 import { Box, Container, Divider, FormControl, MenuItem, Select, Stack, Switch, Typography } from '@mui/material';
 import { ThemeMode, I18n } from 'types/config';
 import useConfig from 'hooks/useConfig';
 import useAuth from 'hooks/useAuth';
-import useSnackbar from 'hooks/useSnackbar';
 import currencies from 'data/currencies';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import { AppCard } from 'components/accountly/kit';
+import { AppCard, FormAlert } from 'components/accountly/kit';
 
 const languages: { value: I18n; label: string }[] = [
   { value: 'en', label: 'English' },
@@ -20,37 +20,40 @@ const languages: { value: I18n; label: string }[] = [
 const Settings = () => {
   const { mode, onChangeMode, language, onChangeLocalization, currency, onChangeCurrency } = useConfig();
   const { user, updateProfile, updateBusiness } = useAuth();
-  const { showSnackbar } = useSnackbar();
   const c = useAccountlyColors();
   const t = useT();
+  const [error, setError] = useState<string | null>(null);
 
   const handleThemeToggle = async (dark: boolean) => {
     const next = dark ? ThemeMode.DARK : ThemeMode.LIGHT;
     onChangeMode(next);
+    setError(null);
     try {
       if (user) await updateProfile({ theme: next });
     } catch {
-      showSnackbar({ message: t('settings.themeSaveFail'), type: 'error' });
+      setError(t('settings.themeSaveFail'));
     }
   };
 
   const handleLanguageChange = async (next: I18n) => {
     onChangeLocalization(next);
+    setError(null);
     try {
       if (user) await updateProfile({ language: next });
     } catch {
-      showSnackbar({ message: t('settings.languageSaveFail'), type: 'error' });
+      setError(t('settings.languageSaveFail'));
     }
   };
 
   const handleCurrencyChange = async (next: string) => {
     const previous = currency;
     onChangeCurrency(next);
+    setError(null);
     try {
       await updateBusiness({ currency: next });
     } catch {
       onChangeCurrency(previous);
-      showSnackbar({ message: t('settings.currencySaveFail'), type: 'error' });
+      setError(t('settings.currencySaveFail'));
     }
   };
 
@@ -58,6 +61,11 @@ const Settings = () => {
     <>
       <AppHeader variant="screen" title={t('settings.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
+        {error && (
+          <Box sx={{ mb: 2 }}>
+            <FormAlert message={error} />
+          </Box>
+        )}
         <AppCard sx={{ p: 3 }}>
           <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15, mb: 2 }}>{t('settings.preferences')}</Typography>
           <Stack spacing={1}>
