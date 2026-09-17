@@ -186,7 +186,7 @@ const en: Dict = {
   'more.personalExpenses': 'Personal Expenses',
   'more.personalExpensesDesc': 'Track your own daily spending',
   'more.reports': 'Reports',
-  'more.reportsComingSoon': 'Coming soon',
+  'more.reportsDesc': 'View spending and business insights',
   'more.notes': 'Notes',
   'more.notesDesc': 'Jot down quick notes',
 
@@ -446,7 +446,7 @@ const hi: Dict = {
   'more.personalExpenses': 'व्यक्तिगत खर्च',
   'more.personalExpensesDesc': 'अपना रोज़ाना खर्च ट्रैक करें',
   'more.reports': 'रिपोर्ट',
-  'more.reportsComingSoon': 'जल्द आ रहा है',
+  'more.reportsDesc': 'खर्च और व्यवसाय की जानकारी देखें',
   'more.notes': 'नोट्स',
   'more.notesDesc': 'त्वरित नोट्स लिखें',
 
@@ -706,7 +706,7 @@ const gu: Dict = {
   'more.personalExpenses': 'અંગત ખર્ચ',
   'more.personalExpensesDesc': 'તમારો રોજિંદો ખર્ચ ટ્રેક કરો',
   'more.reports': 'રિપોર્ટ',
-  'more.reportsComingSoon': 'જલ્દી આવે છે',
+  'more.reportsDesc': 'ખર્ચ અને વ્યવસાયની માહિતી જુઓ',
   'more.notes': 'નોંધ',
   'more.notesDesc': 'ઝડપી નોંધ લખો',
 
@@ -966,7 +966,7 @@ const hiLatn: Dict = {
   'more.personalExpenses': 'Personal Kharch',
   'more.personalExpensesDesc': 'Apna daily kharch track karo',
   'more.reports': 'Reports',
-  'more.reportsComingSoon': 'Jald aa raha hai',
+  'more.reportsDesc': 'Kharch aur business insights dekho',
   'more.notes': 'Notes',
   'more.notesDesc': 'Jaldi notes likho',
 
@@ -1226,7 +1226,7 @@ const guLatn: Dict = {
   'more.personalExpenses': 'Vyaktigat Kharch',
   'more.personalExpensesDesc': 'Tamaro daily kharch track karo',
   'more.reports': 'Reports',
-  'more.reportsComingSoon': 'Jaldi aave chhe',
+  'more.reportsDesc': 'Kharch ane business ni mahiti juo',
   'more.notes': 'Notes',
   'more.notesDesc': 'Jaldi notes lakho',
 

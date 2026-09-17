@@ -23,7 +23,7 @@ const More = () => {
     { label: t('menu.settings'), desc: t('more.settingsDesc'), icon: <Settings />, path: '/settings' },
     { label: t('more.personalExpenses'), desc: t('more.personalExpensesDesc'), icon: <Wallet />, path: '/expense' },
     { label: t('more.notes'), desc: t('more.notesDesc'), icon: <NotebookPen />, path: '/note' },
-    { label: t('more.reports'), desc: t('more.reportsComingSoon'), icon: <BarChart3 />, path: '/reports' }
+    { label: t('more.reports'), desc: t('more.reportsDesc'), icon: <BarChart3 />, path: '/reports' }
   ];
 
   return (
