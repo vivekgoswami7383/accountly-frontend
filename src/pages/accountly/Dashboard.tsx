@@ -1,12 +1,10 @@
 import { ReactNode, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Skeleton, Stack, Typography, alpha } from '@mui/material';
-import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone, Link2 } from 'lucide-react';
+import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchDashboardStatistics } from 'store/reducers/accountly/dashboard';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
-import useAuth from 'hooks/useAuth';
-import useIncomingLinkCount from 'hooks/useIncomingLinkCount';
 import { DISPLAY, shadow, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -91,8 +89,6 @@ const Dashboard = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { user } = useAuth();
-  const pendingLinks = useIncomingLinkCount(['owner', 'admin', 'super_admin'].includes(user?.role || ''));
   const { stats, recentCustomers, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
   const skipEnterRef = useRef(hasLoaded);
 
@@ -110,22 +106,6 @@ const Dashboard = () => {
       <AppHeader variant="home" />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={2.25}>
-          {pendingLinks > 0 && (
-            <ListRow onClick={() => navigate('/links')} sx={{ bgcolor: c.surface, borderRadius: '20px', boxShadow: shadow.soft }}>
-              <IconDot size={40} bg={c.redSoft} fg={c.red}>
-                <Link2 />
-              </IconDot>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
-                  {t('link.pendingCount', { count: pendingLinks })}
-                </Typography>
-                <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
-                  {t('link.bannerSub')}
-                </Typography>
-              </Box>
-              <ChevronRight size={16} color={c.greyIcon} />
-            </ListRow>
-          )}
           <Fade skipEnter={skipEnterRef.current}>
             <AppCard sx={{ p: 1.75 }}>
               <Stack direction="row" spacing={1.5}>

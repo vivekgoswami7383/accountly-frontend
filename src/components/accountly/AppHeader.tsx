@@ -1,8 +1,9 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Container, IconButton, Stack, Typography } from '@mui/material';
-import { Store, ArrowLeft } from 'lucide-react';
+import { Avatar, Badge, Box, Container, IconButton, Stack, Typography } from '@mui/material';
+import { Store, ArrowLeft, Link2 } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
+import useIncomingLinkCount from 'hooks/useIncomingLinkCount';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { IconDot } from './kit';
@@ -21,6 +22,8 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
   const t = useT();
 
   const roleLabel = t(`role.${user?.role || 'owner'}`);
+  const canManageLinks = ['owner', 'admin', 'super_admin'].includes(user?.role || '');
+  const pendingLinks = useIncomingLinkCount(variant === 'home' && canManageLinks);
 
   return (
     <Box
@@ -48,6 +51,13 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                   {roleLabel} · {t('header.manageKhata')}
                 </Typography>
               </Box>
+              {pendingLinks > 0 && (
+                <IconButton onClick={() => navigate('/links')} aria-label={t('link.title')} sx={{ p: 0.75, color: c.ink }}>
+                  <Badge badgeContent={pendingLinks} color="primary" max={9}>
+                    <Link2 size={20} />
+                  </Badge>
+                </IconButton>
+              )}
               <IconButton onClick={() => navigate('/more')} sx={{ p: 0.5 }}>
                 <Box sx={{ position: 'relative' }}>
                   <Avatar
