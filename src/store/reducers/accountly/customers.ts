@@ -79,6 +79,12 @@ export const updateCustomer = createAsyncThunk(
   }
 );
 
+export const refreshAfterLinkChange = () => (dispatch: any) => {
+  dispatch(fetchCustomers());
+  dispatch(fetchCustomersPage(1));
+  dispatch(fetchDashboardStatistics());
+};
+
 export const deleteCustomer = createAsyncThunk('customers/deleteCustomer', async (id: string, { rejectWithValue, dispatch }) => {
   try {
     await customerService.deleteCustomer(id);

@@ -1,6 +1,6 @@
 export type LinkStatus = 'pending' | 'active';
 
-export type LinkLookupStatus = LinkStatus | 'available' | 'unavailable';
+export type LinkLookupStatus = LinkStatus | 'available' | 'incoming' | 'unavailable';
 
 export interface LinkRequest {
   id: string;

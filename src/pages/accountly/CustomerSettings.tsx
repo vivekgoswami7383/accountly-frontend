@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { SquarePen, Trash2, ChevronRight, TriangleAlert, Link2Off } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchCustomers, deleteCustomer, setCustomerLink } from 'store/reducers/accountly/customers';
+import { fetchCustomers, deleteCustomer, setCustomerLink, refreshAfterLinkChange } from 'store/reducers/accountly/customers';
 import linkService from 'services/accountly/linkService';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
@@ -56,6 +56,7 @@ const CustomerSettings = () => {
     try {
       await linkService.unlink(customer.linkId);
       dispatch(setCustomerLink({ customerId: id, linkId: null, linkStatus: null }));
+      dispatch(refreshAfterLinkChange());
     } catch (e: any) {
       setError(e?.message || t('link.failedAction'));
     }

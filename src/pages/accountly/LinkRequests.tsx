@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
-import { fetchCustomers, fetchCustomersPage } from 'store/reducers/accountly/customers';
+import { refreshAfterLinkChange } from 'store/reducers/accountly/customers';
 import linkService from 'services/accountly/linkService';
 import { BlockedLink, LinkRequest } from 'services/accountly/types';
 import { formatDate } from 'utils/accountly/format';
@@ -69,7 +69,7 @@ const LinkRequests = () => {
   const handleAccept = (id: string) =>
     run(id, async () => {
       const { customer_id: customerId } = await linkService.accept(id);
-      await Promise.all([dispatch(fetchCustomers()), dispatch(fetchCustomersPage(1))]);
+      dispatch(refreshAfterLinkChange());
       navigate(`/customer/${customerId}`);
     });
 
@@ -119,7 +119,12 @@ const LinkRequests = () => {
                 <Button
                   size="small"
                   disabled={busyId === req.id}
-                  onClick={() => run(req.id, () => linkService.block(req.id))}
+                  onClick={() =>
+                    run(req.id, async () => {
+                      await linkService.block(req.id);
+                      setBlocked((list) => [{ id: req.id, business_name: req.business_name, blocked_at: new Date().toISOString() }, ...list]);
+                    })
+                  }
                   sx={{ color: c.grey, fontWeight: 500, p: 0, minWidth: 0 }}
                 >
                   {t('link.block')}
