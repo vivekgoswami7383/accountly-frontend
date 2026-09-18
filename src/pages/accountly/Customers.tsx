@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Typography } from '@mui/material';
-import { Search, Phone, ChevronRight, Plus, Link2 } from 'lucide-react';
+import { Search, Phone, ChevronRight, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchCustomersPage } from 'store/reducers/accountly/customers';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
@@ -11,6 +11,7 @@ import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
 import { CustomersEmptyIllustration } from 'components/accountly/EmptyIllustration';
+import CustomerNameLine from 'components/accountly/CustomerNameLine';
 
 const Customers = () => {
   const navigate = useNavigate();
@@ -144,12 +145,7 @@ const Customers = () => {
                           )}
                         </Box>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0 }}>
-                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
-                              {cust.name}
-                            </Typography>
-                            {cust.linkStatus === 'active' && <Link2 size={13} color={c.greenDeep} style={{ flexShrink: 0 }} />}
-                          </Stack>
+                          <CustomerNameLine name={cust.name} linked={cust.linkStatus === 'active'} />
                           <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
                             <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>

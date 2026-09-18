@@ -16,6 +16,7 @@ import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'compo
 import LedgerDocument from 'components/accountly/LedgerDocument';
 import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 import LinkCard from 'components/accountly/LinkCard';
+import CustomerNameLine from 'components/accountly/CustomerNameLine';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -206,9 +207,7 @@ const CustomerDetail = () => {
         )}
       </Box>
       <Box sx={{ minWidth: 0 }}>
-        <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15.5, color: c.ink, lineHeight: 1.15 }} noWrap>
-          {customer?.name || 'Customer'}
-        </Typography>
+        <CustomerNameLine name={customer?.name || 'Customer'} linked={customer?.linkStatus === 'active'} fontSize={15.5} lineHeight={1.15} />
         <Typography sx={{ color: c.grey, fontSize: 11.5, fontWeight: 500 }} noWrap>
           {formatPhone(customer?.phone)}
         </Typography>

@@ -20,11 +20,13 @@ import {
 import { ArrowUp, ArrowDown, Calendar, FileText, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
+import { fetchCustomers } from 'store/reducers/accountly/customers';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, IconDot, ListRow, FormAlert } from 'components/accountly/kit';
+import CustomerNameLine from 'components/accountly/CustomerNameLine';
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -38,6 +40,13 @@ const TransactionDetail = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
+  const linkedCustomer = customers.find((x) => x.id === selectedTransaction?.customerId)?.linkStatus === 'active';
+
+  useEffect(() => {
+    if (!customersLoaded) dispatch(fetchCustomers());
+  }, [dispatch, customersLoaded]);
 
   const isCurrent = selectedTransaction?.id === id;
 
@@ -134,9 +143,7 @@ const TransactionDetail = () => {
                 </IconDot>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewCustomer')}</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
-                    {selectedTransaction!.customerName}
-                  </Typography>
+                  <CustomerNameLine name={selectedTransaction!.customerName} linked={linkedCustomer} fontSize={15} />
                 </Box>
                 <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
               </ListRow>

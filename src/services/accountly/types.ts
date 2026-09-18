@@ -113,6 +113,7 @@ export interface RecentCustomer {
   status: number;
   business_id: string;
   image_url?: string;
+  link_status?: LinkStatus | null;
 }
 
 export interface ApiTransaction {
@@ -208,6 +209,7 @@ export interface ReportTopCustomer {
   name: string;
   phone: string;
   balance: number;
+  linkStatus: LinkStatus | null;
 }
 
 export interface BusinessReport {

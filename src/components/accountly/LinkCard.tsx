@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
 import { setCustomerLink } from 'store/reducers/accountly/customers';
@@ -15,6 +15,7 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
   const t = useT();
   const [available, setAvailable] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [confirmUnlink, setConfirmUnlink] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,6 +62,11 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
     }
   };
 
+  const unlink = async () => {
+    setConfirmUnlink(false);
+    await cancelRequest();
+  };
+
   if (!customer.linkStatus && !available) return null;
 
   const active = customer.linkStatus === 'active';
@@ -83,18 +89,31 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
             </Typography>
           </Box>
         </Stack>
-        {!active && (
-          <Button
-            fullWidth
-            variant={pending ? 'outlined' : 'contained'}
-            disabled={busy}
-            onClick={pending ? cancelRequest : sendRequest}
-            sx={{ mt: 1.75 }}
-          >
-            {pending ? t('link.cancelRequest') : t('link.sendRequest')}
-          </Button>
-        )}
+        <Button
+          fullWidth
+          variant={active || pending ? 'outlined' : 'contained'}
+          disabled={busy}
+          onClick={active ? () => setConfirmUnlink(true) : pending ? cancelRequest : sendRequest}
+          sx={{ mt: 1.75 }}
+        >
+          {active ? t('link.unlink') : pending ? t('link.cancelRequest') : t('link.sendRequest')}
+        </Button>
       </AppCard>
+
+      <Dialog open={confirmUnlink} onClose={() => setConfirmUnlink(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontFamily: DISPLAY, pt: 2.25, pb: 0.75, fontSize: '1.05rem' }}>{t('link.unlinkQ')}</DialogTitle>
+        <DialogContent sx={{ pt: '0 !important', pb: 1 }}>
+          <DialogContentText sx={{ color: c.grey, fontSize: 13.5, lineHeight: 1.45 }}>{t('link.unlinkBody')}</DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 2.5, pb: 2, pt: 0.5 }}>
+          <Button onClick={() => setConfirmUnlink(false)} variant="outlined">
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={unlink} variant="contained">
+            {t('link.unlink')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 };

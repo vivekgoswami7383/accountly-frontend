@@ -12,6 +12,7 @@ import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, IconDot, ListRow, MotionButton, SectionHeader } from 'components/accountly/kit';
 import { CustomersEmptyIllustration, TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
+import CustomerNameLine from 'components/accountly/CustomerNameLine';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -237,9 +238,7 @@ const Dashboard = () => {
                             )}
                           </Box>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
-                              {cust.name}
-                            </Typography>
+                            <CustomerNameLine name={cust.name} linked={cust.link_status === 'active'} />
                             <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
                               <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                               <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
