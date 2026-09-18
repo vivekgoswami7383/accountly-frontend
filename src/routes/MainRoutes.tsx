@@ -9,6 +9,7 @@ const AddCustomer = Loadable(lazy(() => import('pages/accountly/AddCustomer')));
 const CustomerDetail = Loadable(lazy(() => import('pages/accountly/CustomerDetail')));
 const EditCustomer = Loadable(lazy(() => import('pages/accountly/EditCustomer')));
 const CustomerSettings = Loadable(lazy(() => import('pages/accountly/CustomerSettings')));
+const LinkRequests = Loadable(lazy(() => import('pages/accountly/LinkRequests')));
 const Transactions = Loadable(lazy(() => import('pages/accountly/Transactions')));
 const TransactionDetail = Loadable(lazy(() => import('pages/accountly/TransactionDetail')));
 const Payment = Loadable(lazy(() => import('pages/accountly/Payment')));
@@ -41,6 +42,7 @@ const MainRoutes = {
     { path: 'transaction/:id', element: <TransactionDetail /> },
     { path: 'transaction/:id/edit', element: <Payment /> },
     { path: 'more', element: <More /> },
+    { path: 'links', element: <LinkRequests /> },
     { path: 'profile', element: <Profile /> },
     { path: 'settings', element: <Settings /> },
     { path: 'reports', element: <Reports /> },

@@ -57,7 +57,9 @@ const TransactionDetail = () => {
   const accentDeep = sent ? c.redDeep : c.greenDeep;
   const accentSoft = sent ? c.redSoft : c.greenSoft;
 
-  const headerRight = (
+  const isMirrored = Boolean(selectedTransaction?.isMirrored);
+
+  const headerRight = isMirrored ? undefined : (
     <IconButton
       onClick={(e: MouseEvent<HTMLElement>) => setMenuEl(e.currentTarget)}
       disabled={!isCurrent || loading}
@@ -94,6 +96,15 @@ const TransactionDetail = () => {
         <Box sx={{ mb: error ? 2.25 : 0 }}>
           <FormAlert message={error} />
         </Box>
+        {isCurrent && !loading && isMirrored && (
+          <Box sx={{ mb: 2.25 }}>
+            <AppCard sx={{ p: 2 }}>
+              <Typography sx={{ color: c.grey, fontSize: 13, lineHeight: 1.45 }}>
+                {t('link.mirroredNote', { name: selectedTransaction!.customerName })}
+              </Typography>
+            </AppCard>
+          </Box>
+        )}
         {!isCurrent || loading ? (
           <Stack spacing={2.25} alignItems="center" sx={{ py: 4 }}>
             <Skeleton variant="circular" width={64} height={64} />

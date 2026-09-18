@@ -15,6 +15,7 @@ import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'components/accountly/kit';
 import LedgerDocument from 'components/accountly/LedgerDocument';
 import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
+import LinkCard from 'components/accountly/LinkCard';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -286,6 +287,8 @@ const CustomerDetail = () => {
               </Stack>
             </AppCard>
           </Fade>
+
+          {customer && <LinkCard customer={customer} />}
 
           <Stack direction="row" spacing={1}>
             <Box

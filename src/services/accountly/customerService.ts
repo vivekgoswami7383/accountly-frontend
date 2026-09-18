@@ -47,6 +47,8 @@ export const customerService = {
       paidAmount: apiCustomer.balance,
       pendingAmount: 0,
       imageUrl: apiCustomer.image_url || '',
+      linkId: apiCustomer.link_id || null,
+      linkStatus: apiCustomer.link_status || null,
       status: 'active',
       createdAt,
       updatedAt

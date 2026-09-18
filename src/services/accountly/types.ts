@@ -1,3 +1,13 @@
+export type LinkStatus = 'pending' | 'active';
+
+export type LinkLookupStatus = LinkStatus | 'available' | 'unavailable';
+
+export interface LinkRequest {
+  id: string;
+  business_name: string;
+  requested_at: string;
+}
+
 export interface ApiCustomer {
   _id: string;
   name: string;
@@ -7,6 +17,8 @@ export interface ApiCustomer {
   business_id: string;
   image_key?: string;
   image_url?: string;
+  link_id?: string | null;
+  link_status?: LinkStatus | null;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
@@ -24,6 +36,8 @@ export interface Customer {
   paidAmount: number;
   pendingAmount: number;
   imageUrl: string;
+  linkId: string | null;
+  linkStatus: LinkStatus | null;
   status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
@@ -55,6 +69,7 @@ export interface Transaction {
   updatedAt: string;
   balanceAfter?: number;
   attachmentUrl?: string;
+  isMirrored?: boolean;
 }
 
 export interface CreateTransactionRequest {

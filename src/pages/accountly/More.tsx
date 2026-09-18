@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material';
-import { User, Settings, BarChart3, LogOut, ChevronRight, Wallet, NotebookPen } from 'lucide-react';
+import { User, Settings, BarChart3, LogOut, ChevronRight, Wallet, NotebookPen, Link2 } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
+import useIncomingLinkCount from 'hooks/useIncomingLinkCount';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -12,6 +13,8 @@ const More = () => {
   const { user, business, logout } = useAuth();
   const c = useAccountlyColors();
   const t = useT();
+  const canManageLinks = ['owner', 'admin', 'super_admin'].includes(user?.role || '');
+  const pendingLinks = useIncomingLinkCount(canManageLinks);
 
   const handleLogout = async () => {
     await logout();
@@ -23,7 +26,10 @@ const More = () => {
     { label: t('menu.settings'), desc: t('more.settingsDesc'), icon: <Settings />, path: '/settings' },
     { label: t('more.personalExpenses'), desc: t('more.personalExpensesDesc'), icon: <Wallet />, path: '/expense' },
     { label: t('more.notes'), desc: t('more.notesDesc'), icon: <NotebookPen />, path: '/note' },
-    { label: t('more.reports'), desc: t('more.reportsDesc'), icon: <BarChart3 />, path: '/reports' }
+    { label: t('more.reports'), desc: t('more.reportsDesc'), icon: <BarChart3 />, path: '/reports' },
+    ...(canManageLinks
+      ? [{ label: t('link.title'), desc: pendingLinks > 0 ? t('link.pendingCount', { count: pendingLinks }) : t('link.moreDesc'), icon: <Link2 />, path: '/links' }]
+      : [])
   ];
 
   return (

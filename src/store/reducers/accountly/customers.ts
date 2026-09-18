@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import customerService from 'services/accountly/customerService';
-import { Customer, CreateCustomerRequest, UpdateCustomerRequest, TransactionType } from 'services/accountly/types';
+import { Customer, CreateCustomerRequest, UpdateCustomerRequest, TransactionType, LinkStatus } from 'services/accountly/types';
 import { fetchDashboardStatistics } from './dashboard';
 
 interface CustomerState {
@@ -113,6 +113,18 @@ const customerSlice = createSlice({
         state.selectedCustomer.balance = state.selectedCustomer.balance + balanceChange;
       }
     },
+    setCustomerLink: (state, action: PayloadAction<{ customerId: string; linkId: string | null; linkStatus: LinkStatus | null }>) => {
+      const { customerId, linkId, linkStatus } = action.payload;
+      const apply = (c?: Customer) => {
+        if (c) {
+          c.linkId = linkId;
+          c.linkStatus = linkStatus;
+        }
+      };
+      apply(state.customers.find((c) => c.id === customerId));
+      apply(state.listItems.find((c) => c.id === customerId));
+      if (state.selectedCustomer?.id === customerId) apply(state.selectedCustomer);
+    },
     setCustomerBalance: (state, action: PayloadAction<{ customerId: string; balance: number }>) => {
       const { customerId, balance } = action.payload;
       const customer = state.customers.find((c) => c.id === customerId);
@@ -205,5 +217,5 @@ const customerSlice = createSlice({
   }
 });
 
-export const { setSelectedCustomer, clearError, updateCustomerBalance, setCustomerBalance } = customerSlice.actions;
+export const { setSelectedCustomer, clearError, updateCustomerBalance, setCustomerBalance, setCustomerLink } = customerSlice.actions;
 export default customerSlice.reducer;
