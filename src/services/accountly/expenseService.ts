@@ -37,7 +37,18 @@ export const expenseService = {
   },
 
   async getExpenseSummary() {
-    const res = await axios.get('/api/expense/summary');
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart = new Date(todayStart);
+    weekStart.setDate(weekStart.getDate() - ((todayStart.getDay() + 6) % 7));
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const res = await axios.get('/api/expense/summary', {
+      params: {
+        today_start: todayStart.toISOString(),
+        week_start: weekStart.toISOString(),
+        month_start: monthStart.toISOString()
+      }
+    });
     return unwrap(res);
   }
 };
