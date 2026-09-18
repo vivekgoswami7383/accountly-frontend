@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
 import { setCustomerLink } from 'store/reducers/accountly/customers';
@@ -15,7 +15,6 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
   const t = useT();
   const [available, setAvailable] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [confirmUnlink, setConfirmUnlink] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,14 +61,8 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
     }
   };
 
-  const unlink = async () => {
-    setConfirmUnlink(false);
-    await cancelRequest();
-  };
+  if (customer.linkStatus === 'active' || (!customer.linkStatus && !available)) return null;
 
-  if (!customer.linkStatus && !available) return null;
-
-  const active = customer.linkStatus === 'active';
   const pending = customer.linkStatus === 'pending';
 
   return (
@@ -77,43 +70,28 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
       <FormAlert message={error} />
       <AppCard sx={{ p: 2 }}>
         <Stack direction="row" alignItems="center" spacing={1.5}>
-          <IconDot size={40} bg={active ? c.greenSoft : c.chipGrey} fg={active ? c.greenDeep : c.slate}>
+          <IconDot size={40} bg={c.chipGrey} fg={c.slate}>
             <Link2 />
           </IconDot>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 14.5, color: c.ink }}>
-              {active ? t('link.activeTitle') : pending ? t('link.pendingTitle') : t('link.availableTitle')}
+              {pending ? t('link.pendingTitle') : t('link.availableTitle')}
             </Typography>
             <Typography sx={{ color: c.grey, fontSize: 12.5, lineHeight: 1.4, mt: 0.25 }}>
-              {active ? t('link.activeSub') : pending ? t('link.pendingSub') : t('link.availableSub')}
+              {pending ? t('link.pendingSub') : t('link.availableSub')}
             </Typography>
           </Box>
         </Stack>
         <Button
           fullWidth
-          variant={active || pending ? 'outlined' : 'contained'}
+          variant={pending ? 'outlined' : 'contained'}
           disabled={busy}
-          onClick={active ? () => setConfirmUnlink(true) : pending ? cancelRequest : sendRequest}
+          onClick={pending ? cancelRequest : sendRequest}
           sx={{ mt: 1.75 }}
         >
-          {active ? t('link.unlink') : pending ? t('link.cancelRequest') : t('link.sendRequest')}
+          {pending ? t('link.cancelRequest') : t('link.sendRequest')}
         </Button>
       </AppCard>
-
-      <Dialog open={confirmUnlink} onClose={() => setConfirmUnlink(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontFamily: DISPLAY, pt: 2.25, pb: 0.75, fontSize: '1.05rem' }}>{t('link.unlinkQ')}</DialogTitle>
-        <DialogContent sx={{ pt: '0 !important', pb: 1 }}>
-          <DialogContentText sx={{ color: c.grey, fontSize: 13.5, lineHeight: 1.45 }}>{t('link.unlinkBody')}</DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ px: 2.5, pb: 2, pt: 0.5 }}>
-          <Button onClick={() => setConfirmUnlink(false)} variant="outlined">
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={unlink} variant="contained">
-            {t('link.unlink')}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Stack>
   );
 };
