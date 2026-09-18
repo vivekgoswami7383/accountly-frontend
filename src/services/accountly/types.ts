@@ -8,6 +8,12 @@ export interface LinkRequest {
   requested_at: string;
 }
 
+export interface BlockedLink {
+  id: string;
+  business_name: string;
+  blocked_at: string;
+}
+
 export interface ApiCustomer {
   _id: string;
   name: string;

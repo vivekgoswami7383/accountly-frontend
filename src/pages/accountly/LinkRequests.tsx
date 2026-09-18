@@ -5,7 +5,7 @@ import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
 import { fetchCustomers, fetchCustomersPage } from 'store/reducers/accountly/customers';
 import linkService from 'services/accountly/linkService';
-import { LinkRequest } from 'services/accountly/types';
+import { BlockedLink, LinkRequest } from 'services/accountly/types';
 import { formatDate } from 'utils/accountly/format';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -19,6 +19,7 @@ const LinkRequests = () => {
   const c = useAccountlyColors();
   const t = useT();
   const [requests, setRequests] = useState<LinkRequest[] | null>(null);
+  const [blocked, setBlocked] = useState<BlockedLink[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +31,10 @@ const LinkRequests = () => {
         setRequests([]);
         setError(e?.message || t('link.failedAction'));
       });
+    linkService
+      .blocked()
+      .then(setBlocked)
+      .catch(() => setBlocked([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -41,6 +46,19 @@ const LinkRequests = () => {
     try {
       await action();
       removeRequest(id);
+    } catch (e: any) {
+      setError(e?.message || t('link.failedAction'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleUnblock = async (id: string) => {
+    setBusyId(id);
+    setError(null);
+    try {
+      await linkService.unblock(id);
+      setBlocked((list) => list.filter((b) => b.id !== id));
     } catch (e: any) {
       setError(e?.message || t('link.failedAction'));
     } finally {
@@ -108,6 +126,29 @@ const LinkRequests = () => {
                 </Button>
               </AppCard>
             ))
+          )}
+
+          {blocked.length > 0 && (
+            <Box sx={{ pt: 1.5 }}>
+              <Typography sx={{ fontWeight: 500, fontSize: 11.5, color: c.grey, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.25, px: 0.5 }}>
+                {t('link.blockedTitle')}
+              </Typography>
+              <AppCard sx={{ overflow: 'hidden' }}>
+                {blocked.map((item, i) => (
+                  <Box key={item.id}>
+                    {i > 0 && <Divider sx={{ borderColor: c.line }} />}
+                    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.5 }}>
+                      <Typography sx={{ flex: 1, minWidth: 0, fontWeight: 500, fontSize: 14, color: c.ink, wordBreak: 'break-word' }}>
+                        {item.business_name}
+                      </Typography>
+                      <Button size="small" variant="outlined" disabled={busyId === item.id} onClick={() => handleUnblock(item.id)} sx={{ flexShrink: 0 }}>
+                        {t('link.unblock')}
+                      </Button>
+                    </Stack>
+                  </Box>
+                ))}
+              </AppCard>
+            </Box>
           )}
         </Stack>
       </Container>

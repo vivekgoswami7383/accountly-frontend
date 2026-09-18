@@ -238,6 +238,8 @@ const en: Dict = {
   'link.mirroredNote': (v) => `Added by ${v.name} through a linked ledger. You can view it but not change it.`,
   'link.failedRequest': 'Could not send link request',
   'link.failedAction': 'Something went wrong. Please try again.',
+  'link.blockedTitle': 'Blocked businesses',
+  'link.unblock': 'Unblock',
 
   'settings.title': 'Settings',
   'settings.preferences': 'Preferences',
@@ -527,6 +529,8 @@ const hi: Dict = {
   'link.mirroredNote': (v) => `${v.name} ने लिंक किए गए खाते से यह एंट्री जोड़ी है। आप इसे देख सकते हैं, बदल नहीं सकते।`,
   'link.failedRequest': 'लिंक अनुरोध नहीं भेजा जा सका',
   'link.failedAction': 'कुछ गलत हो गया। कृपया फिर कोशिश करें।',
+  'link.blockedTitle': 'ब्लॉक किए गए व्यवसाय',
+  'link.unblock': 'अनब्लॉक करें',
 
   'settings.title': 'सेटिंग्स',
   'settings.preferences': 'प्राथमिकताएं',
@@ -816,6 +820,8 @@ const gu: Dict = {
   'link.mirroredNote': (v) => `${v.name} એ લિંક કરેલા ખાતા દ્વારા આ એન્ટ્રી ઉમેરી છે. તમે જોઈ શકો છો, બદલી શકતા નથી.`,
   'link.failedRequest': 'લિંક વિનંતી મોકલી શકાઈ નથી',
   'link.failedAction': 'કંઈક ખોટું થયું. કૃપા કરીને ફરી પ્રયાસ કરો.',
+  'link.blockedTitle': 'બ્લોક કરેલા બિઝનેસ',
+  'link.unblock': 'અનબ્લોક કરો',
 
   'settings.title': 'સેટિંગ્સ',
   'settings.preferences': 'પસંદગીઓ',
@@ -1105,6 +1111,8 @@ const hiLatn: Dict = {
   'link.mirroredNote': (v) => `${v.name} ne linked khate se ye entry jodi hai. Aap ise dekh sakte ho, badal nahi sakte.`,
   'link.failedRequest': 'Link request nahi bheji ja saki',
   'link.failedAction': 'Kuch galat ho gaya. Dobara koshish karo.',
+  'link.blockedTitle': 'Blocked businesses',
+  'link.unblock': 'Unblock karo',
 
   'settings.title': 'Settings',
   'settings.preferences': 'Preferences',
@@ -1394,6 +1402,8 @@ const guLatn: Dict = {
   'link.mirroredNote': (v) => `${v.name} e linked khata dwara aa entry umeri chhe. Tame jovi shako chho, badli shakta nathi.`,
   'link.failedRequest': 'Link request moki shakay nahi',
   'link.failedAction': 'Kai khotu thayu. Pharithi prayas karo.',
+  'link.blockedTitle': 'Blocked businesses',
+  'link.unblock': 'Unblock karo',
 
   'settings.title': 'Settings',
   'settings.preferences': 'Pasandagio',

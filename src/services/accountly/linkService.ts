@@ -1,5 +1,5 @@
 import axios from 'utils/axios';
-import { LinkLookupStatus, LinkRequest, LinkStatus } from './types';
+import { BlockedLink, LinkLookupStatus, LinkRequest, LinkStatus } from './types';
 
 const unwrap = (res: any) => res?.data?.data ?? res?.data;
 
@@ -30,6 +30,15 @@ export const linkService = {
 
   async block(id: string) {
     await axios.post(`/api/link/${id}/block`);
+  },
+
+  async blocked() {
+    const res = await axios.get('/api/link/blocked');
+    return (unwrap(res)?.blocked || []) as BlockedLink[];
+  },
+
+  async unblock(id: string) {
+    await axios.post(`/api/link/${id}/unblock`);
   },
 
   async unlink(id: string) {
