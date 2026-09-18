@@ -1,7 +1,7 @@
 import { ReactNode, useRef } from 'react';
-import { Box, CircularProgress } from '@mui/material';
-import { Camera } from 'lucide-react';
-import { DISPLAY, AccountlyColors, useAccountlyColors } from 'themes/accountly';
+import { Box } from '@mui/material';
+import { Camera, X } from 'lucide-react';
+import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 
 const UploadableAvatar = ({
   size,
@@ -9,20 +9,35 @@ const UploadableAvatar = ({
   fallback,
   bg,
   fg,
-  uploading,
-  onSelect
+  editable = true,
+  onSelect,
+  onRemove
 }: {
   size: number;
   imageUrl?: string | null;
   fallback: ReactNode;
   bg: string;
   fg: string;
-  uploading?: boolean;
+  editable?: boolean;
   onSelect: (file: File) => void;
+  onRemove?: () => void;
 }) => {
-  const c: AccountlyColors = useAccountlyColors();
+  const c = useAccountlyColors();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const openPicker = () => !uploading && inputRef.current?.click();
+  const openPicker = () => editable && inputRef.current?.click();
+
+  const badgeSx = {
+    position: 'absolute',
+    width: 28,
+    height: 28,
+    borderRadius: '50%',
+    border: `2px solid ${c.surface}`,
+    color: '#fff',
+    display: 'grid',
+    placeItems: 'center',
+    cursor: 'pointer',
+    p: 0
+  } as const;
 
   return (
     <Box sx={{ position: 'relative', width: size, height: size, mx: 'auto' }}>
@@ -37,7 +52,7 @@ const UploadableAvatar = ({
           border: 'none',
           p: 0,
           overflow: 'hidden',
-          cursor: uploading ? 'default' : 'pointer',
+          cursor: editable ? 'pointer' : 'default',
           bgcolor: imageUrl ? 'transparent' : bg,
           color: fg,
           display: 'grid',
@@ -53,27 +68,16 @@ const UploadableAvatar = ({
           fallback
         )}
       </Box>
-      <Box
-        component="button"
-        type="button"
-        onClick={openPicker}
-        sx={{
-          position: 'absolute',
-          right: -2,
-          bottom: -2,
-          width: 28,
-          height: 28,
-          borderRadius: '50%',
-          border: `2px solid ${c.surface}`,
-          bgcolor: c.red,
-          color: '#fff',
-          display: 'grid',
-          placeItems: 'center',
-          cursor: uploading ? 'default' : 'pointer'
-        }}
-      >
-        {uploading ? <CircularProgress size={13} sx={{ color: '#fff' }} /> : <Camera size={13} />}
-      </Box>
+      {editable && (
+        <Box component="button" type="button" onClick={openPicker} aria-label="Change photo" sx={{ ...badgeSx, right: -2, bottom: -2, bgcolor: c.red }}>
+          <Camera size={13} />
+        </Box>
+      )}
+      {editable && imageUrl && onRemove && (
+        <Box component="button" type="button" onClick={onRemove} aria-label="Remove photo" sx={{ ...badgeSx, right: -2, top: -2, bgcolor: c.slate }}>
+          <X size={13} />
+        </Box>
+      )}
       <Box
         component="input"
         type="file"

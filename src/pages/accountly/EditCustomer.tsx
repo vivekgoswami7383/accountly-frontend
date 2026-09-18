@@ -24,13 +24,22 @@ const EditCustomer = () => {
   const { customers, loading } = useSelector((s) => s.customers);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imageUploading, setImageUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const customer = customers.find((x) => x.id === id);
 
   useEffect(() => {
     if (customers.length === 0) dispatch(fetchCustomers());
   }, [dispatch, customers.length]);
+
+  useEffect(
+    () => () => {
+      if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    },
+    [pendingPreview]
+  );
 
   const initial = useMemo(() => {
     if (!customer) return undefined;
@@ -42,28 +51,40 @@ const EditCustomer = () => {
     if (!customer) return;
     setError(null);
     setSubmitting(true);
-    const result = await dispatch(updateCustomer({ id: customer.id, data: values }));
+    let imageKey: string | undefined;
+    if (pendingFile) {
+      try {
+        const uploaded = await uploadService.uploadFile(pendingFile, 'customer', customer.id);
+        imageKey = uploaded.key;
+      } catch (e: any) {
+        setSubmitting(false);
+        setError(e?.message || t('customerForm.failedImageUpload'));
+        return;
+      }
+    } else if (imageRemoved) {
+      imageKey = '';
+    }
+    const result = await dispatch(
+      updateCustomer({ id: customer.id, data: { ...values, ...(imageKey !== undefined ? { image_key: imageKey } : {}) } })
+    );
     setSubmitting(false);
     if (updateCustomer.fulfilled.match(result)) navigate(-1);
     else setError((result.payload as string) || t('customerForm.failedUpdate'));
   };
 
-  const handleImageSelect = async (file: File) => {
-    if (!customer) return;
-    setError(null);
-    setImageUploading(true);
-    try {
-      const uploaded = await uploadService.uploadFile(file, 'customer', customer.id);
-      const result = await dispatch(updateCustomer({ id: customer.id, data: { image_key: uploaded.key } }));
-      if (!updateCustomer.fulfilled.match(result)) {
-        setError((result.payload as string) || t('customerForm.failedImageUpload'));
-      }
-    } catch (e: any) {
-      setError(e?.message || t('customerForm.failedImageUpload'));
-    } finally {
-      setImageUploading(false);
-    }
+  const handleImageSelect = (file: File) => {
+    setPendingFile(file);
+    setPendingPreview(URL.createObjectURL(file));
+    setImageRemoved(false);
   };
+
+  const handleImageRemove = () => {
+    setPendingFile(null);
+    setPendingPreview(null);
+    setImageRemoved(true);
+  };
+
+  const displayedImage = pendingPreview || (imageRemoved ? null : customer?.imageUrl);
 
   return (
     <>
@@ -75,9 +96,9 @@ const EditCustomer = () => {
             submitLabel={t('customerForm.saveChanges')}
             loading={loading || submitting}
             error={error}
-            imageUrl={customer?.imageUrl}
-            imageUploading={imageUploading}
+            imageUrl={displayedImage}
             onImageSelect={handleImageSelect}
+            onImageRemove={handleImageRemove}
             onSubmit={handleSubmit}
           />
         )}

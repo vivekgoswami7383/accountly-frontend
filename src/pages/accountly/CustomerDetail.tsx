@@ -162,7 +162,26 @@ const CustomerDetail = () => {
   };
 
   const headerTitle = (
-    <Stack direction="row" alignItems="center" spacing={1.25} sx={{ minWidth: 0 }}>
+    <Stack
+      component="button"
+      type="button"
+      onClick={() => navigate(`/customer/${id}/settings`)}
+      direction="row"
+      alignItems="center"
+      spacing={1.25}
+      sx={{
+        minWidth: 0,
+        maxWidth: '100%',
+        p: 0,
+        border: 'none',
+        bgcolor: 'transparent',
+        color: 'inherit',
+        font: 'inherit',
+        textAlign: 'left',
+        cursor: 'pointer',
+        WebkitTapHighlightColor: 'transparent'
+      }}
+    >
       <Box
         sx={{
           width: 38,

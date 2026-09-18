@@ -31,37 +31,65 @@ const Profile = () => {
   const [name, setName] = useState(user?.name || '');
   const [error, setError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
-  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [avatarRemoved, setAvatarRemoved] = useState(false);
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => {
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
   }, []);
 
+  useEffect(
+    () => () => {
+      if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    },
+    [pendingPreview]
+  );
+
   const userId = (user as any)?._id || user?.id;
 
-  const handleAvatarSelect = async (file: File) => {
-    if (!userId) return;
-    setError(null);
-    setAvatarUploading(true);
-    try {
-      const uploaded = await uploadService.uploadFile(file, 'avatar', userId);
-      await updateProfile({ avatar_key: uploaded.key });
-    } catch (e: any) {
-      setError(e?.message || t('profile.failedAvatarUpload'));
-    } finally {
-      setAvatarUploading(false);
-    }
+  const handleAvatarSelect = (file: File) => {
+    setPendingFile(file);
+    setPendingPreview(URL.createObjectURL(file));
+    setAvatarRemoved(false);
   };
+
+  const handleAvatarRemove = () => {
+    setPendingFile(null);
+    setPendingPreview(null);
+    setAvatarRemoved(true);
+  };
+
+  const resetAvatarChanges = () => {
+    setPendingFile(null);
+    setPendingPreview(null);
+    setAvatarRemoved(false);
+  };
+
+  const avatarImage = pendingPreview || (avatarRemoved ? null : user?.avatar_url);
 
   const handleSave = async () => {
     setSaving(true);
     setError(null);
     try {
+      let avatarKey: string | undefined;
+      if (pendingFile && userId) {
+        try {
+          const uploaded = await uploadService.uploadFile(pendingFile, 'avatar', userId);
+          avatarKey = uploaded.key;
+        } catch (e: any) {
+          setError(e?.message || t('profile.failedAvatarUpload'));
+          return;
+        }
+      } else if (avatarRemoved) {
+        avatarKey = '';
+      }
       if (isOwner && user?.business_id && businessName.trim() !== (business?.business_name || '')) {
         await updateBusiness({ business_name: businessName.trim() });
       }
-      await updateProfile({ name: name.trim() });
+      await updateProfile({ name: name.trim(), ...(avatarKey !== undefined ? { avatar_key: avatarKey } : {}) });
+      resetAvatarChanges();
       setEditing(false);
       setJustSaved(true);
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
@@ -77,6 +105,7 @@ const Profile = () => {
     setBusinessName(business?.business_name || '');
     setName(user?.name || '');
     setError(null);
+    resetAvatarChanges();
     setEditing(false);
   };
 
@@ -90,12 +119,13 @@ const Profile = () => {
             <Box sx={{ mb: 1.5 }}>
               <UploadableAvatar
                 size={76}
-                imageUrl={user?.avatar_url}
+                imageUrl={avatarImage}
                 fallback={(user?.name || 'U')[0].toUpperCase()}
                 bg={c.redDeep}
                 fg="#fff"
-                uploading={avatarUploading}
+                editable={editing}
                 onSelect={handleAvatarSelect}
+                onRemove={handleAvatarRemove}
               />
             </Box>
             <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 17, wordBreak: 'break-word' }}>

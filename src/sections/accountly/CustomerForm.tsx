@@ -22,8 +22,8 @@ interface CustomerFormProps {
   loading?: boolean;
   error?: string | null;
   imageUrl?: string | null;
-  imageUploading?: boolean;
   onImageSelect?: (file: File) => void;
+  onImageRemove?: () => void;
   onSubmit: (values: { name: string; phone: string; address: string }) => void;
 }
 
@@ -38,7 +38,7 @@ const Label = ({ children }: { children: string }) => {
   );
 };
 
-const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, imageUploading, onImageSelect, onSubmit }: CustomerFormProps) => {
+const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSelect, onImageRemove, onSubmit }: CustomerFormProps) => {
   const c = useAccountlyColors();
   const t = useT();
   const [name, setName] = useState(initial?.name || '');
@@ -66,8 +66,8 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, imageUpl
             fallback={initials(name || 'C')}
             bg={av.bg}
             fg={av.fg}
-            uploading={imageUploading}
             onSelect={onImageSelect}
+            onRemove={onImageRemove}
           />
         ) : (
           <Box
