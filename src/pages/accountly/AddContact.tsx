@@ -30,7 +30,7 @@ const AddContact = () => {
         name: values.name,
         phone: values.phone,
         address: values.address,
-        contact_type: values.contactType
+        type: values.contactType
       })
     );
     setSubmitting(false);

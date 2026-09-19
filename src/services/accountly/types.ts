@@ -29,7 +29,7 @@ export interface ApiContact {
   image_url?: string;
   link_id?: string | null;
   link_status?: LinkStatus | null;
-  contact_type?: ContactType | null;
+  type?: ContactType | null;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
@@ -59,7 +59,7 @@ export interface CreateContactRequest {
   name: string;
   phone: string;
   address?: string;
-  contact_type?: ContactType | null;
+  type?: ContactType | null;
 }
 
 export interface UpdateContactRequest {
@@ -67,7 +67,7 @@ export interface UpdateContactRequest {
   phone?: string;
   address?: string;
   image_key?: string;
-  contact_type?: ContactType | null;
+  type?: ContactType | null;
 }
 
 export type TransactionType = 'debit' | 'credit';

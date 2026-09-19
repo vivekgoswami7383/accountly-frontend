@@ -69,7 +69,7 @@ const EditContact = () => {
     const result = await dispatch(
       updateContact({
         id: contact.id,
-        data: { ...fields, contact_type: contactType, ...(imageKey !== undefined ? { image_key: imageKey } : {}) }
+        data: { ...fields, type: contactType, ...(imageKey !== undefined ? { image_key: imageKey } : {}) }
       })
     );
     setSubmitting(false);

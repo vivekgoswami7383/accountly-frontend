@@ -9,7 +9,7 @@ export const contactService = {
     limit?: number;
     contactType?: ContactType | null;
   }): Promise<{ contacts: ApiContact[]; total?: number; has_more?: boolean }> {
-    const typeQuery = params?.contactType ? `&contact_type=${params.contactType}` : '';
+    const typeQuery = params?.contactType ? `&type=${params.contactType}` : '';
     const query = params ? `?page=${params.page ?? 1}&limit=${params.limit ?? 20}${typeQuery}` : '';
     const res = await axios.get(`/api/contact${query}`);
     return unwrap(res);
@@ -51,7 +51,7 @@ export const contactService = {
       imageUrl: apiContact.image_url || '',
       linkId: apiContact.link_id || null,
       linkStatus: apiContact.link_status || null,
-      contactType: apiContact.contact_type || null,
+      contactType: apiContact.type || null,
       status: 'active',
       createdAt,
       updatedAt
