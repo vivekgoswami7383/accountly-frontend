@@ -155,7 +155,6 @@ const Contacts = () => {
                             <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {formatPhone(cust.phone)}
-                              {cust.contactType ? ` · ${t(`contactType.${cust.contactType}`)}` : ''}
                             </Typography>
                           </Stack>
                         </Box>
