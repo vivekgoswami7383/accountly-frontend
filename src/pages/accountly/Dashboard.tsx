@@ -88,7 +88,7 @@ const Dashboard = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { stats, due, recentContacts, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
+  const { stats, recentContacts, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
   const skipEnterRef = useRef(hasLoaded);
 
   useEffect(() => {
@@ -99,14 +99,6 @@ const Dashboard = () => {
   const payable = stats?.payable ?? 0;
   const hasContacts = recentContacts && recentContacts.length > 0;
   const hasTxns = recentTransactions && recentTransactions.length > 0;
-  const dueParts = due
-    ? [
-        due.overdue.count > 0 ? t('due.summaryOverdue', { count: due.overdue.count }) : '',
-        due.today.count > 0 ? t('due.summaryToday', { count: due.today.count }) : ''
-      ].filter(Boolean)
-    : [];
-  const dueUrgent = (due?.overdue.count ?? 0) > 0;
-  const dueAmount = due ? (dueUrgent ? due.overdue.amount : due.today.amount) : 0;
 
   return (
     <>
@@ -119,35 +111,6 @@ const Dashboard = () => {
                 <StatHalf tone="give" amount={payable} loading={!hasLoaded} label={t('home.youllGive')} />
                 <StatHalf tone="get" amount={receivable} loading={!hasLoaded} label={t('home.youllGet')} />
               </Stack>
-              {dueParts.length > 0 && (
-                <Box
-                  component="button"
-                  onClick={() => navigate('/due')}
-                  sx={{
-                    mt: 1.5,
-                    width: '100%',
-                    px: 1.5,
-                    py: 1.25,
-                    border: 'none',
-                    borderRadius: '14px',
-                    bgcolor: dueUrgent ? c.redSoft : c.chipGrey,
-                    cursor: 'pointer',
-                    color: dueUrgent ? c.redDeep : c.ink,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    fontFamily: DISPLAY
-                  }}
-                >
-                  <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 500, fontSize: 13, color: 'inherit' }} noWrap>
-                    {dueParts.join(' · ')}
-                  </Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: 13, color: 'inherit' }} noWrap>
-                    {fmt(dueAmount)}
-                  </Typography>
-                  <ChevronRight size={14} />
-                </Box>
-              )}
               <Box
                 component="button"
                 onClick={() => navigate('/reports')}

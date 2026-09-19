@@ -455,11 +455,12 @@ const Payment = () => {
           </Stack>
 
           {!isEdit && isDebit && (
-            <Stack direction="row" spacing={1.5}>
+            <Box sx={{ display: 'flex' }}>
               <Box
                 sx={{
                   position: 'relative',
-                  flex: 1,
+                  width: 'calc(50% - 6px)',
+                  boxSizing: 'border-box',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 0.75,
@@ -493,8 +494,7 @@ const Payment = () => {
                   </Box>
                 )}
               </Box>
-              <Box sx={{ flex: 1 }} />
-            </Stack>
+            </Box>
           )}
         </Stack>
       </Container>

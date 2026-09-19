@@ -21,6 +21,7 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, ListRow, IconDot, SectionHeader, FormAlert } from 'components/accountly/kit';
+import ContactDueRow from 'components/accountly/ContactDueRow';
 
 const ContactSettings = () => {
   const { id = '' } = useParams();
@@ -90,6 +91,9 @@ const ContactSettings = () => {
                   </Stack>
                 </Box>
               ))}
+              {contact.balance < 0 && contact.contactType !== 'supplier' && (
+                <ContactDueRow contactId={contact.id} dueDate={contact.dueDate} onError={setError} />
+              )}
             </AppCard>
           </Box>
 

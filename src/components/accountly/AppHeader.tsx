@@ -1,10 +1,11 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Container, IconButton, Stack, Typography } from '@mui/material';
-import { Store, ArrowLeft } from 'lucide-react';
+import { Store, ArrowLeft, Bell } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
+import useDueNotifications from 'hooks/useDueNotifications';
 import { IconDot } from './kit';
 
 interface AppHeaderProps {
@@ -21,6 +22,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
   const t = useT();
 
   const roleLabel = t(`role.${user?.role || 'owner'}`);
+  const { unseenKeys } = useDueNotifications();
 
   return (
     <Box
@@ -48,6 +50,34 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                   {roleLabel} · {t('header.manageKhata')}
                 </Typography>
               </Box>
+              <IconButton onClick={() => navigate('/notifications')} sx={{ p: 0.75, color: c.ink }} aria-label="notifications">
+                <Box sx={{ position: 'relative', display: 'flex' }}>
+                  <Bell size={22} />
+                  {unseenKeys.length > 0 && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -9,
+                        right: -10,
+                        minWidth: 16,
+                        height: 16,
+                        px: 0.5,
+                        borderRadius: '999px',
+                        bgcolor: c.red,
+                        color: '#fff',
+                        fontSize: 10,
+                        fontWeight: 600,
+                        lineHeight: '16px',
+                        textAlign: 'center',
+                        border: `2px solid ${c.surface}`,
+                        boxSizing: 'content-box'
+                      }}
+                    >
+                      {unseenKeys.length > 9 ? '9+' : unseenKeys.length}
+                    </Box>
+                  )}
+                </Box>
+              </IconButton>
               <IconButton onClick={() => navigate('/more')} sx={{ p: 0.5 }}>
                 <Box sx={{ position: 'relative' }}>
                   <Avatar

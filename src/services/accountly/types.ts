@@ -139,7 +139,6 @@ export interface DueListResponse {
 }
 
 export interface DashboardStatisticsResponse {
-  due: DueSummary | null;
   stats: DashboardStats;
   recent_contacts: RecentContact[];
   recent_transactions: ApiTransaction[];
