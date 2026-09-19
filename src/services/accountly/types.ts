@@ -66,6 +66,7 @@ export interface Transaction {
   updatedAt: string;
   balanceAfter?: number;
   attachmentUrl?: string;
+  dueDate?: string;
 }
 
 export interface CreateTransactionRequest {

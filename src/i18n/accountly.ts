@@ -153,7 +153,6 @@ const en: Dict = {
   'transactionDetail.note': 'Note',
   'transactionDetail.attachment': 'Attachment',
   'transactionDetail.viewAttachment': 'View attachment',
-  'transactionDetail.viewContact': 'View contact',
 
   'transactions.title': 'Transactions',
   'transactions.searchPayments': 'Search payments',
@@ -435,7 +434,6 @@ const hi: Dict = {
   'transactionDetail.note': 'नोट',
   'transactionDetail.attachment': 'अटैचमेंट',
   'transactionDetail.viewAttachment': 'अटैचमेंट देखें',
-  'transactionDetail.viewContact': 'संपर्क देखें',
 
   'transactions.title': 'लेन-देन',
   'transactions.searchPayments': 'भुगतान खोजें',
@@ -717,7 +715,6 @@ const gu: Dict = {
   'transactionDetail.note': 'નોંધ',
   'transactionDetail.attachment': 'એટેચમેન્ટ',
   'transactionDetail.viewAttachment': 'એટેચમેન્ટ જુઓ',
-  'transactionDetail.viewContact': 'સંપર્ક જુઓ',
 
   'transactions.title': 'વ્યવહારો',
   'transactions.searchPayments': 'ચુકવણીઓ શોધો',
@@ -999,7 +996,6 @@ const hiLatn: Dict = {
   'transactionDetail.note': 'Note',
   'transactionDetail.attachment': 'Attachment',
   'transactionDetail.viewAttachment': 'Attachment Dekho',
-  'transactionDetail.viewContact': 'Contact Dekho',
 
   'transactions.title': 'Transactions',
   'transactions.searchPayments': 'Payments dhundo',
@@ -1281,7 +1277,6 @@ const guLatn: Dict = {
   'transactionDetail.note': 'Nondh',
   'transactionDetail.attachment': 'Attachment',
   'transactionDetail.viewAttachment': 'Attachment Juo',
-  'transactionDetail.viewContact': 'Contact Jujo',
 
   'transactions.title': 'Vyavharo',
   'transactions.searchPayments': 'Chukvani shodho',

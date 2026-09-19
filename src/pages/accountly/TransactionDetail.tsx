@@ -1,5 +1,5 @@
 import { useEffect, useState, MouseEvent } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -17,10 +17,13 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { ArrowUp, ArrowDown, Calendar, FileText, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Calendar, CalendarClock, Phone, FileText, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
-import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
+import { fetchContacts } from 'store/reducers/accountly/contacts';
+import useDueText from 'hooks/useDueText';
+import { dueState, formatDueDate } from 'utils/accountly/due';
+import { useFormatAmount, formatDateTime, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -34,7 +37,12 @@ const TransactionDetail = () => {
   const t = useT();
   const fmt = useFormatAmount();
 
+  const location = useLocation();
+  const fromContact = Boolean((location.state as { fromContact?: boolean } | null)?.fromContact);
+  const dueText = useDueText();
+
   const { selectedTransaction, loading } = useSelector((s) => s.transactions);
+  const { contacts, hasLoaded: contactsLoaded } = useSelector((s) => s.contacts);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +53,10 @@ const TransactionDetail = () => {
     dispatch(fetchTransactionById(id));
   }, [dispatch, id]);
 
+  useEffect(() => {
+    if (!fromContact && !contactsLoaded) dispatch(fetchContacts());
+  }, [dispatch, fromContact, contactsLoaded]);
+
   const handleDelete = async () => {
     setConfirmDelete(false);
     setError(null);
@@ -54,6 +66,10 @@ const TransactionDetail = () => {
   };
 
   const sent = selectedTransaction?.transaction_type === 'debit';
+  const txContact = contacts.find((x) => x.id === selectedTransaction?.contactId);
+  const contactAvatar = avatarTint(selectedTransaction?.contactName || '');
+  const dueDate = selectedTransaction?.dueDate || null;
+  const dueOverdue = dueDate ? dueState(dueDate) === 'overdue' : false;
   const accentDeep = sent ? c.redDeep : c.greenDeep;
   const accentSoft = sent ? c.redSoft : c.greenSoft;
 
@@ -117,19 +133,49 @@ const TransactionDetail = () => {
             </Box>
 
             <AppCard sx={{ overflow: 'hidden' }}>
-              <ListRow onClick={() => navigate(`/contact/${selectedTransaction!.contactId}`)}>
-                <IconDot size={40} bg={avatarTint(selectedTransaction!.contactName).bg} fg={avatarTint(selectedTransaction!.contactName).fg}>
-                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 13 }}>{initials(selectedTransaction!.contactName)}</Typography>
-                </IconDot>
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewContact')}</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
-                    {selectedTransaction!.contactName}
-                  </Typography>
-                </Box>
-                <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
-              </ListRow>
-              <Divider sx={{ borderColor: c.line, ml: 2 }} />
+              {!fromContact && (
+                <>
+                  <ListRow onClick={() => navigate(`/contact/${selectedTransaction!.contactId}`)}>
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
+                        display: 'grid',
+                        placeItems: 'center',
+                        bgcolor: txContact?.imageUrl ? 'transparent' : contactAvatar.bg,
+                        color: contactAvatar.fg,
+                        fontFamily: DISPLAY,
+                        fontWeight: 500,
+                        fontSize: 14,
+                        flexShrink: 0,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {txContact?.imageUrl ? (
+                        <Box component="img" src={txContact.imageUrl} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        initials(selectedTransaction!.contactName)
+                      )}
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
+                        {selectedTransaction!.contactName}
+                      </Typography>
+                      {txContact?.phone && (
+                        <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
+                          <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
+                          <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
+                            {formatPhone(txContact.phone)}
+                          </Typography>
+                        </Stack>
+                      )}
+                    </Box>
+                    <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
+                  </ListRow>
+                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
+                </>
+              )}
               <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
                 <IconDot size={40} bg={c.chipGrey} fg={c.grey} icon={18}>
                   <Calendar />
@@ -141,6 +187,23 @@ const TransactionDetail = () => {
                   </Typography>
                 </Box>
               </Stack>
+
+              {dueDate && (
+                <>
+                  <Divider sx={{ borderColor: c.line, ml: 2 }} />
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ px: 2, py: 1.75 }}>
+                    <IconDot size={40} bg={dueOverdue ? c.redSoft : c.chipGrey} fg={dueOverdue ? c.redDeep : c.grey} icon={18}>
+                      <CalendarClock />
+                    </IconDot>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('due.add')}</Typography>
+                      <Typography sx={{ fontWeight: 500, fontSize: 15, color: dueOverdue ? c.redDeep : c.ink, mt: 0.25 }}>
+                        {formatDueDate(dueDate)} · {dueText(dueDate)}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </>
+              )}
 
               {selectedTransaction!.description && (
                 <>

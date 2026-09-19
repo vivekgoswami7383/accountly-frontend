@@ -409,7 +409,7 @@ const ContactDetail = () => {
                     return (
                       <Box key={tx.id}>
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                        <ListRow onClick={() => navigate(`/transaction/${tx.id}`)}>
+                        <ListRow onClick={() => navigate(`/transaction/${tx.id}`, { state: { fromContact: true } })}>
                           <IconDot size={44} bg={sent ? c.redSoft : c.greenSoft} fg={sent ? c.redDeep : c.greenDeep}>
                             {sent ? <ArrowUp /> : <ArrowDown />}
                           </IconDot>
