@@ -71,7 +71,7 @@ const Notifications = () => {
                       </IconDot>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography sx={{ fontWeight: unread ? 600 : 500, fontSize: 14, color: c.ink, lineHeight: 1.35 }}>
-                          {t('notifications.owes', { name: n.contact.name, amount: fmt(n.contact.balance) })}
+                          {t(n.contact.balance < 0 ? 'notifications.owes' : 'notifications.youOwe', { name: n.contact.name, amount: fmt(n.contact.balance) })}
                         </Typography>
                         <Typography sx={{ color: overdue ? c.redDeep : c.greyLight, fontSize: 12.5, fontWeight: 500, mt: 0.25 }}>
                           {dueText(n.dueDate)}

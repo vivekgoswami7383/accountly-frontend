@@ -91,7 +91,7 @@ const ContactSettings = () => {
                   </Stack>
                 </Box>
               ))}
-              {contact.balance < 0 && contact.contactType !== 'supplier' && (
+              {contact.balance !== 0 && (
                 <ContactDueRow contactId={contact.id} dueDate={contact.dueDate} onError={setError} />
               )}
             </AppCard>

@@ -62,7 +62,7 @@ export const createTransaction = createAsyncThunk(
           transactionType: data.transaction_type
         })
       );
-      if (data.due_date && data.transaction_type === 'debit' && res.contact_balance < 0) {
+      if (data.due_date && ((data.transaction_type === 'debit' && res.contact_balance < 0) || (data.transaction_type === 'credit' && res.contact_balance > 0))) {
         dispatch(setContactDue({ contactId: data.contact._id, dueDate: data.due_date }));
       }
       dispatch(fetchDashboardStatistics() as any);

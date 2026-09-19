@@ -3,8 +3,15 @@ import contactService from 'services/accountly/contactService';
 import { Contact } from 'services/accountly/types';
 import { daysBetween, dueState, todayStr, DueState } from 'utils/accountly/due';
 
-const STORAGE_KEY = 'accountly.seenDueNotifications';
+const STORAGE_KEY = 'accountly.dueNotifications';
 const WINDOW_DAYS = 3;
+
+interface NotificationRecord {
+  at: number;
+  seen: boolean;
+}
+
+type Records = { [key: string]: NotificationRecord };
 
 export interface DueNotification {
   key: string;
@@ -12,21 +19,22 @@ export interface DueNotification {
   dueDate: string;
   state: DueState;
   days: number;
+  at: number;
 }
 
-const readSeen = (): string[] => {
+const readRecords = (): Records => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
   } catch (e) {
-    return [];
+    return {};
   }
 };
 
-const writeSeen = (keys: string[]) => {
+const writeRecords = (records: Records) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
   } catch (e) {
     return;
   }
@@ -34,8 +42,8 @@ const writeSeen = (keys: string[]) => {
 
 const useDueNotifications = () => {
   const [items, setItems] = useState<DueNotification[]>([]);
+  const [records, setRecords] = useState<Records>(readRecords);
   const [loaded, setLoaded] = useState(false);
-  const [seen, setSeen] = useState<string[]>(readSeen);
 
   useEffect(() => {
     let active = true;
@@ -45,15 +53,24 @@ const useDueNotifications = () => {
       .then((res) => {
         if (!active) return;
         const contacts = contactService.transformContacts([...res.overdue, ...res.today, ...res.upcoming]);
+        const stored = readRecords();
+        const now = Date.now();
+        const nextRecords: Records = {};
         const next = contacts
           .filter((c) => c.dueDate)
           .map((c) => {
             const dueDate = c.dueDate as string;
             const state = dueState(dueDate, today);
-            return { key: `${c.id}:${dueDate}:${state}`, contact: c, dueDate, state, days: daysBetween(today, dueDate) };
+            const key = `${c.id}:${dueDate}:${state}`;
+            return { key, contact: c, dueDate, state, days: daysBetween(today, dueDate), at: stored[key]?.at ?? now };
           })
           .filter((n) => n.days <= WINDOW_DAYS)
-          .sort((a, b) => a.days - b.days);
+          .sort((a, b) => b.at - a.at || a.days - b.days);
+        next.forEach((n) => {
+          nextRecords[n.key] = { at: n.at, seen: stored[n.key]?.seen ?? false };
+        });
+        writeRecords(nextRecords);
+        setRecords(nextRecords);
         setItems(next);
         setLoaded(true);
       })
@@ -65,12 +82,15 @@ const useDueNotifications = () => {
     };
   }, []);
 
-  const unseenKeys = useMemo(() => items.filter((n) => !seen.includes(n.key)).map((n) => n.key), [items, seen]);
+  const unseenKeys = useMemo(() => items.filter((n) => !records[n.key]?.seen).map((n) => n.key), [items, records]);
 
   const markAllSeen = useCallback(() => {
-    const keys = items.map((n) => n.key);
-    writeSeen(keys);
-    setSeen(keys);
+    const next: Records = {};
+    items.forEach((n) => {
+      next[n.key] = { at: n.at, seen: true };
+    });
+    writeRecords(next);
+    setRecords(next);
   }, [items]);
 
   return { items, loaded, unseenKeys, markAllSeen };

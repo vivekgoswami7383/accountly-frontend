@@ -7,6 +7,7 @@ type Entry = string | ((vars: Vars) => string);
 type Dict = Record<string, Entry>;
 
 const en: Dict = {
+  'notifications.youOwe': (v) => `You owe ${v.name} ${v.amount}`,
   'notifications.title': 'Notifications',
   'notifications.emptyTitle': 'You\'re all caught up',
   'notifications.emptySub': 'Payments due in the next 3 days will show up here.',
@@ -289,6 +290,7 @@ const en: Dict = {
 };
 
 const hi: Dict = {
+  'notifications.youOwe': (v) => `आपको ${v.name} को ${v.amount} देने हैं`,
   'notifications.title': 'सूचनाएं',
   'notifications.emptyTitle': 'सब कुछ अपडेट है',
   'notifications.emptySub': 'अगले 3 दिनों में देय भुगतान यहाँ दिखेंगे।',
@@ -570,6 +572,7 @@ const hi: Dict = {
 };
 
 const gu: Dict = {
+  'notifications.youOwe': (v) => `તમારે ${v.name} ને ${v.amount} આપવાના છે`,
   'notifications.title': 'સૂચનાઓ',
   'notifications.emptyTitle': 'બધું અપડેટ છે',
   'notifications.emptySub': 'આગામી 3 દિવસમાં બાકી ચૂકવણી અહીં દેખાશે.',
@@ -851,6 +854,7 @@ const gu: Dict = {
 };
 
 const hiLatn: Dict = {
+  'notifications.youOwe': (v) => `Aapko ${v.name} ko ${v.amount} dene hain`,
   'notifications.title': 'Suchnayein',
   'notifications.emptyTitle': 'Sab kuch update hai',
   'notifications.emptySub': 'Agle 3 dinon mein dena wale payment yahan dikhenge.',
@@ -1132,6 +1136,7 @@ const hiLatn: Dict = {
 };
 
 const guLatn: Dict = {
+  'notifications.youOwe': (v) => `Tamare ${v.name} ne ${v.amount} aapva na chhe`,
   'notifications.title': 'Suchnao',
   'notifications.emptyTitle': 'Badhu update chhe',
   'notifications.emptySub': 'Aavta 3 divas ma baaki chukvani ahi dekhase.',

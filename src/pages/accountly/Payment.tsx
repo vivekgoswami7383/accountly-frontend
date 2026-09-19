@@ -126,7 +126,7 @@ const Payment = () => {
 
   const isDebit = transactionType === 'debit';
   const dueContact = isEdit ? editContact : contacts.find((x) => x.id === contactId);
-  const showDue = isDebit && dueContact?.contactType !== 'supplier' && (isEdit ? Boolean(editContact && editContact.balance < 0) : true);
+  const showDue = isEdit ? Boolean(editContact && (isDebit ? editContact.balance < 0 : editContact.balance > 0)) : Boolean(dueContact);
   const title = isEdit ? t('payment.editEntry') : isDebit ? t('payment.youGaveTitle') : t('payment.youGotTitle');
   const accent = isDebit ? c.red : c.green;
   const accentDeep = isDebit ? c.redDeep : c.greenDeep;
@@ -237,7 +237,7 @@ const Payment = () => {
           transaction_type: transactionType,
           description: description.trim() || '',
           transaction_date,
-          ...(isDebit && dueDate ? { due_date: dueDate } : {})
+          ...(dueDate ? { due_date: dueDate } : {})
         })
       );
       if (!createTransaction.fulfilled.match(result)) {

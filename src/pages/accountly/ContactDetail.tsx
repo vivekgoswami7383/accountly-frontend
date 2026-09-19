@@ -74,9 +74,9 @@ const ContactDetail = () => {
 
   const ledgerDisabled = contactTransactions.length === 0;
 
-  const dueDate = contact && balance < 0 && contact.contactType !== 'supplier' ? contact.dueDate : null;
+  const dueDate = contact && balance !== 0 ? contact.dueDate : null;
   const dueOverdue = dueDate ? dueState(dueDate) === 'overdue' : false;
-  const dueTxId = dueDate ? contactTransactions.find((x) => x.transaction_type === 'debit')?.id : undefined;
+  const dueTxId = dueDate ? contactTransactions.find((x) => x.transaction_type === (balance < 0 ? 'debit' : 'credit'))?.id : undefined;
 
   const handleShareLedger = async () => {
     setLedgerError(null);
