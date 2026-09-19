@@ -3,28 +3,31 @@ import { Box, Button, InputAdornment, Stack, TextField, Typography } from '@mui/
 import { User, Phone, MapPin } from 'lucide-react';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
+import { ContactLabel } from 'services/accountly/types';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { BottomActionBar, FOOTER_SPACE, FormAlert } from 'components/accountly/kit';
 import UploadableAvatar from 'components/accountly/UploadableAvatar';
+import LabelChips from 'components/accountly/LabelChips';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
-export interface CustomerFormValues {
+export interface ContactFormValues {
   name: string;
   phone: string;
   address: string;
   country: CountryType;
+  label: ContactLabel | null;
 }
 
-interface CustomerFormProps {
-  initial?: Partial<CustomerFormValues>;
+interface ContactFormProps {
+  initial?: Partial<ContactFormValues>;
   submitLabel: string;
   loading?: boolean;
   error?: string | null;
   imageUrl?: string | null;
   onImageSelect?: (file: File) => void;
   onImageRemove?: () => void;
-  onSubmit: (values: { name: string; phone: string; address: string }) => void;
+  onSubmit: (values: { name: string; phone: string; address: string; label: ContactLabel | null }) => void;
 }
 
 const validatePhone = (phone: string) => /^[0-9]{10}$/.test(phone);
@@ -38,12 +41,13 @@ const Label = ({ children }: { children: string }) => {
   );
 };
 
-const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSelect, onImageRemove, onSubmit }: CustomerFormProps) => {
+const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSelect, onImageRemove, onSubmit }: ContactFormProps) => {
   const c = useAccountlyColors();
   const t = useT();
   const [name, setName] = useState(initial?.name || '');
   const [phone, setPhone] = useState(initial?.phone || '');
   const [address, setAddress] = useState(initial?.address || '');
+  const [label, setLabel] = useState<ContactLabel | null>(initial?.label || null);
   const [country, setCountry] = useState<CountryType>(initial?.country || DEFAULT_COUNTRY);
   const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean }>({});
 
@@ -53,7 +57,7 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageS
     const next = { name: !name.trim(), phone: !validatePhone(phone) };
     setErrors(next);
     if (next.name || next.phone) return;
-    onSubmit({ name: name.trim(), phone: `${country.phone}${phone}`, address: address.trim() });
+    onSubmit({ name: name.trim(), phone: `${country.phone}${phone}`, address: address.trim(), label });
   };
 
   return (
@@ -81,13 +85,13 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageS
       <Stack spacing={2.5}>
         {error && <FormAlert message={error} />}
         <Box>
-          <Label>{t('customerForm.customerName')}</Label>
+          <Label>{t('contactForm.contactName')}</Label>
           <TextField
             fullWidth
-            placeholder={t('customerForm.enterName')}
+            placeholder={t('contactForm.enterName')}
             value={name}
             error={errors.name}
-            helperText={errors.name ? t('customerForm.nameRequired') : undefined}
+            helperText={errors.name ? t('contactForm.nameRequired') : undefined}
             onChange={(e) => setName(e.target.value)}
             inputProps={{ maxLength: MAX_NAME_LENGTH }}
             InputProps={{ startAdornment: <InputAdornment position="start"><User size={18} color={c.greyLight} /></InputAdornment> }}
@@ -95,13 +99,13 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageS
         </Box>
 
         <Box>
-          <Label>{t('customerForm.phoneNumber')}</Label>
+          <Label>{t('contactForm.phoneNumber')}</Label>
           <TextField
             fullWidth
-            placeholder={t('customerForm.enterPhoneNumber')}
+            placeholder={t('contactForm.enterPhoneNumber')}
             value={phone}
             error={errors.phone}
-            helperText={errors.phone ? t('customerForm.invalidPhone') : undefined}
+            helperText={errors.phone ? t('contactForm.invalidPhone') : undefined}
             onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
             inputProps={{ inputMode: 'numeric', maxLength: 10 }}
             InputProps={{
@@ -116,7 +120,12 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageS
         </Box>
 
         <Box>
-          <Label>{t('customerForm.address')}</Label>
+          <Label>{t('label.title')}</Label>
+          <LabelChips value={label} onChange={setLabel} />
+        </Box>
+
+        <Box>
+          <Label>{t('contactForm.address')}</Label>
           <Box
             sx={{
               bgcolor: c.surface,
@@ -133,7 +142,7 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageS
             <Box
               component="textarea"
               rows={3}
-              placeholder={t('customerForm.optional')}
+              placeholder={t('contactForm.optional')}
               value={address}
               onChange={(e: any) => setAddress(e.target.value)}
               sx={{
@@ -163,4 +172,4 @@ const CustomerForm = ({ initial, submitLabel, loading, error, imageUrl, onImageS
   );
 };
 
-export default CustomerForm;
+export default ContactForm;

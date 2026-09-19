@@ -4,11 +4,11 @@ import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
 
 const Dashboard = Loadable(lazy(() => import('pages/accountly/Dashboard')));
-const Customers = Loadable(lazy(() => import('pages/accountly/Customers')));
-const AddCustomer = Loadable(lazy(() => import('pages/accountly/AddCustomer')));
-const CustomerDetail = Loadable(lazy(() => import('pages/accountly/CustomerDetail')));
-const EditCustomer = Loadable(lazy(() => import('pages/accountly/EditCustomer')));
-const CustomerSettings = Loadable(lazy(() => import('pages/accountly/CustomerSettings')));
+const Contacts = Loadable(lazy(() => import('pages/accountly/Contacts')));
+const AddContact = Loadable(lazy(() => import('pages/accountly/AddContact')));
+const ContactDetail = Loadable(lazy(() => import('pages/accountly/ContactDetail')));
+const EditContact = Loadable(lazy(() => import('pages/accountly/EditContact')));
+const ContactSettings = Loadable(lazy(() => import('pages/accountly/ContactSettings')));
 const LinkRequests = Loadable(lazy(() => import('pages/accountly/LinkRequests')));
 const Transactions = Loadable(lazy(() => import('pages/accountly/Transactions')));
 const TransactionDetail = Loadable(lazy(() => import('pages/accountly/TransactionDetail')));
@@ -32,11 +32,11 @@ const MainRoutes = {
   ),
   children: [
     { index: true, element: <Dashboard /> },
-    { path: 'customer', element: <Customers /> },
-    { path: 'customer/add', element: <AddCustomer /> },
-    { path: 'customer/:id', element: <CustomerDetail /> },
-    { path: 'customer/:id/edit', element: <EditCustomer /> },
-    { path: 'customer/:id/settings', element: <CustomerSettings /> },
+    { path: 'contact', element: <Contacts /> },
+    { path: 'contact/add', element: <AddContact /> },
+    { path: 'contact/:id', element: <ContactDetail /> },
+    { path: 'contact/:id/edit', element: <EditContact /> },
+    { path: 'contact/:id/settings', element: <ContactSettings /> },
     { path: 'transaction', element: <Transactions /> },
     { path: 'transaction/new', element: <Payment /> },
     { path: 'transaction/:id', element: <TransactionDetail /> },

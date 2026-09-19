@@ -21,8 +21,8 @@ export const transactionService = {
     return unwrap(res);
   },
 
-  async getCustomerTransactions(customerId: string) {
-    const res = await axios.get(`/api/transaction/customer/${customerId}`);
+  async getContactTransactions(contactId: string) {
+    const res = await axios.get(`/api/transaction/contact/${contactId}`);
     return unwrap(res);
   },
 

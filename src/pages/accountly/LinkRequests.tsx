@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
-import { refreshAfterLinkChange } from 'store/reducers/accountly/customers';
+import { refreshAfterLinkChange } from 'store/reducers/accountly/contacts';
 import linkService from 'services/accountly/linkService';
 import { BlockedLink, LinkRequest } from 'services/accountly/types';
 import { formatDate } from 'utils/accountly/format';
@@ -11,7 +11,7 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, FormAlert, IconDot } from 'components/accountly/kit';
-import { CustomersEmptyIllustration } from 'components/accountly/EmptyIllustration';
+import { ContactsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const LinkRequests = () => {
   const navigate = useNavigate();
@@ -68,9 +68,9 @@ const LinkRequests = () => {
 
   const handleAccept = (id: string) =>
     run(id, async () => {
-      const { customer_id: customerId } = await linkService.accept(id);
+      const { contact_id: contactId } = await linkService.accept(id);
       dispatch(refreshAfterLinkChange());
-      navigate(`/customer/${customerId}`);
+      navigate(`/contact/${contactId}`);
     });
 
   return (
@@ -87,7 +87,7 @@ const LinkRequests = () => {
           ) : requests.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
               <Box sx={{ mb: 1.75 }}>
-                <CustomersEmptyIllustration />
+                <ContactsEmptyIllustration />
               </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>{t('link.noRequests')}</Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('link.noRequestsSub')}</Typography>

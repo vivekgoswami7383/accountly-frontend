@@ -2,51 +2,53 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container } from '@mui/material';
 import { useDispatch, useSelector } from 'store';
-import { createCustomer } from 'store/reducers/accountly/customers';
+import { createContact } from 'store/reducers/accountly/contacts';
 import useAuth from 'hooks/useAuth';
 import AppHeader from 'components/accountly/AppHeader';
-import CustomerForm from 'sections/accountly/CustomerForm';
+import ContactForm from 'sections/accountly/ContactForm';
 import { useT } from 'i18n/accountly';
+import { ContactLabel } from 'services/accountly/types';
 
-const AddCustomer = () => {
+const AddContact = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
   const t = useT();
-  const { loading } = useSelector((s) => s.customers);
+  const { loading } = useSelector((s) => s.contacts);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (values: { name: string; phone: string; address: string }) => {
+  const handleSubmit = async (values: { name: string; phone: string; address: string; label: ContactLabel | null }) => {
     setError(null);
     if (!user?.business_id) {
-      setError(t('customerForm.businessInfoNotFound'));
+      setError(t('contactForm.businessInfoNotFound'));
       return;
     }
     setSubmitting(true);
     const result = await dispatch(
-      createCustomer({
+      createContact({
         name: values.name,
         phone: values.phone,
-        address: values.address
+        address: values.address,
+        label: values.label
       })
     );
     setSubmitting(false);
-    if (createCustomer.fulfilled.match(result)) {
-      navigate('/customer');
+    if (createContact.fulfilled.match(result)) {
+      navigate('/contact');
     } else {
-      setError((result.payload as string) || t('customerForm.failedAdd'));
+      setError((result.payload as string) || t('contactForm.failedAdd'));
     }
   };
 
   return (
     <>
-      <AppHeader variant="screen" title={t('customerForm.addTitle')} />
+      <AppHeader variant="screen" title={t('contactForm.addTitle')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 3 }}>
-        <CustomerForm submitLabel={t('customerForm.addTitle')} loading={loading || submitting} error={error} onSubmit={handleSubmit} />
+        <ContactForm submitLabel={t('contactForm.addTitle')} loading={loading || submitting} error={error} onSubmit={handleSubmit} />
       </Container>
     </>
   );
 };
 
-export default AddCustomer;
+export default AddContact;

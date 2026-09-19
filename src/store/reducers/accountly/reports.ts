@@ -27,8 +27,8 @@ export const fetchBusinessReport = createAsyncThunk(
           transactionCount: data?.totals?.transaction_count || 0
         },
         daily: Array.isArray(data?.daily) ? data.daily : [],
-        topCustomers: Array.isArray(data?.top_customers)
-          ? data.top_customers.map((c: any) => ({ id: c._id, name: c.name, phone: c.phone, balance: c.balance, linkStatus: c.link_status || null }))
+        topContacts: Array.isArray(data?.top_contacts)
+          ? data.top_contacts.map((c: any) => ({ id: c._id, name: c.name, phone: c.phone, balance: c.balance, linkStatus: c.link_status || null }))
           : []
       };
       return report;

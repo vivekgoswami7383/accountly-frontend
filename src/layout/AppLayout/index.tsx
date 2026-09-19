@@ -30,13 +30,13 @@ const AppLayout = () => {
 
   const TABS = [
     { label: t('nav.home'), icon: <Home size={21} />, to: '/' },
-    { label: t('nav.customers'), icon: <Users size={21} />, to: '/customer' },
+    { label: t('nav.contacts'), icon: <Users size={21} />, to: '/contact' },
     { label: t('nav.payments'), icon: <ArrowRightLeft size={21} />, to: '/transaction' },
     { label: t('nav.more'), icon: <LayoutGrid size={21} />, to: '/more' }
   ];
 
-  const isTabRoute = (p: string) => ['/', '/customer', '/transaction', '/more'].includes(p);
-  const activeTab = (p: string) => ['/', '/customer', '/transaction', '/more'].indexOf(p);
+  const isTabRoute = (p: string) => ['/', '/contact', '/transaction', '/more'].includes(p);
+  const activeTab = (p: string) => ['/', '/contact', '/transaction', '/more'].indexOf(p);
 
   const showNav = isTabRoute(location.pathname);
 

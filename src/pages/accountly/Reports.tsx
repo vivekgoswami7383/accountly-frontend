@@ -12,7 +12,7 @@ import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow, SectionHeader } from 'components/accountly/kit';
 import { ReportsEmptyIllustration } from 'components/accountly/EmptyIllustration';
-import CustomerNameLine from 'components/accountly/CustomerNameLine';
+import ContactNameLine from 'components/accountly/ContactNameLine';
 
 const SectionLabel = ({ children, c }: { children: ReactNode; c: AccountlyColors }) => (
   <Typography sx={{ fontWeight: 500, fontSize: 11.5, color: c.grey, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1.25 }}>
@@ -215,25 +215,25 @@ const Reports = () => {
             </Box>
           </Fade>
 
-          {!loading && report && report.topCustomers.length > 0 && (
+          {!loading && report && report.topContacts.length > 0 && (
             <Fade delay={0.1}>
               <Box>
-                <SectionHeader title={t('reports.topCustomers')} />
+                <SectionHeader title={t('reports.topContacts')} />
                 <AppCard sx={{ overflow: 'hidden' }}>
-                  {report.topCustomers.map((cust, i) => {
+                  {report.topContacts.map((cust, i) => {
                     const get = cust.balance < 0;
                     const av = avatarTint(cust.name);
                     return (
                       <Box key={cust.id}>
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                        <ListRow onClick={() => navigate(`/customer/${cust.id}`)}>
+                        <ListRow onClick={() => navigate(`/contact/${cust.id}`)}>
                           <Box
                             sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 14, flexShrink: 0 }}
                           >
                             {initials(cust.name)}
                           </Box>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <CustomerNameLine name={cust.name} linked={cust.linkStatus === 'active'} />
+                            <ContactNameLine name={cust.name} linked={cust.linkStatus === 'active'} />
                             <Stack direction="row" alignItems="center" spacing={0.625} sx={{ minWidth: 0, mt: 0.25 }}>
                               <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                               <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>

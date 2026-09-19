@@ -4,7 +4,7 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { Calendar, Camera, Check, ChevronDown, FileText, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { createTransaction, fetchTransactionById, updateTransactionById } from 'store/reducers/accountly/transactions';
-import { fetchCustomers } from 'store/reducers/accountly/customers';
+import { fetchContacts } from 'store/reducers/accountly/contacts';
 import { TransactionType } from 'services/accountly/types';
 import uploadService from 'services/accountly/uploadService';
 import useAuth from 'hooks/useAuth';
@@ -45,10 +45,10 @@ const Payment = () => {
   const { currency } = useConfig();
   const currencySymbol = getCurrency(currency).symbol;
 
-  const customerId = params.get('customerId') || '';
+  const contactId = params.get('contactId') || '';
   const type = params.get('type') === 'refund' ? 'refund' : 'payment';
 
-  const { customers } = useSelector((s) => s.customers);
+  const { contacts } = useSelector((s) => s.contacts);
   const { selectedTransaction, loading } = useSelector((s) => s.transactions);
 
   const calc = useCalculatorInput();
@@ -72,8 +72,8 @@ const Payment = () => {
   const isEdit = Boolean(transactionId);
 
   useEffect(() => {
-    if (customers.length === 0) dispatch(fetchCustomers());
-  }, [dispatch, customers.length]);
+    if (contacts.length === 0) dispatch(fetchContacts());
+  }, [dispatch, contacts.length]);
 
   useEffect(() => {
     if (transactionId) dispatch(fetchTransactionById(transactionId));
@@ -92,16 +92,16 @@ const Payment = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, selectedTransaction]);
 
-  const customer = useMemo(() => {
+  const contact = useMemo(() => {
     if (isEdit) {
       if (selectedTransaction && selectedTransaction.id === transactionId) {
-        return { id: selectedTransaction.customerId, name: selectedTransaction.customerName };
+        return { id: selectedTransaction.contactId, name: selectedTransaction.contactName };
       }
       return null;
     }
-    const found = customers.find((x) => x.id === customerId);
+    const found = contacts.find((x) => x.id === contactId);
     return found ? { id: found.id, name: found.name } : null;
-  }, [isEdit, selectedTransaction, transactionId, customers, customerId]);
+  }, [isEdit, selectedTransaction, transactionId, contacts, contactId]);
 
   const transactionType: TransactionType = isEdit
     ? selectedTransaction?.transaction_type || 'debit'
@@ -157,8 +157,8 @@ const Payment = () => {
       setAmountError(true);
       return;
     }
-    if (!customer) {
-      setFormError(t('payment.customerNotFound'));
+    if (!contact) {
+      setFormError(t('payment.contactNotFound'));
       return;
     }
 
@@ -198,12 +198,12 @@ const Payment = () => {
       }
 
       if (!user?.business_id) {
-        setFormError(t('customerForm.businessInfoNotFound'));
+        setFormError(t('contactForm.businessInfoNotFound'));
         return;
       }
       const result = await dispatch(
         createTransaction({
-          customer: { _id: customer.id, name: customer.name },
+          contact: { _id: contact.id, name: contact.name },
           amount: value,
           transaction_type: transactionType,
           description: description.trim() || '',

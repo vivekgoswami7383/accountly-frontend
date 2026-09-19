@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container } from '@mui/material';
 import { useDispatch, useSelector } from 'store';
-import { fetchCustomers, updateCustomer } from 'store/reducers/accountly/customers';
+import { fetchContacts, updateContact } from 'store/reducers/accountly/contacts';
 import AppHeader from 'components/accountly/AppHeader';
-import CustomerForm from 'sections/accountly/CustomerForm';
+import ContactForm from 'sections/accountly/ContactForm';
 import countries, { CountryType } from 'data/countries';
 import { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { useT } from 'i18n/accountly';
 import uploadService from 'services/accountly/uploadService';
+import { ContactLabel } from 'services/accountly/types';
 
 const splitPhone = (full: string): { country: CountryType; local: string } => {
   const match = [...countries].filter((x) => full.startsWith(x.phone)).sort((a, b) => b.phone.length - a.phone.length)[0];
@@ -16,23 +17,23 @@ const splitPhone = (full: string): { country: CountryType; local: string } => {
   return { country: DEFAULT_COUNTRY, local: full.replace(/^\+/, '') };
 };
 
-const EditCustomer = () => {
+const EditContact = () => {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useT();
-  const { customers, loading } = useSelector((s) => s.customers);
+  const { contacts, loading } = useSelector((s) => s.contacts);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
   const [imageRemoved, setImageRemoved] = useState(false);
 
-  const customer = customers.find((x) => x.id === id);
+  const contact = contacts.find((x) => x.id === id);
 
   useEffect(() => {
-    if (customers.length === 0) dispatch(fetchCustomers());
-  }, [dispatch, customers.length]);
+    if (contacts.length === 0) dispatch(fetchContacts());
+  }, [dispatch, contacts.length]);
 
   useEffect(
     () => () => {
@@ -42,34 +43,34 @@ const EditCustomer = () => {
   );
 
   const initial = useMemo(() => {
-    if (!customer) return undefined;
-    const { country, local } = splitPhone(customer.phone || '');
-    return { name: customer.name, phone: local, address: customer.address, country };
-  }, [customer]);
+    if (!contact) return undefined;
+    const { country, local } = splitPhone(contact.phone || '');
+    return { name: contact.name, phone: local, address: contact.address, country, label: contact.label };
+  }, [contact]);
 
-  const handleSubmit = async (values: { name: string; phone: string; address: string }) => {
-    if (!customer) return;
+  const handleSubmit = async (values: { name: string; phone: string; address: string; label: ContactLabel | null }) => {
+    if (!contact) return;
     setError(null);
     setSubmitting(true);
     let imageKey: string | undefined;
     if (pendingFile) {
       try {
-        const uploaded = await uploadService.uploadFile(pendingFile, 'customer', customer.id);
+        const uploaded = await uploadService.uploadFile(pendingFile, 'contact', contact.id);
         imageKey = uploaded.key;
       } catch (e: any) {
         setSubmitting(false);
-        setError(e?.message || t('customerForm.failedImageUpload'));
+        setError(e?.message || t('contactForm.failedImageUpload'));
         return;
       }
     } else if (imageRemoved) {
       imageKey = '';
     }
     const result = await dispatch(
-      updateCustomer({ id: customer.id, data: { ...values, ...(imageKey !== undefined ? { image_key: imageKey } : {}) } })
+      updateContact({ id: contact.id, data: { ...values, ...(imageKey !== undefined ? { image_key: imageKey } : {}) } })
     );
     setSubmitting(false);
-    if (updateCustomer.fulfilled.match(result)) navigate(-1);
-    else setError((result.payload as string) || t('customerForm.failedUpdate'));
+    if (updateContact.fulfilled.match(result)) navigate(-1);
+    else setError((result.payload as string) || t('contactForm.failedUpdate'));
   };
 
   const handleImageSelect = (file: File) => {
@@ -84,16 +85,16 @@ const EditCustomer = () => {
     setImageRemoved(true);
   };
 
-  const displayedImage = pendingPreview || (imageRemoved ? null : customer?.imageUrl);
+  const displayedImage = pendingPreview || (imageRemoved ? null : contact?.imageUrl);
 
   return (
     <>
-      <AppHeader variant="screen" title={t('customerForm.editTitle')} />
+      <AppHeader variant="screen" title={t('contactForm.editTitle')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 3 }}>
         {initial && (
-          <CustomerForm
+          <ContactForm
             initial={initial}
-            submitLabel={t('customerForm.saveChanges')}
+            submitLabel={t('contactForm.saveChanges')}
             loading={loading || submitting}
             error={error}
             imageUrl={displayedImage}
@@ -107,4 +108,4 @@ const EditCustomer = () => {
   );
 };
 
-export default EditCustomer;
+export default EditContact;

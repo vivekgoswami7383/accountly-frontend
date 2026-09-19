@@ -20,13 +20,13 @@ import {
 import { ArrowUp, ArrowDown, Calendar, FileText, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
-import { fetchCustomers } from 'store/reducers/accountly/customers';
+import { fetchContacts } from 'store/reducers/accountly/contacts';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, IconDot, ListRow, FormAlert } from 'components/accountly/kit';
-import CustomerNameLine from 'components/accountly/CustomerNameLine';
+import ContactNameLine from 'components/accountly/ContactNameLine';
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -41,12 +41,12 @@ const TransactionDetail = () => {
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
-  const linkedCustomer = customers.find((x) => x.id === selectedTransaction?.customerId)?.linkStatus === 'active';
+  const { contacts, hasLoaded: contactsLoaded } = useSelector((s) => s.contacts);
+  const linkedContact = contacts.find((x) => x.id === selectedTransaction?.contactId)?.linkStatus === 'active';
 
   useEffect(() => {
-    if (!customersLoaded) dispatch(fetchCustomers());
-  }, [dispatch, customersLoaded]);
+    if (!contactsLoaded) dispatch(fetchContacts());
+  }, [dispatch, contactsLoaded]);
 
   const isCurrent = selectedTransaction?.id === id;
 
@@ -57,7 +57,7 @@ const TransactionDetail = () => {
   const handleDelete = async () => {
     setConfirmDelete(false);
     setError(null);
-    const result = await dispatch(deleteTransactionById({ id, customerId: selectedTransaction?.customerId || '' }));
+    const result = await dispatch(deleteTransactionById({ id, contactId: selectedTransaction?.contactId || '' }));
     if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
     else setError((result.payload as string) || t('payment.failedDeleteEntry'));
   };
@@ -109,7 +109,7 @@ const TransactionDetail = () => {
           <Box sx={{ mb: 2.25 }}>
             <AppCard sx={{ p: 2 }}>
               <Typography sx={{ color: c.grey, fontSize: 13, lineHeight: 1.45 }}>
-                {t('link.mirroredNote', { name: selectedTransaction!.customerName })}
+                {t('link.mirroredNote', { name: selectedTransaction!.contactName })}
               </Typography>
             </AppCard>
           </Box>
@@ -137,13 +137,13 @@ const TransactionDetail = () => {
             </Box>
 
             <AppCard sx={{ overflow: 'hidden' }}>
-              <ListRow onClick={() => navigate(`/customer/${selectedTransaction!.customerId}`)}>
-                <IconDot size={40} bg={avatarTint(selectedTransaction!.customerName).bg} fg={avatarTint(selectedTransaction!.customerName).fg}>
-                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 13 }}>{initials(selectedTransaction!.customerName)}</Typography>
+              <ListRow onClick={() => navigate(`/contact/${selectedTransaction!.contactId}`)}>
+                <IconDot size={40} bg={avatarTint(selectedTransaction!.contactName).bg} fg={avatarTint(selectedTransaction!.contactName).fg}>
+                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 13 }}>{initials(selectedTransaction!.contactName)}</Typography>
                 </IconDot>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewCustomer')}</Typography>
-                  <CustomerNameLine name={selectedTransaction!.customerName} linked={linkedCustomer} fontSize={15} />
+                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewContact')}</Typography>
+                  <ContactNameLine name={selectedTransaction!.contactName} linked={linkedContact} fontSize={15} />
                 </Box>
                 <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
               </ListRow>

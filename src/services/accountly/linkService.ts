@@ -4,13 +4,13 @@ import { BlockedLink, LinkLookupStatus, LinkRequest, LinkStatus } from './types'
 const unwrap = (res: any) => res?.data?.data ?? res?.data;
 
 export const linkService = {
-  async lookup(customerId: string) {
-    const res = await axios.get(`/api/link/lookup?customer_id=${customerId}`);
+  async lookup(contactId: string) {
+    const res = await axios.get(`/api/link/lookup?contact_id=${contactId}`);
     return unwrap(res) as { status: LinkLookupStatus; link_id?: string };
   },
 
-  async request(customerId: string) {
-    const res = await axios.post('/api/link/request', { customer_id: customerId });
+  async request(contactId: string) {
+    const res = await axios.post('/api/link/request', { contact_id: contactId });
     return unwrap(res) as { link: { id: string; status: LinkStatus } };
   },
 
@@ -21,7 +21,7 @@ export const linkService = {
 
   async accept(id: string) {
     const res = await axios.post(`/api/link/${id}/accept`);
-    return unwrap(res) as { customer_id: string };
+    return unwrap(res) as { contact_id: string };
   },
 
   async decline(id: string) {

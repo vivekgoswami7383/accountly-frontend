@@ -1,3 +1,7 @@
+export type ContactLabel = 'customer' | 'supplier' | 'friend' | 'family';
+
+export const CONTACT_LABELS: ContactLabel[] = ['customer', 'supplier', 'friend', 'family'];
+
 export type LinkStatus = 'pending' | 'active';
 
 export type LinkLookupStatus = LinkStatus | 'available' | 'incoming' | 'unavailable';
@@ -14,7 +18,7 @@ export interface BlockedLink {
   blocked_at: string;
 }
 
-export interface ApiCustomer {
+export interface ApiContact {
   _id: string;
   name: string;
   phone: string;
@@ -25,13 +29,14 @@ export interface ApiCustomer {
   image_url?: string;
   link_id?: string | null;
   link_status?: LinkStatus | null;
+  label?: ContactLabel | null;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface Customer {
+export interface Contact {
   id: string;
   name: string;
   email: string;
@@ -44,30 +49,33 @@ export interface Customer {
   imageUrl: string;
   linkId: string | null;
   linkStatus: LinkStatus | null;
+  label: ContactLabel | null;
   status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
 
-export interface CreateCustomerRequest {
+export interface CreateContactRequest {
   name: string;
   phone: string;
   address?: string;
+  label?: ContactLabel | null;
 }
 
-export interface UpdateCustomerRequest {
+export interface UpdateContactRequest {
   name?: string;
   phone?: string;
   address?: string;
   image_key?: string;
+  label?: ContactLabel | null;
 }
 
 export type TransactionType = 'debit' | 'credit';
 
 export interface Transaction {
   id: string;
-  customerId: string;
-  customerName: string;
+  contactId: string;
+  contactName: string;
   amount: number;
   transaction_type: TransactionType;
   description: string;
@@ -79,7 +87,7 @@ export interface Transaction {
 }
 
 export interface CreateTransactionRequest {
-  customer: { _id: string; name: string };
+  contact: { _id: string; name: string };
   amount: number;
   transaction_type: TransactionType;
   description?: string;
@@ -101,11 +109,11 @@ export interface DashboardStats {
   receivable: number;
   payable: number;
   net: number;
-  customer_count: number;
+  contact_count: number;
   total_transactions: number;
 }
 
-export interface RecentCustomer {
+export interface RecentContact {
   _id: string;
   name: string;
   phone: string;
@@ -118,7 +126,7 @@ export interface RecentCustomer {
 
 export interface ApiTransaction {
   _id: string;
-  customer: { _id: string; name: string };
+  contact: { _id: string; name: string };
   amount: number;
   transaction_type: TransactionType;
   description: string;
@@ -128,11 +136,11 @@ export interface ApiTransaction {
   attachment_url?: string;
 }
 
-export type UploadCategory = 'logo' | 'avatar' | 'customer' | 'attachment';
+export type UploadCategory = 'logo' | 'avatar' | 'contact' | 'attachment';
 
 export interface DashboardStatisticsResponse {
   stats: DashboardStats;
-  recent_customers: RecentCustomer[];
+  recent_contacts: RecentContact[];
   recent_transactions: ApiTransaction[];
 }
 
@@ -204,7 +212,7 @@ export interface ReportDailyPoint {
   given: number;
 }
 
-export interface ReportTopCustomer {
+export interface ReportTopContact {
   id: string;
   name: string;
   phone: string;
@@ -215,5 +223,5 @@ export interface ReportTopCustomer {
 export interface BusinessReport {
   totals: ReportTotals;
   daily: ReportDailyPoint[];
-  topCustomers: ReportTopCustomer[];
+  topContacts: ReportTopContact[];
 }

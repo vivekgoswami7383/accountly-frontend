@@ -4,8 +4,8 @@ import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Skeleton, 
 import { pdf } from '@react-pdf/renderer';
 import { Phone, MoreVertical, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare, Share2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchCustomers } from 'store/reducers/accountly/customers';
-import { fetchCustomerTransactions, resetCustomerView } from 'store/reducers/accountly/transactions';
+import { fetchContacts } from 'store/reducers/accountly/contacts';
+import { fetchContactTransactions, resetContactView } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatPhone, formatDate } from 'utils/accountly/format';
 import useAuth from 'hooks/useAuth';
 import useConfig from 'hooks/useConfig';
@@ -16,7 +16,7 @@ import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'compo
 import LedgerDocument from 'components/accountly/LedgerDocument';
 import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 import LinkCard from 'components/accountly/LinkCard';
-import CustomerNameLine from 'components/accountly/CustomerNameLine';
+import ContactNameLine from 'components/accountly/ContactNameLine';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -25,7 +25,7 @@ const fmtWhen = (iso?: string) => {
   return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true }).replace(',', '');
 };
 
-const CustomerDetail = () => {
+const ContactDetail = () => {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,62 +34,62 @@ const CustomerDetail = () => {
   const fmt = useFormatAmount();
   const { business } = useAuth();
   const { currency } = useConfig();
-  const { customers, hasLoaded: customersLoaded } = useSelector((s) => s.customers);
-  const { customerTransactions, customerStats, loadedCustomerId, loading } = useSelector((s) => s.transactions);
+  const { contacts, hasLoaded: contactsLoaded } = useSelector((s) => s.contacts);
+  const { contactTransactions, contactStats, loadedContactId, loading } = useSelector((s) => s.transactions);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [ledgerError, setLedgerError] = useState<string | null>(null);
 
-  const customer = customers.find((x) => x.id === id);
-  const av = avatarTint(customer?.name || 'Customer');
-  const balance = customerStats.customerBalance ?? customer?.balance ?? 0;
-  const isCurrent = loadedCustomerId === id;
+  const contact = contacts.find((x) => x.id === id);
+  const av = avatarTint(contact?.name || 'Contact');
+  const balance = contactStats.contactBalance ?? contact?.balance ?? 0;
+  const isCurrent = loadedContactId === id;
   const showSkeleton = !isCurrent && loading;
 
-  const reminderDisabled = balance === 0 || !customer?.phone;
-  const reminderPhone = (customer?.phone || '').replace(/[^0-9]/g, '');
+  const reminderDisabled = balance === 0 || !contact?.phone;
+  const reminderPhone = (contact?.phone || '').replace(/[^0-9]/g, '');
   const reminderMessage =
     balance < 0
-      ? t('detail.reminderDue', { name: customer?.name || '', amount: fmt(Math.abs(balance)), business: business?.business_name || '' })
-      : t('detail.reminderOwed', { name: customer?.name || '', amount: fmt(Math.abs(balance)), business: business?.business_name || '' });
+      ? t('detail.reminderDue', { name: contact?.name || '', amount: fmt(Math.abs(balance)), business: business?.business_name || '' })
+      : t('detail.reminderOwed', { name: contact?.name || '', amount: fmt(Math.abs(balance)), business: business?.business_name || '' });
   const whatsappHref = reminderDisabled ? undefined : `https://wa.me/${reminderPhone}?text=${encodeURIComponent(reminderMessage)}`;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const smsHref = reminderDisabled ? undefined : `sms:${customer?.phone}${isIOS ? '&' : '?'}body=${encodeURIComponent(reminderMessage)}`;
+  const smsHref = reminderDisabled ? undefined : `sms:${contact?.phone}${isIOS ? '&' : '?'}body=${encodeURIComponent(reminderMessage)}`;
 
   useEffect(() => {
-    if (!customersLoaded) dispatch(fetchCustomers());
-  }, [dispatch, customersLoaded]);
+    if (!contactsLoaded) dispatch(fetchContacts());
+  }, [dispatch, contactsLoaded]);
 
   useEffect(() => {
     if (!id) return;
-    if (loadedCustomerId === id) return;
-    dispatch(resetCustomerView(id));
-    dispatch(fetchCustomerTransactions(id));
+    if (loadedContactId === id) return;
+    dispatch(resetContactView(id));
+    dispatch(fetchContactTransactions(id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
-  const ledgerDisabled = customerTransactions.length === 0;
+  const ledgerDisabled = contactTransactions.length === 0;
 
   const handleShareLedger = async () => {
     setLedgerError(null);
     try {
-      const result = await dispatch(fetchCustomerTransactions(id));
-      if (!fetchCustomerTransactions.fulfilled.match(result)) {
+      const result = await dispatch(fetchContactTransactions(id));
+      if (!fetchContactTransactions.fulfilled.match(result)) {
         setLedgerError(t('detail.failedGenerateLedger'));
         return;
       }
 
-      const { transactions: rawTransactions, customer_balance: freshBalance } = result.payload.response as {
+      const { transactions: rawTransactions, contact_balance: freshBalance } = result.payload.response as {
         transactions: any[];
-        customer_balance: number;
+        contact_balance: number;
       };
 
       const businessName = business?.business_name || 'My Business';
-      const customerLabel = customer?.name || 'Customer';
+      const contactLabel = contact?.name || 'Contact';
       const rows = [...rawTransactions].reverse().map((tx) => {
         const sent = tx.transaction_type === 'debit';
         return {
           date: formatDate(tx.created_at),
-          label: sent ? t('ledger.givenTo', { name: customerLabel }) : t('ledger.receivedFrom', { name: customerLabel }),
+          label: sent ? t('ledger.givenTo', { name: contactLabel }) : t('ledger.receivedFrom', { name: contactLabel }),
           note: tx.description || undefined,
           debit: sent ? tx.amount : 0,
           credit: sent ? 0 : tx.amount,
@@ -97,7 +97,7 @@ const CustomerDetail = () => {
         };
       });
 
-      const customerOwesBusiness = freshBalance < 0;
+      const contactOwesBusiness = freshBalance < 0;
 
       const ASCII_CURRENCY_FALLBACK: Record<string, string> = { INR: 'Rs. ', NPR: 'Rs. ', LKR: 'Rs. ', PKR: 'Rs. ' };
       const pdfFormatAmount = (value: number) => {
@@ -115,12 +115,12 @@ const CustomerDetail = () => {
           businessName={businessName}
           businessAddress={business?.address}
           businessGst={business?.gst_number}
-          customerName={customer?.name || 'Customer'}
-          customerPhone={formatPhone(customer?.phone)}
-          customerAddress={customer?.address}
+          contactName={contact?.name || 'Contact'}
+          contactPhone={formatPhone(contact?.phone)}
+          contactAddress={contact?.address}
           currentBalance={freshBalance}
-          balanceLabel={customerOwesBusiness ? t('ledger.amountDue') : t('ledger.creditBalance')}
-          balanceTone={customerOwesBusiness ? 'due' : 'credit'}
+          balanceLabel={contactOwesBusiness ? t('ledger.amountDue') : t('ledger.creditBalance')}
+          balanceTone={contactOwesBusiness ? 'due' : 'credit'}
           formatAmount={pdfFormatAmount}
           rows={rows}
           labels={{
@@ -141,7 +141,7 @@ const CustomerDetail = () => {
         />
       ).toBlob();
 
-      const filename = `${(customer?.name || 'customer').replace(/\s+/g, '-')}-ledger.pdf`;
+      const filename = `${(contact?.name || 'contact').replace(/\s+/g, '-')}-ledger.pdf`;
       const file = new File([blob], filename, { type: 'application/pdf' });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -167,7 +167,7 @@ const CustomerDetail = () => {
     <Stack
       component="button"
       type="button"
-      onClick={() => navigate(`/customer/${id}/settings`)}
+      onClick={() => navigate(`/contact/${id}/settings`)}
       direction="row"
       alignItems="center"
       spacing={1.25}
@@ -191,7 +191,7 @@ const CustomerDetail = () => {
           borderRadius: '50%',
           display: 'grid',
           placeItems: 'center',
-          bgcolor: customer?.imageUrl ? 'transparent' : av.bg,
+          bgcolor: contact?.imageUrl ? 'transparent' : av.bg,
           color: av.fg,
           fontFamily: DISPLAY,
           fontWeight: 500,
@@ -200,16 +200,17 @@ const CustomerDetail = () => {
           overflow: 'hidden'
         }}
       >
-        {customer?.imageUrl ? (
-          <Box component="img" src={customer.imageUrl} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {contact?.imageUrl ? (
+          <Box component="img" src={contact.imageUrl} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
-          initials(customer?.name || 'C')
+          initials(contact?.name || 'C')
         )}
       </Box>
       <Box sx={{ minWidth: 0 }}>
-        <CustomerNameLine name={customer?.name || 'Customer'} linked={customer?.linkStatus === 'active'} fontSize={15.5} lineHeight={1.15} />
+        <ContactNameLine name={contact?.name || 'Contact'} linked={contact?.linkStatus === 'active'} fontSize={15.5} lineHeight={1.15} />
         <Typography sx={{ color: c.grey, fontSize: 11.5, fontWeight: 500 }} noWrap>
-          {formatPhone(customer?.phone)}
+          {formatPhone(contact?.phone)}
+          {contact?.label ? ` · ${t(`label.${contact.label}`)}` : ''}
         </Typography>
       </Box>
     </Stack>
@@ -217,8 +218,8 @@ const CustomerDetail = () => {
 
   const headerRight = (
     <Stack direction="row" spacing={0.25} sx={{ flexShrink: 0 }}>
-      {customer?.phone && (
-        <IconButton component="a" href={`tel:${customer.phone}`} sx={{ color: c.ink }}>
+      {contact?.phone && (
+        <IconButton component="a" href={`tel:${contact.phone}`} sx={{ color: c.ink }}>
           <Phone size={18} />
         </IconButton>
       )}
@@ -232,7 +233,7 @@ const CustomerDetail = () => {
         <MenuItem
           onClick={() => {
             setMenuEl(null);
-            navigate(`/customer/${id}/settings`);
+            navigate(`/contact/${id}/settings`);
           }}
           sx={{ gap: 1.25 }}
         >
@@ -277,7 +278,7 @@ const CustomerDetail = () => {
                   ) : (
                     <>
                       <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 22, color: c.slate }}>
-                        {customerTransactions.length}
+                        {contactTransactions.length}
                       </Typography>
                       <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500, mt: 0.25 }}>{t('detail.transactions')}</Typography>
                     </>
@@ -287,8 +288,9 @@ const CustomerDetail = () => {
             </AppCard>
           </Fade>
 
-          {customer && <LinkCard customer={customer} />}
+          {contact && <LinkCard contact={contact} />}
 
+          {contact?.label !== 'supplier' && (
           <Stack direction="row" spacing={1}>
             <Box
               component="a"
@@ -360,6 +362,7 @@ const CustomerDetail = () => {
               {t('detail.sendReminderSms')}
             </Box>
           </Stack>
+          )}
 
           {showSkeleton ? (
             <Box>
@@ -380,7 +383,7 @@ const CustomerDetail = () => {
                 ))}
               </AppCard>
             </Box>
-          ) : customerTransactions.length > 0 ? (
+          ) : contactTransactions.length > 0 ? (
             <Fade delay={0.05}>
               <Box>
                 <SectionHeader title={t('detail.transactions')} />
@@ -392,7 +395,7 @@ const CustomerDetail = () => {
                     overscrollBehavior: 'contain'
                   }}
                 >
-                  {customerTransactions.map((tx, i) => {
+                  {contactTransactions.map((tx, i) => {
                     const sent = tx.transaction_type === 'debit';
                     return (
                       <Box key={tx.id}>
@@ -453,7 +456,7 @@ const CustomerDetail = () => {
               fullWidth
               variant="contained"
               startIcon={<ArrowUp size={18} />}
-              onClick={() => navigate(`/transaction/new?customerId=${id}&type=payment`)}
+              onClick={() => navigate(`/transaction/new?contactId=${id}&type=payment`)}
               sx={{ bgcolor: c.red, boxShadow: 'none', '&:hover': { bgcolor: c.redDeep } }}
             >
               {t('detail.youGaveBtn')}
@@ -463,7 +466,7 @@ const CustomerDetail = () => {
               variant="contained"
               color="success"
               startIcon={<ArrowDown size={18} />}
-              onClick={() => navigate(`/transaction/new?customerId=${id}&type=refund`)}
+              onClick={() => navigate(`/transaction/new?contactId=${id}&type=refund`)}
               sx={{ bgcolor: c.green, boxShadow: 'none', '&:hover': { bgcolor: c.greenDeep } }}
             >
               {t('detail.youGotBtn')}
@@ -475,4 +478,4 @@ const CustomerDetail = () => {
   );
 };
 
-export default CustomerDetail;
+export default ContactDetail;

@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
-import { refreshAfterLinkChange, setCustomerLink } from 'store/reducers/accountly/customers';
+import { refreshAfterLinkChange, setContactLink } from 'store/reducers/accountly/contacts';
 import linkService from 'services/accountly/linkService';
-import { Customer } from 'services/accountly/types';
+import { Contact } from 'services/accountly/types';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { AppCard, FormAlert, IconDot } from './kit';
 
 type LookupState = { status: 'available' | 'incoming'; linkId?: string } | null;
 
-const LinkCard = ({ customer }: { customer: Customer }) => {
+const LinkCard = ({ contact }: { contact: Contact }) => {
   const dispatch = useDispatch();
   const c = useAccountlyColors();
   const t = useT();
@@ -21,10 +21,10 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
 
   useEffect(() => {
     setLookup(null);
-    if (customer.linkStatus) return undefined;
+    if (contact.linkStatus) return undefined;
     let cancelled = false;
     linkService
-      .lookup(customer.id)
+      .lookup(contact.id)
       .then((res) => {
         if (cancelled) return;
         if (res.status === 'available') setLookup({ status: 'available' });
@@ -36,7 +36,7 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
     return () => {
       cancelled = true;
     };
-  }, [customer.id, customer.linkStatus]);
+  }, [contact.id, contact.linkStatus]);
 
   const run = async (action: () => Promise<void>, failMessage: string) => {
     setBusy(true);
@@ -52,22 +52,22 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
 
   const sendRequest = () =>
     run(async () => {
-      const res = await linkService.request(customer.id);
-      dispatch(setCustomerLink({ customerId: customer.id, linkId: res.link.id, linkStatus: 'pending' }));
+      const res = await linkService.request(contact.id);
+      dispatch(setContactLink({ contactId: contact.id, linkId: res.link.id, linkStatus: 'pending' }));
     }, t('link.failedRequest'));
 
   const cancelRequest = () =>
     run(async () => {
-      if (!customer.linkId) return;
-      await linkService.unlink(customer.linkId);
-      dispatch(setCustomerLink({ customerId: customer.id, linkId: null, linkStatus: null }));
+      if (!contact.linkId) return;
+      await linkService.unlink(contact.linkId);
+      dispatch(setContactLink({ contactId: contact.id, linkId: null, linkStatus: null }));
     }, t('link.failedAction'));
 
   const acceptIncoming = () =>
     run(async () => {
       if (!lookup?.linkId) return;
       await linkService.accept(lookup.linkId);
-      dispatch(setCustomerLink({ customerId: customer.id, linkId: lookup.linkId, linkStatus: 'active' }));
+      dispatch(setContactLink({ contactId: contact.id, linkId: lookup.linkId, linkStatus: 'active' }));
       dispatch(refreshAfterLinkChange());
     }, t('link.failedAction'));
 
@@ -79,11 +79,11 @@ const LinkCard = ({ customer }: { customer: Customer }) => {
       dispatch(refreshAfterLinkChange());
     }, t('link.failedAction'));
 
-  const pending = customer.linkStatus === 'pending';
-  const incoming = !customer.linkStatus && lookup?.status === 'incoming';
-  const available = !customer.linkStatus && lookup?.status === 'available';
+  const pending = contact.linkStatus === 'pending';
+  const incoming = !contact.linkStatus && lookup?.status === 'incoming';
+  const available = !contact.linkStatus && lookup?.status === 'available';
 
-  if (customer.linkStatus === 'active' || !(pending || incoming || available)) return null;
+  if (contact.linkStatus === 'active' || !(pending || incoming || available)) return null;
 
   const title = pending ? t('link.pendingTitle') : incoming ? t('link.incomingTitle') : t('link.availableTitle');
   const sub = pending ? t('link.pendingSub') : incoming ? t('link.incomingSub') : t('link.availableSub');
