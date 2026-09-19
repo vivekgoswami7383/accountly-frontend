@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Container, Divider, IconButton, Menu, MenuItem, Skeleton, Stack, Typography } from '@mui/material';
 import { pdf } from '@react-pdf/renderer';
-import { Phone, MoreVertical, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare, Share2 } from 'lucide-react';
+import { Phone, MoreVertical, Settings, ArrowUp, ArrowDown, MessageCircle, MessageSquare, Share2, CalendarClock } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchContacts } from 'store/reducers/accountly/contacts';
 import { fetchContactTransactions, resetContactView } from 'store/reducers/accountly/transactions';
 import { useFormatAmount, formatPhone, formatDate } from 'utils/accountly/format';
+import useDueText from 'hooks/useDueText';
+import { dueState } from 'utils/accountly/due';
 import useAuth from 'hooks/useAuth';
 import useConfig from 'hooks/useConfig';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
@@ -30,6 +32,7 @@ const ContactDetail = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
+  const dueText = useDueText();
   const { business } = useAuth();
   const { currency } = useConfig();
   const { contacts, hasLoaded: contactsLoaded } = useSelector((s) => s.contacts);
@@ -70,6 +73,10 @@ const ContactDetail = () => {
   }, [dispatch, id]);
 
   const ledgerDisabled = contactTransactions.length === 0;
+
+  const dueDate = contact && balance < 0 && contact.contactType !== 'supplier' ? contact.dueDate : null;
+  const dueOverdue = dueDate ? dueState(dueDate) === 'overdue' : false;
+  const dueTxId = dueDate ? contactTransactions.find((x) => x.transaction_type === 'debit')?.id : undefined;
 
   const handleShareLedger = async () => {
     setLedgerError(null);
@@ -414,9 +421,32 @@ const ContactDetail = () => {
                               {fmtWhen(tx.createdAt)}
                             </Typography>
                           </Box>
-                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
-                            {fmt(tx.amount)}
-                          </Typography>
+                          <Stack alignItems="flex-end" spacing={0.5} sx={{ flexShrink: 0 }}>
+                            {tx.id === dueTxId && dueDate && (
+                              <Box
+                                sx={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 0.5,
+                                  px: 1,
+                                  py: 0.25,
+                                  borderRadius: '999px',
+                                  bgcolor: dueOverdue ? c.redSoft : c.chipGrey,
+                                  color: dueOverdue ? c.redDeep : c.grey,
+                                  fontFamily: DISPLAY,
+                                  fontWeight: 500,
+                                  fontSize: 11,
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                <CalendarClock size={11} />
+                                {dueText(dueDate)}
+                              </Box>
+                            )}
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                              {fmt(tx.amount)}
+                            </Typography>
+                          </Stack>
                         </ListRow>
                       </Box>
                     );
