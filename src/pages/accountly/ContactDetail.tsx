@@ -374,6 +374,7 @@ const ContactDetail = () => {
 
           {showSkeleton ? (
             <Box>
+              <Divider sx={{ borderColor: c.line, mb: 2 }} />
               <SectionHeader title={t('detail.transactions')} />
               <AppCard sx={{ overflow: 'hidden' }}>
                 {[0, 1, 2].map((i) => (
@@ -394,6 +395,7 @@ const ContactDetail = () => {
           ) : contactTransactions.length > 0 ? (
             <Fade delay={0.05}>
               <Box>
+                <Divider sx={{ borderColor: c.line, mb: 2 }} />
                 <SectionHeader
                   title={t('detail.transactions')}
                   right={
