@@ -3,7 +3,7 @@ import { Box, Button, InputAdornment, Stack, TextField, Typography } from '@mui/
 import { User, Phone, MapPin } from 'lucide-react';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
-import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js/min';
+import { parsePhoneNumberFromString, validatePhoneNumberLength, CountryCode } from 'libphonenumber-js/min';
 import { ContactType } from 'services/accountly/types';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -32,6 +32,16 @@ interface ContactFormProps {
 }
 
 const parseNumber = (country: CountryType, phone: string) => parsePhoneNumberFromString(phone, country.code as CountryCode);
+
+const FIXED_NATIONAL_LENGTH: { [code: string]: number } = { IN: 10, ID: 12 };
+
+const limitDigits = (country: CountryType, digits: string) => {
+  const trunkPrefix = digits.startsWith('0') ? 1 : 0;
+  const fixed = FIXED_NATIONAL_LENGTH[country.code];
+  let next = fixed ? digits.slice(0, fixed + trunkPrefix) : digits;
+  while (next.length > 0 && validatePhoneNumberLength(next, country.code as CountryCode) === 'TOO_LONG') next = next.slice(0, -1);
+  return next.slice(0, 15);
+};
 
 const toNationalDigits = (country: CountryType, raw: string) => {
   const digits = raw.replace(/[^0-9]/g, '');
@@ -116,7 +126,7 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
             value={phone}
             error={errors.phone}
             helperText={errors.phone ? t('contactForm.invalidPhone') : undefined}
-            onChange={(e) => setPhone(toNationalDigits(country, e.target.value).slice(0, 15))}
+            onChange={(e) => setPhone(limitDigits(country, toNationalDigits(country, e.target.value)))}
             inputProps={{ inputMode: 'numeric', maxLength: 20 }}
             InputProps={{
               startAdornment: (
