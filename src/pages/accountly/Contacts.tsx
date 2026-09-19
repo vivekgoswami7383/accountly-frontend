@@ -86,7 +86,7 @@ const Contacts = () => {
           )}
 
           {(contacts.length > 0 || listType) && (
-            <ContactTypeChips value={listType} withAll scroll onChange={(next) => dispatch(fetchContactsPage({ page: 1, contactType: next }))} />
+            <ContactTypeChips value={listType} scroll onChange={(next) => dispatch(fetchContactsPage({ page: 1, contactType: next }))} />
           )}
 
           {listLoading ? (

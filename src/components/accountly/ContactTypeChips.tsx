@@ -6,17 +6,15 @@ import { useT } from 'i18n/accountly';
 const ContactTypeChips = ({
   value,
   onChange,
-  withAll = false,
   scroll = false
 }: {
   value: ContactType | null;
   onChange: (next: ContactType | null) => void;
-  withAll?: boolean;
   scroll?: boolean;
 }) => {
   const c = useAccountlyColors();
   const t = useT();
-  const options: (ContactType | null)[] = withAll ? [null, ...CONTACT_TYPES] : CONTACT_TYPES;
+  const options = CONTACT_TYPES;
 
   return (
     <Stack
@@ -27,10 +25,10 @@ const ContactTypeChips = ({
         const active = option === value;
         return (
           <Box
-            key={option || 'all'}
+            key={option}
             component="button"
             type="button"
-            onClick={() => onChange(!withAll && active ? null : option)}
+            onClick={() => onChange(active ? null : option)}
             sx={{
               flexShrink: 0,
               border: active ? 'none' : `1.5px solid ${c.border}`,
@@ -46,7 +44,7 @@ const ContactTypeChips = ({
               whiteSpace: 'nowrap'
             }}
           >
-            {option ? t(`contactType.${option}`) : t('contactType.all')}
+            {t(`contactType.${option}`)}
           </Box>
         );
       })}
