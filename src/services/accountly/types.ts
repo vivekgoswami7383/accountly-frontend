@@ -6,13 +6,7 @@ export type LinkStatus = 'pending' | 'active';
 
 export type LinkLookupStatus = LinkStatus | 'available' | 'incoming' | 'unavailable';
 
-export interface LinkHistoryPreview {
-  share_history: boolean;
-  history_count: number;
-  existing_count: number;
-}
-
-export interface LinkRequest extends LinkHistoryPreview {
+export interface LinkRequest {
   id: string;
   business_name: string;
   requested_at: string;
