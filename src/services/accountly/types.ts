@@ -1,6 +1,6 @@
-export type ContactType = 'customer' | 'supplier' | 'friend' | 'family';
+export type ContactType = 'customer' | 'supplier' | 'business' | 'friend' | 'family';
 
-export const CONTACT_TYPES: ContactType[] = ['customer', 'supplier', 'friend', 'family'];
+export const CONTACT_TYPES: ContactType[] = ['customer', 'supplier', 'business', 'friend', 'family'];
 
 export type LinkStatus = 'pending' | 'active';
 
