@@ -3,6 +3,7 @@ import { Box, Button, InputAdornment, Stack, TextField, Typography } from '@mui/
 import { User, Phone, MapPin } from 'lucide-react';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
+import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js/min';
 import { ContactType } from 'services/accountly/types';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -30,7 +31,14 @@ interface ContactFormProps {
   onSubmit: (values: { name: string; phone: string; address: string; contactType: ContactType | null }) => void;
 }
 
-const validatePhone = (phone: string) => /^[0-9]{10}$/.test(phone);
+const parseNumber = (country: CountryType, phone: string) => parsePhoneNumberFromString(phone, country.code as CountryCode);
+
+const toNationalDigits = (country: CountryType, raw: string) => {
+  const digits = raw.replace(/[^0-9]/g, '');
+  const callingCode = country.phone.replace(/[^0-9]/g, '');
+  if (raw.trim().startsWith('+') && digits.startsWith(callingCode)) return digits.slice(callingCode.length);
+  return digits;
+};
 
 const Label = ({ children }: { children: string }) => {
   const c = useAccountlyColors();
@@ -54,10 +62,12 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
   const av = avatarTint(name || 'C');
 
   const handleSubmit = () => {
-    const next = { name: !name.trim(), phone: !validatePhone(phone) };
+    const unchanged = Boolean(initial) && phone === initial?.phone && country.code === initial?.country?.code;
+    const parsed = parseNumber(country, phone);
+    const next = { name: !name.trim(), phone: !unchanged && !parsed?.isValid() };
     setErrors(next);
     if (next.name || next.phone) return;
-    onSubmit({ name: name.trim(), phone: `${country.phone}${phone}`, address: address.trim(), contactType });
+    onSubmit({ name: name.trim(), phone: unchanged ? `${country.phone}${phone}` : parsed!.number, address: address.trim(), contactType });
   };
 
   return (
@@ -106,8 +116,8 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
             value={phone}
             error={errors.phone}
             helperText={errors.phone ? t('contactForm.invalidPhone') : undefined}
-            onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
-            inputProps={{ inputMode: 'numeric', maxLength: 10 }}
+            onChange={(e) => setPhone(toNationalDigits(country, e.target.value).slice(0, 15))}
+            inputProps={{ inputMode: 'numeric', maxLength: 20 }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
