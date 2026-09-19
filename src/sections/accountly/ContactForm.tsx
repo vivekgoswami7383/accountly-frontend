@@ -47,7 +47,7 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
   const [name, setName] = useState(initial?.name || '');
   const [phone, setPhone] = useState(initial?.phone || '');
   const [address, setAddress] = useState(initial?.address || '');
-  const [contactType, setContactType] = useState<ContactType | null>(initial?.contactType || null);
+  const [contactType, setContactType] = useState<ContactType | null>(initial ? initial.contactType ?? null : 'customer');
   const [country, setCountry] = useState<CountryType>(initial?.country || DEFAULT_COUNTRY);
   const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean }>({});
 
