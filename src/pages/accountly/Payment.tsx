@@ -4,7 +4,8 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { Calendar, Camera, Check, ChevronDown, FileText, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { createTransaction, fetchTransactionById, updateTransactionById } from 'store/reducers/accountly/transactions';
-import { fetchContacts } from 'store/reducers/accountly/contacts';
+import { fetchContacts, setContactDue } from 'store/reducers/accountly/contacts';
+import contactService from 'services/accountly/contactService';
 import { TransactionType } from 'services/accountly/types';
 import uploadService from 'services/accountly/uploadService';
 import useAuth from 'hooks/useAuth';
@@ -57,6 +58,7 @@ const Payment = () => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(todayStr());
   const [dueDate, setDueDate] = useState<string | null>(null);
+  const initialDueRef = useRef<string | null | undefined>(undefined);
   const dueMin = addDays(todayStr(), 1);
   const [initialDate, setInitialDate] = useState(todayStr());
   const [amountError, setAmountError] = useState(false);
@@ -107,6 +109,15 @@ const Payment = () => {
     return found ? { id: found.id, name: found.name } : null;
   }, [isEdit, selectedTransaction, transactionId, contacts, contactId]);
 
+  const editContact = isEdit ? contacts.find((x) => x.id === selectedTransaction?.contactId) : undefined;
+
+  useEffect(() => {
+    if (editContact && initialDueRef.current === undefined) {
+      initialDueRef.current = editContact.dueDate;
+      setDueDate(editContact.dueDate);
+    }
+  }, [editContact]);
+
   const transactionType: TransactionType = isEdit
     ? selectedTransaction?.transaction_type || 'debit'
     : type === 'payment'
@@ -114,6 +125,8 @@ const Payment = () => {
     : 'credit';
 
   const isDebit = transactionType === 'debit';
+  const dueContact = isEdit ? editContact : contacts.find((x) => x.id === contactId);
+  const showDue = isDebit && dueContact?.contactType !== 'supplier' && (isEdit ? Boolean(editContact && editContact.balance < 0) : true);
   const title = isEdit ? t('payment.editEntry') : isDebit ? t('payment.youGaveTitle') : t('payment.youGotTitle');
   const accent = isDebit ? c.red : c.green;
   const accentDeep = isDebit ? c.redDeep : c.greenDeep;
@@ -196,8 +209,20 @@ const Payment = () => {
             }
           })
         );
-        if (updateTransactionById.fulfilled.match(result)) navigate(-1);
-        else setFormError((result.payload as string) || t('payment.failedUpdateEntry'));
+        if (!updateTransactionById.fulfilled.match(result)) {
+          setFormError((result.payload as string) || t('payment.failedUpdateEntry'));
+          return;
+        }
+        if (editContact && showDue && dueDate !== initialDueRef.current) {
+          try {
+            await contactService.updateContact(editContact.id, { due_date: dueDate });
+            dispatch(setContactDue({ contactId: editContact.id, dueDate }));
+          } catch (error: any) {
+            setFormError(error?.message || t('due.failed'));
+            return;
+          }
+        }
+        navigate(-1);
         return;
       }
 
@@ -454,7 +479,7 @@ const Payment = () => {
             />
           </Stack>
 
-          {!isEdit && isDebit && (
+          {showDue && (
             <Box sx={{ display: 'flex' }}>
               <Box
                 sx={{
