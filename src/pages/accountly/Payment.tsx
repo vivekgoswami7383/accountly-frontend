@@ -202,7 +202,7 @@ const Payment = () => {
             id: transactionId,
             data: {
               amount: value,
-              description: description.trim() || undefined,
+              description: description.trim(),
               transaction_type: transactionType,
               transaction_date,
               ...attachmentPatch
