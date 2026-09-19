@@ -15,7 +15,7 @@ import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'components/accountly/kit';
 import LedgerDocument from 'components/accountly/LedgerDocument';
 import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
-import ContactDueCard from 'components/accountly/ContactDueCard';
+import ContactDueLine from 'components/accountly/ContactDueLine';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -271,6 +271,9 @@ const ContactDetail = () => {
                       <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500, mt: 0.25 }}>
                         {balance < 0 ? t('detail.youWillGet') : t('detail.youWillGive')}
                       </Typography>
+                      {balance < 0 && contact && contact.contactType !== 'supplier' && (
+                        <ContactDueLine contactId={contact.id} dueDate={contact.dueDate} onError={setLedgerError} />
+                      )}
                     </>
                   )}
                 </Box>
@@ -292,12 +295,6 @@ const ContactDetail = () => {
               </Stack>
             </AppCard>
           </Fade>
-
-          {!showSkeleton && contact && balance < 0 && (
-            <Fade>
-              <ContactDueCard contactId={contact.id} dueDate={contact.dueDate} />
-            </Fade>
-          )}
 
           {contact?.contactType !== 'supplier' && (
           <Stack direction="row" spacing={1}>

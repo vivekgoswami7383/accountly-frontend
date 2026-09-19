@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { CalendarClock } from 'lucide-react';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
-import { daysBetween, dueState, formatDueDate, todayStr } from 'utils/accountly/due';
+import { daysBetween, dueState, todayStr } from 'utils/accountly/due';
 
 export const useDueText = () => {
   const t = useT();
@@ -15,8 +15,7 @@ export const useDueText = () => {
       if (state === 'overdue') return t('due.overdueBy', { days: Math.abs(days) });
       if (state === 'today') return t('due.today');
       if (days === 1) return t('due.tomorrowLabel');
-      if (days <= 30) return t('due.inDays', { days });
-      return t('due.dueOn', { date: formatDueDate(dueDate) });
+      return t('due.inDays', { days });
     },
     [t]
   );

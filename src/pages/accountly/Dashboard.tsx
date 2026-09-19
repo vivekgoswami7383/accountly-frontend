@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Divider, Skeleton, Stack, Typography, alpha } from '@mui/material';
-import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone, CalendarClock } from 'lucide-react';
+import { ArrowUp, ArrowDown, UserPlus, Zap, FileText, ChevronRight, Phone } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchDashboardStatistics } from 'store/reducers/accountly/dashboard';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
@@ -102,12 +102,11 @@ const Dashboard = () => {
   const dueParts = due
     ? [
         due.overdue.count > 0 ? t('due.summaryOverdue', { count: due.overdue.count }) : '',
-        due.today.count > 0 ? t('due.summaryToday', { count: due.today.count }) : '',
-        due.overdue.count === 0 && due.today.count === 0 && due.upcoming.count > 0 ? t('due.summaryUpcoming', { count: due.upcoming.count }) : ''
+        due.today.count > 0 ? t('due.summaryToday', { count: due.today.count }) : ''
       ].filter(Boolean)
     : [];
   const dueUrgent = (due?.overdue.count ?? 0) > 0;
-  const dueAmount = due ? (dueUrgent ? due.overdue.amount : due.today.count > 0 ? due.today.amount : due.upcoming.amount) : 0;
+  const dueAmount = due ? (dueUrgent ? due.overdue.amount : due.today.amount) : 0;
 
   return (
     <>
@@ -120,6 +119,35 @@ const Dashboard = () => {
                 <StatHalf tone="give" amount={payable} loading={!hasLoaded} label={t('home.youllGive')} />
                 <StatHalf tone="get" amount={receivable} loading={!hasLoaded} label={t('home.youllGet')} />
               </Stack>
+              {dueParts.length > 0 && (
+                <Box
+                  component="button"
+                  onClick={() => navigate('/due')}
+                  sx={{
+                    mt: 1.5,
+                    width: '100%',
+                    px: 1.5,
+                    py: 1.25,
+                    border: 'none',
+                    borderRadius: '14px',
+                    bgcolor: dueUrgent ? c.redSoft : c.chipGrey,
+                    cursor: 'pointer',
+                    color: dueUrgent ? c.redDeep : c.ink,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontFamily: DISPLAY
+                  }}
+                >
+                  <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 500, fontSize: 13, color: 'inherit' }} noWrap>
+                    {dueParts.join(' · ')}
+                  </Typography>
+                  <Typography sx={{ fontWeight: 500, fontSize: 13, color: 'inherit' }} noWrap>
+                    {fmt(dueAmount)}
+                  </Typography>
+                  <ChevronRight size={14} />
+                </Box>
+              )}
               <Box
                 component="button"
                 onClick={() => navigate('/reports')}
@@ -147,42 +175,6 @@ const Dashboard = () => {
               </Box>
             </AppCard>
           </Fade>
-
-          {dueParts.length > 0 && (
-            <Fade delay={0.03} skipEnter={skipEnterRef.current}>
-              <MotionButton
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/due')}
-                sx={{
-                  width: '100%',
-                  p: 1.75,
-                  borderRadius: '20px',
-                  bgcolor: c.surface,
-                  boxShadow: shadow.soft,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  textAlign: 'left'
-                }}
-              >
-                <IconDot size={40} bg={dueUrgent ? c.redSoft : c.chipGrey} fg={dueUrgent ? c.redDeep : c.slate}>
-                  <CalendarClock />
-                </IconDot>
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ fontWeight: 500, fontSize: 14, color: c.ink }} noWrap>
-                    {t('due.title')}
-                  </Typography>
-                  <Typography sx={{ color: dueUrgent ? c.redDeep : c.greyLight, fontSize: 12, fontWeight: 500, mt: 0.25 }} noWrap>
-                    {dueParts.join(' · ')}
-                  </Typography>
-                </Box>
-                <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: dueUrgent ? c.redDeep : c.ink, flexShrink: 0 }} noWrap>
-                  {fmt(dueAmount)}
-                </Typography>
-                <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
-              </MotionButton>
-            </Fade>
-          )}
 
           <Fade delay={0.05} skipEnter={skipEnterRef.current}>
             <Stack direction="row" spacing={1.5}>

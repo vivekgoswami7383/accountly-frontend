@@ -18,7 +18,8 @@ import TransactionSuccessAnimation from 'components/accountly/TransactionSuccess
 import CalculatorKeypad from 'components/accountly/CalculatorKeypad';
 import useConfig from 'hooks/useConfig';
 import { FormAlert } from 'components/accountly/kit';
-import DueDateField from 'components/accountly/DueDateField';
+import { addDays, formatDueShort } from 'utils/accountly/due';
+import { CalendarClock } from 'lucide-react';
 
 const toDateInputValue = (d: Date): string => {
   const yyyy = d.getFullYear();
@@ -56,6 +57,7 @@ const Payment = () => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(todayStr());
   const [dueDate, setDueDate] = useState<string | null>(null);
+  const dueMin = addDays(todayStr(), 1);
   const [initialDate, setInitialDate] = useState(todayStr());
   const [amountError, setAmountError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -452,7 +454,48 @@ const Payment = () => {
             />
           </Stack>
 
-          {!isEdit && isDebit && <DueDateField value={dueDate} onChange={setDueDate} accent={accent} />}
+          {!isEdit && isDebit && (
+            <Stack direction="row" spacing={1.5}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  borderRadius: '14px',
+                  border: `1.5px solid ${dueDate ? accent : c.border}`,
+                  bgcolor: c.surface,
+                  px: 1.5,
+                  py: 1.25
+                }}
+              >
+                <CalendarClock size={16} color={dueDate ? accentDeep : c.greyLight} style={{ flexShrink: 0 }} />
+                <Typography sx={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 500, color: dueDate ? accentDeep : c.ink }} noWrap>
+                  {dueDate ? `${t('due.title')} ${formatDueShort(dueDate)}` : t('due.add')}
+                </Typography>
+                <Box
+                  component="input"
+                  type="date"
+                  value={dueDate || ''}
+                  min={dueMin}
+                  onFocus={() => setCalculatorOpen(false)}
+                  onChange={(e: any) => setDueDate(e.target.value || null)}
+                  sx={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', border: 'none' }}
+                />
+                {dueDate && (
+                  <Box
+                    component="span"
+                    onClick={() => setDueDate(null)}
+                    sx={{ position: 'relative', zIndex: 1, display: 'flex', color: c.greyLight, cursor: 'pointer' }}
+                  >
+                    <X size={14} />
+                  </Box>
+                )}
+              </Box>
+              <Box sx={{ flex: 1 }} />
+            </Stack>
+          )}
         </Stack>
       </Container>
 

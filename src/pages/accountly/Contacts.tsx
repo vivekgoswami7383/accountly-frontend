@@ -10,7 +10,6 @@ import { useT } from 'i18n/accountly';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
-import DueBadge from 'components/accountly/DueBadge';
 import ContactTypeChips from 'components/accountly/ContactTypeChips';
 import { ContactsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
@@ -159,11 +158,6 @@ const Contacts = () => {
                               {formatPhone(cust.phone)}
                             </Typography>
                           </Stack>
-                          {cust.dueDate && get && (
-                            <Box sx={{ mt: 0.5 }}>
-                              <DueBadge dueDate={cust.dueDate} />
-                            </Box>
-                          )}
                         </Box>
                         <Stack alignItems="center" spacing={0.375} sx={{ flexShrink: 0, alignSelf: 'flex-start' }}>
                           <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: get ? c.greenDeep : c.redDeep }} noWrap>
