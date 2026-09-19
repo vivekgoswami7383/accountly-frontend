@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import transactionService from 'services/accountly/transactionService';
 import { CreateTransactionRequest, TransactionFilter, Transaction } from 'services/accountly/types';
-import { updateContactBalance, setContactBalance } from './contacts';
+import { updateContactBalance, setContactBalance, deleteContact, createContact } from './contacts';
 import { fetchDashboardStatistics } from './dashboard';
 
 interface TransactionState {
@@ -167,6 +167,24 @@ const transactionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        const contactId = action.payload;
+        state.transactions = state.transactions.filter((t) => t.contactId !== contactId);
+        if (state.loadedContactId === contactId) {
+          state.contactTransactions = [];
+          state.contactStats = { totalTransactions: 0, contactBalance: null };
+          state.loadedContactId = null;
+        }
+        if (state.selectedTransaction?.contactId === contactId) state.selectedTransaction = null;
+      })
+      .addCase(createContact.fulfilled, (state, action) => {
+        if (state.loadedContactId === action.payload.id) {
+          state.contactTransactions = [];
+          state.contactStats = { totalTransactions: 0, contactBalance: null };
+          state.loadedContactId = null;
+        }
+        state.transactions = state.transactions.filter((t) => t.contactId !== action.payload.id);
+      })
       .addCase(createTransaction.pending, (state) => {
         state.loading = true;
         state.error = null;

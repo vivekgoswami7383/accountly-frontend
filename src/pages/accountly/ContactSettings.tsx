@@ -30,7 +30,7 @@ const ContactSettings = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { contacts } = useSelector((s) => s.contacts);
+  const { contacts, hasLoaded: contactsLoaded } = useSelector((s) => s.contacts);
   const [confirm, setConfirm] = useState(false);
   const [confirmUnlink, setConfirmUnlink] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,11 +41,15 @@ const ContactSettings = () => {
     if (contacts.length === 0) dispatch(fetchContacts());
   }, [dispatch, contacts.length]);
 
+  useEffect(() => {
+    if (contactsLoaded && !contact) navigate('/contact', { replace: true });
+  }, [contactsLoaded, contact, navigate]);
+
   const handleDelete = async () => {
     setConfirm(false);
     setError(null);
     const result = await dispatch(deleteContact(id));
-    if (deleteContact.fulfilled.match(result)) navigate('/contact');
+    if (deleteContact.fulfilled.match(result)) navigate('/contact', { replace: true });
     else setError((result.payload as string) || t('contactSettings.failedDelete'));
   };
 

@@ -61,6 +61,10 @@ const ContactDetail = () => {
   }, [dispatch, contactsLoaded]);
 
   useEffect(() => {
+    if (contactsLoaded && !contact) navigate('/contact', { replace: true });
+  }, [contactsLoaded, contact, navigate]);
+
+  useEffect(() => {
     if (!id) return;
     if (loadedContactId === id) return;
     dispatch(resetContactView(id));
