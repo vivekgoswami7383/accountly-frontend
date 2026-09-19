@@ -17,9 +17,12 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { ArrowUp, ArrowDown, Calendar, FileText, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Calendar, CalendarClock, FileText, Paperclip, Trash2, Pencil, MoreVertical, TriangleAlert, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchTransactionById, deleteTransactionById } from 'store/reducers/accountly/transactions';
+import { fetchContacts } from 'store/reducers/accountly/contacts';
+import useDueText from 'hooks/useDueText';
+import { dueState } from 'utils/accountly/due';
 import { useFormatAmount, formatDateTime } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
@@ -35,6 +38,8 @@ const TransactionDetail = () => {
   const fmt = useFormatAmount();
 
   const { selectedTransaction, loading } = useSelector((s) => s.transactions);
+  const { contacts, hasLoaded: contactsLoaded } = useSelector((s) => s.contacts);
+  const dueText = useDueText();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menuEl, setMenuEl] = useState<null | HTMLElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +50,10 @@ const TransactionDetail = () => {
     dispatch(fetchTransactionById(id));
   }, [dispatch, id]);
 
+  useEffect(() => {
+    if (!contactsLoaded) dispatch(fetchContacts());
+  }, [dispatch, contactsLoaded]);
+
   const handleDelete = async () => {
     setConfirmDelete(false);
     setError(null);
@@ -54,6 +63,9 @@ const TransactionDetail = () => {
   };
 
   const sent = selectedTransaction?.transaction_type === 'debit';
+  const txContact = contacts.find((x) => x.id === selectedTransaction?.contactId);
+  const dueDate = sent && txContact && txContact.balance < 0 && txContact.contactType !== 'supplier' ? txContact.dueDate : null;
+  const dueOverdue = dueDate ? dueState(dueDate) === 'overdue' : false;
   const accentDeep = sent ? c.redDeep : c.greenDeep;
   const accentSoft = sent ? c.redSoft : c.greenSoft;
 
@@ -102,7 +114,30 @@ const TransactionDetail = () => {
           </Stack>
         ) : (
           <Stack spacing={2.25}>
-            <Box sx={{ bgcolor: accentSoft, borderRadius: '24px', px: 2.5, py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{ position: 'relative', bgcolor: accentSoft, borderRadius: '24px', px: 2.5, py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {dueDate && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    bgcolor: c.surface,
+                    color: dueOverdue ? c.redDeep : c.ink,
+                    borderRadius: '999px',
+                    px: 1.25,
+                    py: 0.5,
+                    fontFamily: DISPLAY,
+                    fontWeight: 500,
+                    fontSize: 12
+                  }}
+                >
+                  <CalendarClock size={13} />
+                  {dueText(dueDate)}
+                </Box>
+              )}
               <IconDot size={56} bg={c.surface} fg={accentDeep} icon={24}>
                 {sent ? <ArrowUp /> : <ArrowDown />}
               </IconDot>
