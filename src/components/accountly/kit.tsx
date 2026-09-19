@@ -110,11 +110,12 @@ export const IconDot = ({
   </Box>
 );
 
-export const SectionHeader = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => {
+export const SectionHeader = ({ title, action, onAction, right }: { title: string; action?: string; onAction?: () => void; right?: ReactNode }) => {
   const c = useAccountlyColors();
   return (
     <Stack direction="row" alignItems="center" sx={{ px: 0.25, mb: 1.25 }}>
       <Typography sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 500, fontSize: 18, color: c.ink, letterSpacing: '-0.01em' }}>{title}</Typography>
+      {right}
       {action && (
         <ButtonBase onClick={onAction} sx={{ borderRadius: 1.5, px: 0.5, py: 0.25, color: c.slate }}>
           <Typography sx={{ color: c.slate, fontWeight: 500, fontSize: 12.5, mr: 0.375 }}>{action}</Typography>

@@ -76,7 +76,6 @@ const ContactDetail = () => {
 
   const dueDate = contact && balance !== 0 ? contact.dueDate : null;
   const dueOverdue = dueDate ? dueState(dueDate) === 'overdue' : false;
-  const dueTxId = dueDate ? contactTransactions.find((x) => x.transaction_type === (balance < 0 ? 'debit' : 'credit'))?.id : undefined;
 
   const handleShareLedger = async () => {
     setLedgerError(null);
@@ -395,7 +394,32 @@ const ContactDetail = () => {
           ) : contactTransactions.length > 0 ? (
             <Fade delay={0.05}>
               <Box>
-                <SectionHeader title={t('detail.transactions')} />
+                <SectionHeader
+                  title={t('detail.transactions')}
+                  right={
+                    dueDate ? (
+                      <Box
+                        sx={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                          px: 1.25,
+                          py: 0.375,
+                          borderRadius: '999px',
+                          bgcolor: dueOverdue ? c.redSoft : c.chipGrey,
+                          color: dueOverdue ? c.redDeep : c.grey,
+                          fontFamily: DISPLAY,
+                          fontWeight: 500,
+                          fontSize: 11.5,
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        <CalendarClock size={12} />
+                        {dueText(dueDate)}
+                      </Box>
+                    ) : undefined
+                  }
+                />
                 <AppCard
                   sx={{
                     overflowX: 'hidden',
@@ -414,35 +438,9 @@ const ContactDetail = () => {
                             {sent ? <ArrowUp /> : <ArrowDown />}
                           </IconDot>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Stack direction="row" alignItems="center" spacing={1} sx={{ minWidth: 0 }}>
-                              <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink, flexShrink: 0 }} noWrap>
-                                {sent ? t('detail.youGave') : t('detail.youGot')}
-                              </Typography>
-                              {tx.id === dueTxId && dueDate && (
-                                <Box
-                                  sx={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 0.5,
-                                    minWidth: 0,
-                                    px: 1,
-                                    py: 0.125,
-                                    borderRadius: '999px',
-                                    bgcolor: dueOverdue ? c.redSoft : c.chipGrey,
-                                    color: dueOverdue ? c.redDeep : c.grey,
-                                    fontFamily: DISPLAY,
-                                    fontWeight: 500,
-                                    fontSize: 10.5,
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  <CalendarClock size={10} style={{ flexShrink: 0 }} />
-                                  <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {dueText(dueDate)}
-                                  </Box>
-                                </Box>
-                              )}
-                            </Stack>
+                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
+                              {sent ? t('detail.youGave') : t('detail.youGot')}
+                            </Typography>
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {fmtWhen(tx.createdAt)}
                             </Typography>
