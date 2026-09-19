@@ -409,7 +409,7 @@ const ContactDetail = () => {
                     return (
                       <Box key={tx.id}>
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                        <ListRow onClick={() => navigate(`/transaction/${tx.id}`)}>
+                        <ListRow onClick={() => navigate(`/transaction/${tx.id}`)} sx={{ position: 'relative' }}>
                           <IconDot size={44} bg={sent ? c.redSoft : c.greenSoft} fg={sent ? c.redDeep : c.greenDeep}>
                             {sent ? <ArrowUp /> : <ArrowDown />}
                           </IconDot>
@@ -421,32 +421,33 @@ const ContactDetail = () => {
                               {fmtWhen(tx.createdAt)}
                             </Typography>
                           </Box>
-                          <Stack alignItems="flex-end" spacing={0.5} sx={{ flexShrink: 0 }}>
-                            {tx.id === dueTxId && dueDate && (
-                              <Box
-                                sx={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 0.5,
-                                  px: 1,
-                                  py: 0.25,
-                                  borderRadius: '999px',
-                                  bgcolor: dueOverdue ? c.redSoft : c.chipGrey,
-                                  color: dueOverdue ? c.redDeep : c.grey,
-                                  fontFamily: DISPLAY,
-                                  fontWeight: 500,
-                                  fontSize: 11,
-                                  whiteSpace: 'nowrap'
-                                }}
-                              >
-                                <CalendarClock size={11} />
-                                {dueText(dueDate)}
-                              </Box>
-                            )}
-                            <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: sent ? c.redDeep : c.greenDeep }} noWrap>
-                              {fmt(tx.amount)}
-                            </Typography>
-                          </Stack>
+                          {tx.id === dueTxId && dueDate && (
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                top: 6,
+                                right: 12,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                px: 1,
+                                py: 0.125,
+                                borderRadius: '999px',
+                                bgcolor: dueOverdue ? c.redSoft : c.chipGrey,
+                                color: dueOverdue ? c.redDeep : c.grey,
+                                fontFamily: DISPLAY,
+                                fontWeight: 500,
+                                fontSize: 10.5,
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              <CalendarClock size={10} />
+                              {dueText(dueDate)}
+                            </Box>
+                          )}
+                          <Typography sx={{ fontWeight: 500, fontSize: 14.5, flexShrink: 0, color: sent ? c.redDeep : c.greenDeep }} noWrap>
+                            {fmt(tx.amount)}
+                          </Typography>
                         </ListRow>
                       </Box>
                     );
