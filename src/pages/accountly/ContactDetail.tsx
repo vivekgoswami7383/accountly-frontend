@@ -16,6 +16,7 @@ import { AppCard, Fade, ListRow, IconDot, SectionHeader, FormAlert } from 'compo
 import LedgerDocument from 'components/accountly/LedgerDocument';
 import { TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 import LinkCard from 'components/accountly/LinkCard';
+import LinkImportStatus from 'components/accountly/LinkImportStatus';
 import ContactNameLine from 'components/accountly/ContactNameLine';
 
 const fmtWhen = (iso?: string) => {
@@ -289,6 +290,7 @@ const ContactDetail = () => {
           </Fade>
 
           {contact && <LinkCard contact={contact} />}
+          {contact && <LinkImportStatus contact={contact} />}
 
           {contact?.contactType !== 'supplier' && (
           <Stack direction="row" spacing={1}>

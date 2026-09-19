@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Container, Divider, FormControlLabel, Skeleton, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
 import { refreshAfterLinkChange } from 'store/reducers/accountly/contacts';
@@ -20,6 +20,7 @@ const LinkRequests = () => {
   const t = useT();
   const [requests, setRequests] = useState<LinkRequest[] | null>(null);
   const [blocked, setBlocked] = useState<BlockedLink[]>([]);
+  const [importChoice, setImportChoice] = useState<Record<string, boolean>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,9 +67,10 @@ const LinkRequests = () => {
     }
   };
 
-  const handleAccept = (id: string) =>
-    run(id, async () => {
-      const { contact_id: contactId } = await linkService.accept(id);
+  const handleAccept = (request: LinkRequest) =>
+    run(request.id, async () => {
+      const wantsImport = (importChoice[request.id] ?? request.existing_count === 0) && request.share_history && request.history_count > 0;
+      const { contact_id: contactId } = await linkService.accept(request.id, wantsImport);
       dispatch(refreshAfterLinkChange());
       navigate(`/contact/${contactId}`);
     });
@@ -107,11 +109,30 @@ const LinkRequests = () => {
                   </Box>
                 </Stack>
                 <Typography sx={{ color: c.grey, fontSize: 12.5, lineHeight: 1.45, mt: 1.5 }}>{t('link.requestExplain')}</Typography>
+                {req.share_history && req.history_count > 0 && (
+                  <Box sx={{ mt: 1.25 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={importChoice[req.id] ?? req.existing_count === 0}
+                          onChange={(e) => setImportChoice((prev) => ({ ...prev, [req.id]: e.target.checked }))}
+                        />
+                      }
+                      label={<Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.ink }}>{t('link.importHistory', { count: req.history_count })}</Typography>}
+                    />
+                    {req.existing_count > 0 && (
+                      <Typography sx={{ color: c.redDeep, fontSize: 12, ml: 4, mt: -0.5, lineHeight: 1.4 }}>
+                        {t('link.importWarn', { count: req.existing_count })}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
                 <Stack direction="row" spacing={1.25} sx={{ mt: 1.75 }}>
                   <Button fullWidth variant="outlined" disabled={busyId === req.id} onClick={() => run(req.id, () => linkService.decline(req.id))}>
                     {t('link.decline')}
                   </Button>
-                  <Button fullWidth variant="contained" disabled={busyId === req.id} onClick={() => handleAccept(req.id)}>
+                  <Button fullWidth variant="contained" disabled={busyId === req.id} onClick={() => handleAccept(req)}>
                     {t('link.accept')}
                   </Button>
                 </Stack>

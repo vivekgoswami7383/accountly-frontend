@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
 import { Link2 } from 'lucide-react';
 import { useDispatch } from 'store';
 import { refreshAfterLinkChange, setContactLink } from 'store/reducers/accountly/contacts';
@@ -9,7 +9,13 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { AppCard, FormAlert, IconDot } from './kit';
 
-type LookupState = { status: 'available' | 'incoming'; linkId?: string } | null;
+type LookupState = {
+  status: 'available' | 'incoming';
+  linkId?: string;
+  historyCount: number;
+  shareHistory: boolean;
+  existingCount: number;
+} | null;
 
 const LinkCard = ({ contact }: { contact: Contact }) => {
   const dispatch = useDispatch();
@@ -18,6 +24,8 @@ const LinkCard = ({ contact }: { contact: Contact }) => {
   const [lookup, setLookup] = useState<LookupState>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shareHistory, setShareHistory] = useState(true);
+  const [importHistory, setImportHistory] = useState(false);
 
   useEffect(() => {
     setLookup(null);
@@ -27,8 +35,20 @@ const LinkCard = ({ contact }: { contact: Contact }) => {
       .lookup(contact.id)
       .then((res) => {
         if (cancelled) return;
-        if (res.status === 'available') setLookup({ status: 'available' });
-        else if (res.status === 'incoming') setLookup({ status: 'incoming', linkId: res.link_id });
+        if (res.status === 'available') {
+          setLookup({ status: 'available', historyCount: res.history_count || 0, shareHistory: false, existingCount: 0 });
+          setShareHistory(true);
+        } else if (res.status === 'incoming') {
+          const existing = res.existing_count || 0;
+          setLookup({
+            status: 'incoming',
+            linkId: res.link_id,
+            historyCount: res.history_count || 0,
+            shareHistory: Boolean(res.share_history),
+            existingCount: existing
+          });
+          setImportHistory(existing === 0);
+        }
       })
       .catch(() => {
         if (!cancelled) setLookup(null);
@@ -52,7 +72,8 @@ const LinkCard = ({ contact }: { contact: Contact }) => {
 
   const sendRequest = () =>
     run(async () => {
-      const res = await linkService.request(contact.id);
+      const wantsHistory = shareHistory && (lookup?.historyCount || 0) > 0;
+      const res = await linkService.request(contact.id, wantsHistory);
       dispatch(setContactLink({ contactId: contact.id, linkId: res.link.id, linkStatus: 'pending' }));
     }, t('link.failedRequest'));
 
@@ -66,7 +87,8 @@ const LinkCard = ({ contact }: { contact: Contact }) => {
   const acceptIncoming = () =>
     run(async () => {
       if (!lookup?.linkId) return;
-      await linkService.accept(lookup.linkId);
+      const wantsImport = importHistory && lookup.shareHistory && lookup.historyCount > 0;
+      await linkService.accept(lookup.linkId, wantsImport);
       dispatch(setContactLink({ contactId: contact.id, linkId: lookup.linkId, linkStatus: 'active' }));
       dispatch(refreshAfterLinkChange());
     }, t('link.failedAction'));
@@ -101,6 +123,31 @@ const LinkCard = ({ contact }: { contact: Contact }) => {
             <Typography sx={{ color: c.grey, fontSize: 12.5, lineHeight: 1.4, mt: 0.25 }}>{sub}</Typography>
           </Box>
         </Stack>
+
+        {available && lookup && lookup.historyCount > 0 && (
+          <Box sx={{ mt: 1.25 }}>
+            <FormControlLabel
+              control={<Checkbox size="small" checked={shareHistory} onChange={(e) => setShareHistory(e.target.checked)} />}
+              label={<Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.ink }}>{t('link.shareHistory', { count: lookup.historyCount })}</Typography>}
+            />
+            <Typography sx={{ color: c.grey, fontSize: 12, ml: 4, mt: -0.5 }}>{t('link.shareHistorySub')}</Typography>
+          </Box>
+        )}
+
+        {incoming && lookup && lookup.shareHistory && lookup.historyCount > 0 && (
+          <Box sx={{ mt: 1.25 }}>
+            <FormControlLabel
+              control={<Checkbox size="small" checked={importHistory} onChange={(e) => setImportHistory(e.target.checked)} />}
+              label={<Typography sx={{ fontSize: 13.5, fontWeight: 500, color: c.ink }}>{t('link.importHistory', { count: lookup.historyCount })}</Typography>}
+            />
+            {lookup.existingCount > 0 && (
+              <Typography sx={{ color: c.redDeep, fontSize: 12, ml: 4, mt: -0.5, lineHeight: 1.4 }}>
+                {t('link.importWarn', { count: lookup.existingCount })}
+              </Typography>
+            )}
+          </Box>
+        )}
+
         {incoming ? (
           <Stack direction="row" spacing={1.25} sx={{ mt: 1.75 }}>
             <Button fullWidth variant="outlined" disabled={busy} onClick={declineIncoming}>

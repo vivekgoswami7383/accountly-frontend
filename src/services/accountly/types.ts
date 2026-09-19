@@ -6,10 +6,23 @@ export type LinkStatus = 'pending' | 'active';
 
 export type LinkLookupStatus = LinkStatus | 'available' | 'incoming' | 'unavailable';
 
-export interface LinkRequest {
+export interface LinkHistoryPreview {
+  share_history: boolean;
+  history_count: number;
+  existing_count: number;
+}
+
+export interface LinkRequest extends LinkHistoryPreview {
   id: string;
   business_name: string;
   requested_at: string;
+}
+
+export interface LinkImportStatus {
+  status: 'none' | 'running' | 'done' | 'failed';
+  total: number;
+  done: number;
+  can_retry: boolean;
 }
 
 export interface BlockedLink {
