@@ -23,6 +23,7 @@ import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accoun
 import { useT } from 'i18n/accountly';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 import { FormAlert } from 'components/accountly/kit';
+import { checkPhone, readPhoneInput } from 'utils/accountly/phone';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -40,15 +41,16 @@ const Register = () => {
   const [formError, setFormError] = useState<string | null>(null);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = k === 'phone' ? e.target.value.replace(/[^0-9]/g, '').slice(0, 10) : e.target.value;
+    const v = k === 'phone' ? readPhoneInput(country, e.target.value) : e.target.value;
     setForm((f) => ({ ...f, [k]: v }));
   };
 
   const handleSubmit = async () => {
+    const checked = checkPhone(country, form.phone);
     const next: Record<string, boolean> = {
       business_name: !form.business_name.trim(),
       name: !form.name.trim(),
-      phone: !/^[0-9]{10}$/.test(form.phone),
+      phone: !checked.valid,
       password: form.password.length < 8
     };
     setErrors(next);
@@ -56,7 +58,7 @@ const Register = () => {
     if (Object.values(next).some(Boolean)) return;
     setSubmitting(true);
     try {
-      await register(form.business_name.trim(), form.name.trim(), `${country.phone}${form.phone}`, form.password);
+      await register(form.business_name.trim(), form.name.trim(), checked.number, form.password);
       navigate('/', { replace: true });
     } catch (err: any) {
       setFormError(err?.message || t('auth.registrationFailed'));
@@ -105,7 +107,7 @@ const Register = () => {
                 value={form.phone}
                 error={errors.phone}
                 onChange={set('phone')}
-                inputProps={{ inputMode: 'numeric', maxLength: 10 }}
+                inputProps={{ inputMode: 'numeric', maxLength: 20 }}
                 InputProps={{ startAdornment: <InputAdornment position="start"><CountryCodePicker value={country} onChange={setCountry} /></InputAdornment> }}
               />
               <TextField

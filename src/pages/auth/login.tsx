@@ -22,6 +22,7 @@ import { CountryType } from 'data/countries';
 import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { FormAlert } from 'components/accountly/kit';
+import { checkPhone, readPhoneInput } from 'utils/accountly/phone';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -40,13 +41,14 @@ const Login = () => {
   const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    const next = { phone: !/^[0-9]{10}$/.test(phone), password: !password.trim() };
+    const checked = checkPhone(country, phone);
+    const next = { phone: !checked.possible, password: !password.trim() };
     setErrors(next);
     setFormError(null);
     if (next.phone || next.password) return;
     setSubmitting(true);
     try {
-      await login(`${country.phone}${phone}`, password);
+      await login(checked.number, password);
       navigate('/', { replace: true });
     } catch (err: any) {
       setFormError(err?.message || t('auth.loginFailed'));
@@ -75,8 +77,8 @@ const Login = () => {
                 placeholder={t('auth.enterPhoneNumber')}
                 value={phone}
                 error={errors.phone}
-                onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
-                inputProps={{ inputMode: 'numeric', maxLength: 10 }}
+                onChange={(e) => setPhone(readPhoneInput(country, e.target.value))}
+                inputProps={{ inputMode: 'numeric', maxLength: 20 }}
                 InputProps={{ startAdornment: <InputAdornment position="start"><CountryCodePicker value={country} onChange={setCountry} /></InputAdornment> }}
               />
               <TextField
