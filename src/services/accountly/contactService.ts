@@ -1,5 +1,5 @@
 import axios from 'utils/axios';
-import { ApiContact, CreateContactRequest, UpdateContactRequest, Contact, ContactType } from './types';
+import { ApiContact, CreateContactRequest, UpdateContactRequest, Contact, ContactType, DueListResponse } from './types';
 
 const unwrap = (res: any) => res?.data?.data ?? res?.data;
 
@@ -12,6 +12,11 @@ export const contactService = {
     const typeQuery = params?.contactType ? `&type=${params.contactType}` : '';
     const query = params ? `?page=${params.page ?? 1}&limit=${params.limit ?? 20}${typeQuery}` : '';
     const res = await axios.get(`/api/contact${query}`);
+    return unwrap(res);
+  },
+
+  async getDueContacts(today: string): Promise<DueListResponse> {
+    const res = await axios.get(`/api/contact/due?today=${today}`);
     return unwrap(res);
   },
 
@@ -50,6 +55,7 @@ export const contactService = {
       pendingAmount: 0,
       imageUrl: apiContact.image_url || '',
       contactType: apiContact.type || null,
+      dueDate: apiContact.due_date || null,
       status: 'active',
       createdAt,
       updatedAt

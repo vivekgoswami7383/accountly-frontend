@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Box } from '@mui/material';
-import { Users, Receipt, Wallet, NotebookPen, BarChart3 } from 'lucide-react';
+import { Users, Receipt, Wallet, NotebookPen, BarChart3, CalendarClock } from 'lucide-react';
 import { AVATAR_TINTS_LIGHT, AVATAR_TINTS_DARK, useAccountlyColors, useAccountlyMode } from 'themes/accountly';
 
 const BLOB_PATH = 'M50,8 C68,6 92,22 92,48 C92,74 70,94 46,92 C22,90 6,70 8,46 C10,22 32,10 50,8 Z';
@@ -61,4 +61,9 @@ export const NotesEmptyIllustration = ({ size }: { size?: number }) => {
 export const ReportsEmptyIllustration = ({ size }: { size?: number }) => {
   const tint = useTint(0);
   return <EmptyIllustration icon={<BarChart3 strokeWidth={1.75} />} bg={tint.bg} fg={tint.fg} size={size} />;
+};
+
+export const DueEmptyIllustration = ({ size }: { size?: number }) => {
+  const tint = useTint(2);
+  return <EmptyIllustration icon={<CalendarClock strokeWidth={1.75} />} bg={tint.bg} fg={tint.fg} size={size} />;
 };

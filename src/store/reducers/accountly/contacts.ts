@@ -113,21 +113,43 @@ const contactSlice = createSlice({
       const { contactId, amount, transactionType } = action.payload;
       const balanceChange = transactionType === 'debit' ? -amount : amount;
       const contact = state.contacts.find((c) => c.id === contactId);
-      if (contact) contact.balance = contact.balance + balanceChange;
+      if (contact) {
+        contact.balance = contact.balance + balanceChange;
+        if (contact.balance >= 0) contact.dueDate = null;
+      }
       const listItem = state.listItems.find((c) => c.id === contactId);
-      if (listItem) listItem.balance = listItem.balance + balanceChange;
+      if (listItem) {
+        listItem.balance = listItem.balance + balanceChange;
+        if (listItem.balance >= 0) listItem.dueDate = null;
+      }
       if (state.selectedContact?.id === contactId) {
         state.selectedContact.balance = state.selectedContact.balance + balanceChange;
+        if (state.selectedContact.balance >= 0) state.selectedContact.dueDate = null;
       }
+    },
+    setContactDue: (state, action: PayloadAction<{ contactId: string; dueDate: string | null }>) => {
+      const { contactId, dueDate } = action.payload;
+      const contact = state.contacts.find((c) => c.id === contactId);
+      if (contact) contact.dueDate = dueDate;
+      const listItem = state.listItems.find((c) => c.id === contactId);
+      if (listItem) listItem.dueDate = dueDate;
+      if (state.selectedContact?.id === contactId) state.selectedContact.dueDate = dueDate;
     },
     setContactBalance: (state, action: PayloadAction<{ contactId: string; balance: number }>) => {
       const { contactId, balance } = action.payload;
       const contact = state.contacts.find((c) => c.id === contactId);
-      if (contact) contact.balance = balance;
+      if (contact) {
+        contact.balance = balance;
+        if (balance >= 0) contact.dueDate = null;
+      }
       const listItem = state.listItems.find((c) => c.id === contactId);
-      if (listItem) listItem.balance = balance;
+      if (listItem) {
+        listItem.balance = balance;
+        if (balance >= 0) listItem.dueDate = null;
+      }
       if (state.selectedContact?.id === contactId) {
         state.selectedContact.balance = balance;
+        if (balance >= 0) state.selectedContact.dueDate = null;
       }
     }
   },
@@ -213,5 +235,5 @@ const contactSlice = createSlice({
   }
 });
 
-export const { setSelectedContact, clearError, updateContactBalance, setContactBalance } = contactSlice.actions;
+export const { setSelectedContact, clearError, updateContactBalance, setContactBalance, setContactDue } = contactSlice.actions;
 export default contactSlice.reducer;

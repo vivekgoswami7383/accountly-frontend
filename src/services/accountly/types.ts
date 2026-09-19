@@ -12,6 +12,7 @@ export interface ApiContact {
   image_key?: string;
   image_url?: string;
   type?: ContactType | null;
+  due_date?: string | null;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
@@ -30,6 +31,7 @@ export interface Contact {
   pendingAmount: number;
   imageUrl: string;
   contactType: ContactType | null;
+  dueDate: string | null;
   status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
@@ -48,6 +50,7 @@ export interface UpdateContactRequest {
   address?: string;
   image_key?: string;
   type?: ContactType | null;
+  due_date?: string | null;
 }
 
 export type TransactionType = 'debit' | 'credit';
@@ -72,6 +75,7 @@ export interface CreateTransactionRequest {
   description?: string;
   transaction_date?: string;
   attachment_key?: string;
+  due_date?: string | null;
 }
 
 export interface FilterCondition {
@@ -116,7 +120,26 @@ export interface ApiTransaction {
 
 export type UploadCategory = 'logo' | 'avatar' | 'contact' | 'attachment';
 
+export interface DueBucket {
+  count: number;
+  amount: number;
+}
+
+export interface DueSummary {
+  overdue: DueBucket;
+  today: DueBucket;
+  upcoming: DueBucket;
+}
+
+export interface DueListResponse {
+  summary: DueSummary;
+  overdue: ApiContact[];
+  today: ApiContact[];
+  upcoming: ApiContact[];
+}
+
 export interface DashboardStatisticsResponse {
+  due: DueSummary | null;
   stats: DashboardStats;
   recent_contacts: RecentContact[];
   recent_transactions: ApiTransaction[];

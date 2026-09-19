@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import dashboardService from 'services/accountly/dashboardService';
-import { DashboardStats, RecentContact, ApiTransaction, Transaction } from 'services/accountly/types';
+import { DashboardStats, DueSummary, RecentContact, ApiTransaction, Transaction } from 'services/accountly/types';
 
 interface DashboardState {
   stats: DashboardStats | null;
+  due: DueSummary | null;
   recentContacts: RecentContact[];
   recentTransactions: Transaction[];
   loading: boolean;
@@ -13,6 +14,7 @@ interface DashboardState {
 
 const initialState: DashboardState = {
   stats: null,
+  due: null,
   recentContacts: [],
   recentTransactions: [],
   loading: false,
@@ -46,6 +48,7 @@ const dashboardSlice = createSlice({
         state.loading = false;
         state.hasLoaded = true;
         state.stats = action.payload.stats;
+        state.due = action.payload.due || null;
         state.recentContacts = action.payload.recent_contacts || [];
         state.recentTransactions = (action.payload.recent_transactions || []).map((t: ApiTransaction) => ({
           id: t._id,

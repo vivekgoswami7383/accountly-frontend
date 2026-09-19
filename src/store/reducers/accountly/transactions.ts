@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import transactionService from 'services/accountly/transactionService';
 import { CreateTransactionRequest, TransactionFilter, Transaction } from 'services/accountly/types';
-import { updateContactBalance, setContactBalance, deleteContact, createContact } from './contacts';
+import { updateContactBalance, setContactBalance, setContactDue, deleteContact, createContact } from './contacts';
 import { fetchDashboardStatistics } from './dashboard';
 
 interface TransactionState {
@@ -62,6 +62,9 @@ export const createTransaction = createAsyncThunk(
           transactionType: data.transaction_type
         })
       );
+      if (data.due_date && data.transaction_type === 'debit' && res.contact_balance < 0) {
+        dispatch(setContactDue({ contactId: data.contact._id, dueDate: data.due_date }));
+      }
       dispatch(fetchDashboardStatistics() as any);
       return { transaction: res.transaction, contactBalance: res.contact_balance };
     } catch (error: any) {

@@ -18,6 +18,7 @@ import TransactionSuccessAnimation from 'components/accountly/TransactionSuccess
 import CalculatorKeypad from 'components/accountly/CalculatorKeypad';
 import useConfig from 'hooks/useConfig';
 import { FormAlert } from 'components/accountly/kit';
+import DueDateField from 'components/accountly/DueDateField';
 
 const toDateInputValue = (d: Date): string => {
   const yyyy = d.getFullYear();
@@ -54,6 +55,7 @@ const Payment = () => {
   const calc = useCalculatorInput();
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(todayStr());
+  const [dueDate, setDueDate] = useState<string | null>(null);
   const [initialDate, setInitialDate] = useState(todayStr());
   const [amountError, setAmountError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -207,7 +209,8 @@ const Payment = () => {
           amount: value,
           transaction_type: transactionType,
           description: description.trim() || '',
-          transaction_date
+          transaction_date,
+          ...(isDebit && dueDate ? { due_date: dueDate } : {})
         })
       );
       if (!createTransaction.fulfilled.match(result)) {
@@ -448,6 +451,8 @@ const Payment = () => {
               sx={{ display: 'none' }}
             />
           </Stack>
+
+          {!isEdit && isDebit && <DueDateField value={dueDate} onChange={setDueDate} accent={accent} />}
         </Stack>
       </Container>
 
