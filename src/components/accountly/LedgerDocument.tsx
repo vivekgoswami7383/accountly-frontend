@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   statementTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.red, letterSpacing: 1 },
   divider: { borderBottomWidth: 1, borderBottomColor: COLORS.line, marginTop: 18, marginBottom: 18 },
   eyebrow: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: COLORS.greyLight, letterSpacing: 1, marginBottom: 5 },
-  customerName: { fontSize: 13, fontFamily: 'Helvetica-Bold', marginBottom: 3 },
+  contactName: { fontSize: 13, fontFamily: 'Helvetica-Bold', marginBottom: 3 },
   summaryCard: {
     flexDirection: 'row',
     backgroundColor: COLORS.bg,
@@ -66,9 +66,9 @@ export interface LedgerDocumentProps {
   businessName: string;
   businessAddress?: string;
   businessGst?: string;
-  customerName: string;
-  customerPhone?: string;
-  customerAddress?: string;
+  contactName: string;
+  contactPhone?: string;
+  contactAddress?: string;
   currentBalance: number;
   balanceLabel: string;
   balanceTone: 'due' | 'credit';
@@ -95,9 +95,9 @@ const LedgerDocument = ({
   businessName,
   businessAddress,
   businessGst,
-  customerName,
-  customerPhone,
-  customerAddress,
+  contactName,
+  contactPhone,
+  contactAddress,
   currentBalance,
   balanceLabel,
   balanceTone,
@@ -127,9 +127,9 @@ const LedgerDocument = ({
 
       <View>
         <Text style={styles.eyebrow}>{labels.billTo.toUpperCase()}</Text>
-        <Text style={styles.customerName}>{customerName}</Text>
-        {customerPhone ? <Text style={styles.muted}>{customerPhone}</Text> : null}
-        {customerAddress ? <Text style={styles.muted}>{customerAddress}</Text> : null}
+        <Text style={styles.contactName}>{contactName}</Text>
+        {contactPhone ? <Text style={styles.muted}>{contactPhone}</Text> : null}
+        {contactAddress ? <Text style={styles.muted}>{contactAddress}</Text> : null}
       </View>
 
       <View style={styles.summaryCard}>

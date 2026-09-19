@@ -108,10 +108,10 @@ const Notes = () => {
                 <NotesEmptyIllustration />
               </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
-                {query ? t('customers.noMatches') : t('notes.noNotesYet')}
+                {query ? t('contacts.noMatches') : t('notes.noNotesYet')}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>
-                {query ? t('customers.tryDifferent') : t('notes.noNotesSub')}
+                {query ? t('contacts.tryDifferent') : t('notes.noNotesSub')}
               </Typography>
             </AppCard>
           ) : (

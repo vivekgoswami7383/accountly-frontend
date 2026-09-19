@@ -146,7 +146,7 @@ const Transactions = () => {
     const q = query.trim().toLowerCase();
     if (!q) return transactions;
     return transactions.filter(
-      (tx) => tx.customerName?.toLowerCase().includes(q) || tx.description?.toLowerCase().includes(q) || String(tx.amount).includes(q)
+      (tx) => tx.contactName?.toLowerCase().includes(q) || tx.description?.toLowerCase().includes(q) || String(tx.amount).includes(q)
     );
   }, [transactions, query]);
 
@@ -255,9 +255,9 @@ const Transactions = () => {
                 <TransactionsEmptyIllustration size={100} />
               </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
-                {query || hasNonDefaultFilter ? t('customers.noMatches') : t('home.noPaymentsYet')}
+                {query || hasNonDefaultFilter ? t('contacts.noMatches') : t('home.noPaymentsYet')}
               </Typography>
-              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('transactions.openCustomerRecord')}</Typography>
+              <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('transactions.openContactRecord')}</Typography>
             </AppCard>
           ) : (
             <Fade>
@@ -273,7 +273,7 @@ const Transactions = () => {
                         </IconDot>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
                           <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
-                            {sent ? t('home.paidTo', { name: tx.customerName }) : t('home.receivedFrom', { name: tx.customerName })}
+                            {sent ? t('home.paidTo', { name: tx.contactName }) : t('home.receivedFrom', { name: tx.contactName })}
                           </Typography>
                           <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                             {fmtWhen(tx.createdAt)}

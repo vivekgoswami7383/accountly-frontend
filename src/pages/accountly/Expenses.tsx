@@ -349,7 +349,7 @@ const Expenses = () => {
                 <ExpensesEmptyIllustration size={100} />
               </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
-                {query || hasNonDefaultFilter ? t('customers.noMatches') : t('expenses.noExpensesYet')}
+                {query || hasNonDefaultFilter ? t('contacts.noMatches') : t('expenses.noExpensesYet')}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>{t('expenses.noExpensesSub')}</Typography>
             </AppCard>

@@ -214,18 +214,18 @@ const Reports = () => {
             </Box>
           </Fade>
 
-          {!loading && report && report.topCustomers.length > 0 && (
+          {!loading && report && report.topContacts.length > 0 && (
             <Fade delay={0.1}>
               <Box>
-                <SectionHeader title={t('reports.topCustomers')} />
+                <SectionHeader title={t('reports.topContacts')} />
                 <AppCard sx={{ overflow: 'hidden' }}>
-                  {report.topCustomers.map((cust, i) => {
+                  {report.topContacts.map((cust, i) => {
                     const get = cust.balance < 0;
                     const av = avatarTint(cust.name);
                     return (
                       <Box key={cust.id}>
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                        <ListRow onClick={() => navigate(`/customer/${cust.id}`)}>
+                        <ListRow onClick={() => navigate(`/contact/${cust.id}`)}>
                           <Box
                             sx={{ width: 44, height: 44, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: av.bg, color: av.fg, fontFamily: DISPLAY, fontWeight: 500, fontSize: 14, flexShrink: 0 }}
                           >

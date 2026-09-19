@@ -38,7 +38,7 @@ const useTint = (index: number) => {
   return (mode === 'dark' ? AVATAR_TINTS_DARK : AVATAR_TINTS_LIGHT)[index];
 };
 
-export const CustomersEmptyIllustration = ({ size }: { size?: number }) => {
+export const ContactsEmptyIllustration = ({ size }: { size?: number }) => {
   const tint = useTint(1);
   return <EmptyIllustration icon={<Users strokeWidth={1.75} />} bg={tint.bg} fg={tint.fg} size={size} />;
 };

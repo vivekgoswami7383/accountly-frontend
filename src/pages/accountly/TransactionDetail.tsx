@@ -48,7 +48,7 @@ const TransactionDetail = () => {
   const handleDelete = async () => {
     setConfirmDelete(false);
     setError(null);
-    const result = await dispatch(deleteTransactionById({ id, customerId: selectedTransaction?.customerId || '' }));
+    const result = await dispatch(deleteTransactionById({ id, contactId: selectedTransaction?.contactId || '' }));
     if (deleteTransactionById.fulfilled.match(result)) navigate(-1);
     else setError((result.payload as string) || t('payment.failedDeleteEntry'));
   };
@@ -117,14 +117,14 @@ const TransactionDetail = () => {
             </Box>
 
             <AppCard sx={{ overflow: 'hidden' }}>
-              <ListRow onClick={() => navigate(`/customer/${selectedTransaction!.customerId}`)}>
-                <IconDot size={40} bg={avatarTint(selectedTransaction!.customerName).bg} fg={avatarTint(selectedTransaction!.customerName).fg}>
-                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 13 }}>{initials(selectedTransaction!.customerName)}</Typography>
+              <ListRow onClick={() => navigate(`/contact/${selectedTransaction!.contactId}`)}>
+                <IconDot size={40} bg={avatarTint(selectedTransaction!.contactName).bg} fg={avatarTint(selectedTransaction!.contactName).fg}>
+                  <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 13 }}>{initials(selectedTransaction!.contactName)}</Typography>
                 </IconDot>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewCustomer')}</Typography>
+                  <Typography sx={{ color: c.grey, fontSize: 12, fontWeight: 500 }}>{t('transactionDetail.viewContact')}</Typography>
                   <Typography sx={{ fontWeight: 500, fontSize: 15, color: c.ink }} noWrap>
-                    {selectedTransaction!.customerName}
+                    {selectedTransaction!.contactName}
                   </Typography>
                 </Box>
                 <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />

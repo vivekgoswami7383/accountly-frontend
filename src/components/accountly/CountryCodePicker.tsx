@@ -47,7 +47,7 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
 
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { height: '70vh' } }}>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 16, py: 2 }}>
-          {t('customerForm.selectCountry')}
+          {t('contactForm.selectCountry')}
           <IconButton onClick={() => setOpen(false)} size="small">
             <X size={16} />
           </IconButton>
@@ -56,7 +56,7 @@ const CountryCodePicker = ({ value, onChange }: CountryCodePickerProps) => {
           <TextField
             fullWidth
             size="small"
-            placeholder={t('customerForm.searchCountries')}
+            placeholder={t('contactForm.searchCountries')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             InputProps={{

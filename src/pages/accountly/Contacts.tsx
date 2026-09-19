@@ -3,44 +3,45 @@ import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Container, Divider, InputAdornment, Skeleton, Stack, TextField, Typography } from '@mui/material';
 import { Search, Phone, ChevronRight, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
-import { fetchCustomersPage } from 'store/reducers/accountly/customers';
+import { fetchContactsPage } from 'store/reducers/accountly/contacts';
 import { useFormatAmount, formatPhone } from 'utils/accountly/format';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
-import { CustomersEmptyIllustration } from 'components/accountly/EmptyIllustration';
+import ContactTypeChips from 'components/accountly/ContactTypeChips';
+import { ContactsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
-const Customers = () => {
+const Contacts = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { listItems: customers, listPage, listHasMore, listLoading, listLoadingMore } = useSelector((s) => s.customers);
+  const { listItems: contacts, listPage, listHasMore, listLoading, listLoadingMore, listType } = useSelector((s) => s.contacts);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    if (listPage === 0) dispatch(fetchCustomersPage(1));
+    if (listPage === 0) dispatch(fetchContactsPage({ page: 1 }));
   }, [dispatch, listPage]);
 
   const loadMore = () => {
-    if (listHasMore && !listLoadingMore) dispatch(fetchCustomersPage(listPage + 1));
+    if (listHasMore && !listLoadingMore) dispatch(fetchContactsPage({ page: listPage + 1 }));
   };
 
   const sentinelRef = useInfiniteScroll(loadMore, listHasMore, listLoading || listLoadingMore);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return customers;
-    return customers.filter((x) => x.name.toLowerCase().includes(q) || x.phone.includes(q));
-  }, [customers, query]);
+    if (!q) return contacts;
+    return contacts.filter((x) => x.name.toLowerCase().includes(q) || x.phone.includes(q));
+  }, [contacts, query]);
 
   const addBtn = (
     <Box
       component="button"
-      onClick={() => navigate('/customer/add')}
+      onClick={() => navigate('/contact/add')}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -63,13 +64,13 @@ const Customers = () => {
 
   return (
     <>
-      <AppHeader variant="root" title={t('customers.title')} right={addBtn} />
+      <AppHeader variant="root" title={t('contacts.title')} right={addBtn} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={2}>
-          {customers.length > 0 && (
+          {(contacts.length > 0 || listType) && (
             <TextField
               fullWidth
-              placeholder={t('customers.searchPlaceholder')}
+              placeholder={t('contacts.searchPlaceholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               InputProps={{
@@ -81,6 +82,10 @@ const Customers = () => {
                 sx: { borderRadius: '16px', boxShadow: '0 1px 2px rgba(20,23,26,0.03)' }
               }}
             />
+          )}
+
+          {(contacts.length > 0 || listType) && (
+            <ContactTypeChips value={listType} scroll onChange={(next) => dispatch(fetchContactsPage({ page: 1, contactType: next }))} />
           )}
 
           {listLoading ? (
@@ -102,13 +107,13 @@ const Customers = () => {
           ) : filtered.length === 0 ? (
             <AppCard sx={{ px: 3, py: 5, textAlign: 'center' }}>
               <Box sx={{ mb: 1.75 }}>
-                <CustomersEmptyIllustration />
+                <ContactsEmptyIllustration />
               </Box>
               <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 16 }}>
-                {query ? t('customers.noMatches') : t('home.noCustomersYet')}
+                {query ? t('contacts.noMatches') : t('home.noContactsYet')}
               </Typography>
               <Typography sx={{ color: c.grey, fontSize: 13, mt: 0.5 }}>
-                {query ? t('customers.tryDifferent') : t('customers.tapAddToCreate')}
+                {query ? t('contacts.tryDifferent') : t('contacts.tapAddToCreate')}
               </Typography>
             </AppCard>
           ) : (
@@ -120,7 +125,7 @@ const Customers = () => {
                   return (
                     <Box key={cust.id}>
                       {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                      <ListRow onClick={() => navigate(`/customer/${cust.id}`)}>
+                      <ListRow onClick={() => navigate(`/contact/${cust.id}`)}>
                         <Box
                           sx={{
                             width: 44,
@@ -182,4 +187,4 @@ const Customers = () => {
   );
 };
 
-export default Customers;
+export default Contacts;

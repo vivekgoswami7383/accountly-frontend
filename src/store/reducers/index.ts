@@ -10,7 +10,7 @@ import productReducer from './product';
 import cartReducer from './cart';
 import kanban from './kanban';
 import invoice from './invoice';
-import customers from './accountly/customers';
+import contacts from './accountly/contacts';
 import transactions from './accountly/transactions';
 import dashboard from './accountly/dashboard';
 import expenses from './accountly/expenses';
@@ -25,7 +25,7 @@ const appReducers = combineReducers({
   calendar,
   menu,
   snackbar,
-  customers,
+  contacts,
   transactions,
   dashboard,
   expenses,
@@ -48,7 +48,7 @@ const reducers = (state: ReturnType<typeof appReducers> | undefined, action: { t
   if (action.type === RESET_ACCOUNTLY_STATE && state) {
     state = {
       ...state,
-      customers: undefined,
+      contacts: undefined,
       transactions: undefined,
       dashboard: undefined,
       expenses: undefined,

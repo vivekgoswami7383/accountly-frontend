@@ -9,7 +9,7 @@ import { DISPLAY, shadow, avatarTint, initials, useAccountlyColors } from 'theme
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, IconDot, ListRow, MotionButton, SectionHeader } from 'components/accountly/kit';
-import { CustomersEmptyIllustration, TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
+import { ContactsEmptyIllustration, TransactionsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
 const fmtWhen = (iso?: string) => {
   if (!iso) return '';
@@ -88,7 +88,7 @@ const Dashboard = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { stats, recentCustomers, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
+  const { stats, recentContacts, recentTransactions, hasLoaded } = useSelector((s) => s.dashboard);
   const skipEnterRef = useRef(hasLoaded);
 
   useEffect(() => {
@@ -97,7 +97,7 @@ const Dashboard = () => {
 
   const receivable = stats?.receivable ?? 0;
   const payable = stats?.payable ?? 0;
-  const hasCustomers = recentCustomers && recentCustomers.length > 0;
+  const hasContacts = recentContacts && recentContacts.length > 0;
   const hasTxns = recentTransactions && recentTransactions.length > 0;
 
   return (
@@ -142,8 +142,8 @@ const Dashboard = () => {
           <Fade delay={0.05} skipEnter={skipEnterRef.current}>
             <Stack direction="row" spacing={1.5}>
               {[
-                { label: t('home.addCustomer'), sub: t('home.newContact'), icon: <UserPlus />, to: '/customer/add' },
-                { label: t('home.newEntry'), sub: t('home.recordPayment'), icon: <Zap />, to: '/customer' }
+                { label: t('home.addContact'), sub: t('home.newContact'), icon: <UserPlus />, to: '/contact/add' },
+                { label: t('home.newEntry'), sub: t('home.recordPayment'), icon: <Zap />, to: '/contact' }
               ].map((a) => (
                 <MotionButton
                   key={a.to}
@@ -182,18 +182,18 @@ const Dashboard = () => {
 
           <Fade delay={0.1} skipEnter={skipEnterRef.current}>
             <Box>
-              <SectionHeader title={t('home.customers')} action={t('common.seeAll')} onAction={() => navigate('/customer')} />
+              <SectionHeader title={t('home.contacts')} action={t('common.seeAll')} onAction={() => navigate('/contact')} />
               {!hasLoaded ? (
                 <ListSkeleton />
-              ) : hasCustomers ? (
+              ) : hasContacts ? (
                 <AppCard sx={{ overflow: 'hidden' }}>
-                  {recentCustomers.map((cust, i) => {
+                  {recentContacts.map((cust, i) => {
                     const get = cust.balance < 0;
                     const av = avatarTint(cust.name);
                     return (
                       <Box key={cust._id}>
                         {i > 0 && <Divider sx={{ borderColor: c.line, ml: '72px' }} />}
-                        <ListRow onClick={() => navigate(`/customer/${cust._id}`)}>
+                        <ListRow onClick={() => navigate(`/contact/${cust._id}`)}>
                           <Box
                             sx={{
                               width: 44,
@@ -243,11 +243,11 @@ const Dashboard = () => {
                 </AppCard>
               ) : (
                 <EmptyBlock
-                  img={<CustomersEmptyIllustration />}
-                  title={t('home.noCustomersYet')}
-                  sub={t('home.noCustomersSub')}
-                  cta={t('home.addCustomerCta')}
-                  onCta={() => navigate('/customer/add')}
+                  img={<ContactsEmptyIllustration />}
+                  title={t('home.noContactsYet')}
+                  sub={t('home.noContactsSub')}
+                  cta={t('home.addContactCta')}
+                  onCta={() => navigate('/contact/add')}
                 />
               )}
             </Box>
@@ -271,7 +271,7 @@ const Dashboard = () => {
                           </IconDot>
                           <Box sx={{ flex: 1, minWidth: 0 }}>
                             <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: c.ink }} noWrap>
-                              {sent ? t('home.paidTo', { name: t2.customerName }) : t('home.receivedFrom', { name: t2.customerName })}
+                              {sent ? t('home.paidTo', { name: t2.contactName }) : t('home.receivedFrom', { name: t2.contactName })}
                             </Typography>
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {fmtWhen(t2.createdAt)}
