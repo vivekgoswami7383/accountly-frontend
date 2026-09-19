@@ -1,6 +1,6 @@
-export type ContactLabel = 'customer' | 'supplier' | 'friend' | 'family';
+export type ContactType = 'customer' | 'supplier' | 'friend' | 'family';
 
-export const CONTACT_LABELS: ContactLabel[] = ['customer', 'supplier', 'friend', 'family'];
+export const CONTACT_TYPES: ContactType[] = ['customer', 'supplier', 'friend', 'family'];
 
 export type LinkStatus = 'pending' | 'active';
 
@@ -29,7 +29,7 @@ export interface ApiContact {
   image_url?: string;
   link_id?: string | null;
   link_status?: LinkStatus | null;
-  label?: ContactLabel | null;
+  contact_type?: ContactType | null;
   created_at?: string;
   updated_at?: string;
   createdAt?: string;
@@ -49,7 +49,7 @@ export interface Contact {
   imageUrl: string;
   linkId: string | null;
   linkStatus: LinkStatus | null;
-  label: ContactLabel | null;
+  contactType: ContactType | null;
   status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
@@ -59,7 +59,7 @@ export interface CreateContactRequest {
   name: string;
   phone: string;
   address?: string;
-  label?: ContactLabel | null;
+  contact_type?: ContactType | null;
 }
 
 export interface UpdateContactRequest {
@@ -67,7 +67,7 @@ export interface UpdateContactRequest {
   phone?: string;
   address?: string;
   image_key?: string;
-  label?: ContactLabel | null;
+  contact_type?: ContactType | null;
 }
 
 export type TransactionType = 'debit' | 'credit';

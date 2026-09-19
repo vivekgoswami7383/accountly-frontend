@@ -3,12 +3,12 @@ import { Box, Button, InputAdornment, Stack, TextField, Typography } from '@mui/
 import { User, Phone, MapPin } from 'lucide-react';
 import CountryCodePicker, { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { CountryType } from 'data/countries';
-import { ContactLabel } from 'services/accountly/types';
+import { ContactType } from 'services/accountly/types';
 import { DISPLAY, avatarTint, initials, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { BottomActionBar, FOOTER_SPACE, FormAlert } from 'components/accountly/kit';
 import UploadableAvatar from 'components/accountly/UploadableAvatar';
-import LabelChips from 'components/accountly/LabelChips';
+import ContactTypeChips from 'components/accountly/ContactTypeChips';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 
 export interface ContactFormValues {
@@ -16,7 +16,7 @@ export interface ContactFormValues {
   phone: string;
   address: string;
   country: CountryType;
-  label: ContactLabel | null;
+  contactType: ContactType | null;
 }
 
 interface ContactFormProps {
@@ -27,7 +27,7 @@ interface ContactFormProps {
   imageUrl?: string | null;
   onImageSelect?: (file: File) => void;
   onImageRemove?: () => void;
-  onSubmit: (values: { name: string; phone: string; address: string; label: ContactLabel | null }) => void;
+  onSubmit: (values: { name: string; phone: string; address: string; contactType: ContactType | null }) => void;
 }
 
 const validatePhone = (phone: string) => /^[0-9]{10}$/.test(phone);
@@ -47,7 +47,7 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
   const [name, setName] = useState(initial?.name || '');
   const [phone, setPhone] = useState(initial?.phone || '');
   const [address, setAddress] = useState(initial?.address || '');
-  const [label, setLabel] = useState<ContactLabel | null>(initial?.label || null);
+  const [contactType, setContactType] = useState<ContactType | null>(initial?.contactType || null);
   const [country, setCountry] = useState<CountryType>(initial?.country || DEFAULT_COUNTRY);
   const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean }>({});
 
@@ -57,7 +57,7 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
     const next = { name: !name.trim(), phone: !validatePhone(phone) };
     setErrors(next);
     if (next.name || next.phone) return;
-    onSubmit({ name: name.trim(), phone: `${country.phone}${phone}`, address: address.trim(), label });
+    onSubmit({ name: name.trim(), phone: `${country.phone}${phone}`, address: address.trim(), contactType });
   };
 
   return (
@@ -120,8 +120,8 @@ const ContactForm = ({ initial, submitLabel, loading, error, imageUrl, onImageSe
         </Box>
 
         <Box>
-          <Label>{t('label.title')}</Label>
-          <LabelChips value={label} onChange={setLabel} />
+          <Label>{t('contactType.title')}</Label>
+          <ContactTypeChips value={contactType} onChange={setContactType} />
         </Box>
 
         <Box>

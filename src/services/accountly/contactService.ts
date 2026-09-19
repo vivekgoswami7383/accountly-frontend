@@ -1,5 +1,5 @@
 import axios from 'utils/axios';
-import { ContactLabel, ApiContact, CreateContactRequest, UpdateContactRequest, Contact } from './types';
+import { ContactType, ApiContact, CreateContactRequest, UpdateContactRequest, Contact } from './types';
 
 const unwrap = (res: any) => res?.data?.data ?? res?.data;
 
@@ -7,10 +7,10 @@ export const contactService = {
   async getContacts(params?: {
     page?: number;
     limit?: number;
-    label?: ContactLabel | null;
+    contactType?: ContactType | null;
   }): Promise<{ contacts: ApiContact[]; total?: number; has_more?: boolean }> {
-    const labelQuery = params?.label ? `&label=${params.label}` : '';
-    const query = params ? `?page=${params.page ?? 1}&limit=${params.limit ?? 20}${labelQuery}` : '';
+    const typeQuery = params?.contactType ? `&contact_type=${params.contactType}` : '';
+    const query = params ? `?page=${params.page ?? 1}&limit=${params.limit ?? 20}${typeQuery}` : '';
     const res = await axios.get(`/api/contact${query}`);
     return unwrap(res);
   },
@@ -51,7 +51,7 @@ export const contactService = {
       imageUrl: apiContact.image_url || '',
       linkId: apiContact.link_id || null,
       linkStatus: apiContact.link_status || null,
-      label: apiContact.label || null,
+      contactType: apiContact.contact_type || null,
       status: 'active',
       createdAt,
       updatedAt

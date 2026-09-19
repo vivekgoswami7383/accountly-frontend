@@ -7,7 +7,7 @@ import useAuth from 'hooks/useAuth';
 import AppHeader from 'components/accountly/AppHeader';
 import ContactForm from 'sections/accountly/ContactForm';
 import { useT } from 'i18n/accountly';
-import { ContactLabel } from 'services/accountly/types';
+import { ContactType } from 'services/accountly/types';
 
 const AddContact = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const AddContact = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (values: { name: string; phone: string; address: string; label: ContactLabel | null }) => {
+  const handleSubmit = async (values: { name: string; phone: string; address: string; contactType: ContactType | null }) => {
     setError(null);
     if (!user?.business_id) {
       setError(t('contactForm.businessInfoNotFound'));
@@ -30,7 +30,7 @@ const AddContact = () => {
         name: values.name,
         phone: values.phone,
         address: values.address,
-        label: values.label
+        contact_type: values.contactType
       })
     );
     setSubmitting(false);

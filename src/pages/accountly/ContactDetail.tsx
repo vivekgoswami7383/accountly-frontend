@@ -210,7 +210,7 @@ const ContactDetail = () => {
         <ContactNameLine name={contact?.name || 'Contact'} linked={contact?.linkStatus === 'active'} fontSize={15.5} lineHeight={1.15} />
         <Typography sx={{ color: c.grey, fontSize: 11.5, fontWeight: 500 }} noWrap>
           {formatPhone(contact?.phone)}
-          {contact?.label ? ` · ${t(`label.${contact.label}`)}` : ''}
+          {contact?.contactType ? ` · ${t(`contactType.${contact.contactType}`)}` : ''}
         </Typography>
       </Box>
     </Stack>
@@ -290,7 +290,7 @@ const ContactDetail = () => {
 
           {contact && <LinkCard contact={contact} />}
 
-          {contact?.label !== 'supplier' && (
+          {contact?.contactType !== 'supplier' && (
           <Stack direction="row" spacing={1}>
             <Box
               component="a"

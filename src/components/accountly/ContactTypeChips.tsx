@@ -1,22 +1,22 @@
 import { Box, Stack } from '@mui/material';
-import { CONTACT_LABELS, ContactLabel } from 'services/accountly/types';
+import { CONTACT_TYPES, ContactType } from 'services/accountly/types';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 
-const LabelChips = ({
+const ContactTypeChips = ({
   value,
   onChange,
   withAll = false,
   scroll = false
 }: {
-  value: ContactLabel | null;
-  onChange: (next: ContactLabel | null) => void;
+  value: ContactType | null;
+  onChange: (next: ContactType | null) => void;
   withAll?: boolean;
   scroll?: boolean;
 }) => {
   const c = useAccountlyColors();
   const t = useT();
-  const options: (ContactLabel | null)[] = withAll ? [null, ...CONTACT_LABELS] : CONTACT_LABELS;
+  const options: (ContactType | null)[] = withAll ? [null, ...CONTACT_TYPES] : CONTACT_TYPES;
 
   return (
     <Stack
@@ -46,7 +46,7 @@ const LabelChips = ({
               whiteSpace: 'nowrap'
             }}
           >
-            {option ? t(`label.${option}`) : t('label.all')}
+            {option ? t(`contactType.${option}`) : t('contactType.all')}
           </Box>
         );
       })}
@@ -54,4 +54,4 @@ const LabelChips = ({
   );
 };
 
-export default LabelChips;
+export default ContactTypeChips;

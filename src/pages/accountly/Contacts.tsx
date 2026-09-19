@@ -12,7 +12,7 @@ import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, BalanceTag, Fade, ListRow } from 'components/accountly/kit';
 import { ContactsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 import ContactNameLine from 'components/accountly/ContactNameLine';
-import LabelChips from 'components/accountly/LabelChips';
+import ContactTypeChips from 'components/accountly/ContactTypeChips';
 
 const Contacts = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Contacts = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { listItems: contacts, listPage, listHasMore, listLoading, listLoadingMore, listLabel } = useSelector((s) => s.contacts);
+  const { listItems: contacts, listPage, listHasMore, listLoading, listLoadingMore, listType } = useSelector((s) => s.contacts);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const Contacts = () => {
       <AppHeader variant="root" title={t('contacts.title')} right={addBtn} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={2}>
-          {(contacts.length > 0 || listLabel) && (
+          {(contacts.length > 0 || listType) && (
             <TextField
               fullWidth
               placeholder={t('contacts.searchPlaceholder')}
@@ -85,8 +85,8 @@ const Contacts = () => {
             />
           )}
 
-          {(contacts.length > 0 || listLabel) && (
-            <LabelChips value={listLabel} withAll scroll onChange={(next) => dispatch(fetchContactsPage({ page: 1, label: next }))} />
+          {(contacts.length > 0 || listType) && (
+            <ContactTypeChips value={listType} withAll scroll onChange={(next) => dispatch(fetchContactsPage({ page: 1, contactType: next }))} />
           )}
 
           {listLoading ? (
@@ -155,7 +155,7 @@ const Contacts = () => {
                             <Phone size={12} color={c.greyLight} style={{ flexShrink: 0 }} />
                             <Typography sx={{ color: c.greyLight, fontSize: 12.5, fontWeight: 500 }} noWrap>
                               {formatPhone(cust.phone)}
-                              {cust.label ? ` · ${t(`label.${cust.label}`)}` : ''}
+                              {cust.contactType ? ` · ${t(`contactType.${cust.contactType}`)}` : ''}
                             </Typography>
                           </Stack>
                         </Box>

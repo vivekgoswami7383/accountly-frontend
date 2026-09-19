@@ -9,7 +9,7 @@ import countries, { CountryType } from 'data/countries';
 import { DEFAULT_COUNTRY } from 'components/accountly/CountryCodePicker';
 import { useT } from 'i18n/accountly';
 import uploadService from 'services/accountly/uploadService';
-import { ContactLabel } from 'services/accountly/types';
+import { ContactType } from 'services/accountly/types';
 
 const splitPhone = (full: string): { country: CountryType; local: string } => {
   const match = [...countries].filter((x) => full.startsWith(x.phone)).sort((a, b) => b.phone.length - a.phone.length)[0];
@@ -45,10 +45,10 @@ const EditContact = () => {
   const initial = useMemo(() => {
     if (!contact) return undefined;
     const { country, local } = splitPhone(contact.phone || '');
-    return { name: contact.name, phone: local, address: contact.address, country, label: contact.label };
+    return { name: contact.name, phone: local, address: contact.address, country, contactType: contact.contactType };
   }, [contact]);
 
-  const handleSubmit = async (values: { name: string; phone: string; address: string; label: ContactLabel | null }) => {
+  const handleSubmit = async (values: { name: string; phone: string; address: string; contactType: ContactType | null }) => {
     if (!contact) return;
     setError(null);
     setSubmitting(true);
@@ -65,8 +65,12 @@ const EditContact = () => {
     } else if (imageRemoved) {
       imageKey = '';
     }
+    const { contactType, ...fields } = values;
     const result = await dispatch(
-      updateContact({ id: contact.id, data: { ...values, ...(imageKey !== undefined ? { image_key: imageKey } : {}) } })
+      updateContact({
+        id: contact.id,
+        data: { ...fields, contact_type: contactType, ...(imageKey !== undefined ? { image_key: imageKey } : {}) }
+      })
     );
     setSubmitting(false);
     if (updateContact.fulfilled.match(result)) navigate(-1);

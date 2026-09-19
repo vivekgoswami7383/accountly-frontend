@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import contactService from 'services/accountly/contactService';
-import { Contact, CreateContactRequest, UpdateContactRequest, TransactionType, LinkStatus, ContactLabel } from 'services/accountly/types';
+import { Contact, CreateContactRequest, UpdateContactRequest, TransactionType, LinkStatus, ContactType } from 'services/accountly/types';
 import { fetchDashboardStatistics } from './dashboard';
 
 interface ContactState {
@@ -14,7 +14,7 @@ interface ContactState {
   listHasMore: boolean;
   listLoading: boolean;
   listLoadingMore: boolean;
-  listLabel: ContactLabel | null;
+  listType: ContactType | null;
 }
 
 const initialState: ContactState = {
@@ -28,7 +28,7 @@ const initialState: ContactState = {
   listHasMore: true,
   listLoading: false,
   listLoadingMore: false,
-  listLabel: null
+  listType: null
 };
 
 export const CONTACTS_PAGE_SIZE = 20;
@@ -44,13 +44,13 @@ export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (_
 
 export const fetchContactsPage = createAsyncThunk(
   'contacts/fetchContactsPage',
-  async ({ page, label }: { page: number; label?: ContactLabel | null }, { getState, rejectWithValue }) => {
+  async ({ page, contactType }: { page: number; contactType?: ContactType | null }, { getState, rejectWithValue }) => {
     try {
-      const activeLabel = label === undefined ? (getState() as any).contacts.listLabel : label;
-      const data = await contactService.getContacts({ page, limit: CONTACTS_PAGE_SIZE, label: activeLabel });
+      const activeType = contactType === undefined ? (getState() as any).contacts.listType : contactType;
+      const data = await contactService.getContacts({ page, limit: CONTACTS_PAGE_SIZE, contactType: activeType });
       return {
         page,
-        label: activeLabel as ContactLabel | null,
+        contactType: activeType as ContactType | null,
         items: contactService.transformContacts(data?.contacts || []),
         hasMore: Boolean(data?.has_more)
       };
@@ -171,8 +171,8 @@ const contactSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchContactsPage.fulfilled, (state, action) => {
-        const { page, items, hasMore, label } = action.payload;
-        state.listLabel = label;
+        const { page, items, hasMore, contactType } = action.payload;
+        state.listType = contactType;
         state.listLoading = false;
         state.listLoadingMore = false;
         state.listPage = page;
