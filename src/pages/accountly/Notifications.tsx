@@ -1,37 +1,77 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
-import { CalendarClock, ChevronRight } from 'lucide-react';
-import useDueNotifications from 'hooks/useDueNotifications';
-import useDueText from 'hooks/useDueText';
+import { Box, CircularProgress, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
+import { CalendarClock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { useDispatch, useSelector } from 'store';
+import { fetchNotifications, markAllNotificationsRead } from 'store/reducers/accountly/notifications';
+import { ApiNotification } from 'services/accountly/types';
+import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import { useFormatAmount } from 'utils/accountly/format';
+import { formatDueShort } from 'utils/accountly/due';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, IconDot, ListRow } from 'components/accountly/kit';
 import { NotificationsEmptyIllustration } from 'components/accountly/EmptyIllustration';
 
+const timeAgo = (iso: string) => {
+  const minutes = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60000));
+  if (minutes < 1) return 'now';
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d`;
+  return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+};
+
 const Notifications = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const dueText = useDueText();
-  const { items, loaded, unseenKeys, markAllSeen } = useDueNotifications();
-  const initialUnseen = useRef<string[] | null>(null);
-
-  if (loaded && initialUnseen.current === null) initialUnseen.current = unseenKeys;
+  const { items, page, hasMore, loading, loadingMore, hasLoaded } = useSelector((s) => s.notifications);
+  const unreadIds = useRef<Set<string>>(new Set());
+  const markedRef = useRef(false);
 
   useEffect(() => {
-    if (loaded) markAllSeen();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded]);
+    dispatch(fetchNotifications({ page: 1 }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    items.forEach((n) => {
+      if (!n.read_at) unreadIds.current.add(n._id);
+    });
+    if (hasLoaded && !markedRef.current) {
+      markedRef.current = true;
+      if (items.some((n) => !n.read_at)) dispatch(markAllNotificationsRead());
+    }
+  }, [items, hasLoaded, dispatch]);
+
+  const loadMore = () => {
+    if (hasMore && !loadingMore) dispatch(fetchNotifications({ page: page + 1 }));
+  };
+
+  const sentinelRef = useInfiniteScroll(loadMore, hasMore, loading || loadingMore);
+
+  const describe = (n: ApiNotification) => {
+    const amount = fmt(n.data.amount);
+    if (n.type === 'due_settled') {
+      return { title: t('notifications.settledTitle', { name: n.data.contact_name }), sub: t('notifications.settledSub', { amount }), tone: 'ok' as const };
+    }
+    const title = t(n.data.direction === 'receivable' ? 'notifications.owes' : 'notifications.youOwe', { name: n.data.contact_name, amount });
+    if (n.type === 'overdue') {
+      return { title, sub: t('notifications.overdueSince', { date: formatDueShort(n.data.due_date) }), tone: 'late' as const };
+    }
+    return { title, sub: t(n.type === 'due_today' ? 'notifications.dueToday' : 'notifications.dueTomorrow'), tone: 'due' as const };
+  };
 
   return (
     <>
       <AppHeader variant="screen" title={t('notifications.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: 3 }}>
-        {!loaded ? (
+        {!hasLoaded && loading ? (
           <AppCard sx={{ overflow: 'hidden' }}>
             {[0, 1, 2].map((i) => (
               <Box key={i}>
@@ -60,30 +100,38 @@ const Notifications = () => {
           <Fade>
             <AppCard sx={{ overflow: 'hidden' }}>
               {items.map((n, i) => {
-                const overdue = n.state === 'overdue';
-                const unread = initialUnseen.current?.includes(n.key);
+                const { title, sub, tone } = describe(n);
+                const unread = unreadIds.current.has(n._id);
                 return (
-                  <Box key={n.key}>
+                  <Box key={n._id}>
                     {i > 0 && <Divider sx={{ borderColor: c.line, ml: '68px' }} />}
-                    <ListRow onClick={() => navigate(`/contact/${n.contact.id}`)}>
-                      <IconDot size={40} bg={overdue ? c.redSoft : c.chipGrey} fg={overdue ? c.redDeep : c.slate}>
-                        <CalendarClock />
+                    <ListRow onClick={() => navigate(`/contact/${n.data.contact_id}`)}>
+                      <IconDot
+                        size={40}
+                        bg={tone === 'late' ? c.redSoft : tone === 'ok' ? c.greenSoft : c.chipGrey}
+                        fg={tone === 'late' ? c.redDeep : tone === 'ok' ? c.greenDeep : c.slate}
+                      >
+                        {tone === 'ok' ? <CheckCircle2 /> : <CalendarClock />}
                       </IconDot>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ fontWeight: unread ? 600 : 500, fontSize: 14, color: c.ink, lineHeight: 1.35 }}>
-                          {t(n.contact.balance < 0 ? 'notifications.owes' : 'notifications.youOwe', { name: n.contact.name, amount: fmt(n.contact.balance) })}
-                        </Typography>
-                        <Typography sx={{ color: overdue ? c.redDeep : c.greyLight, fontSize: 12.5, fontWeight: 500, mt: 0.25 }}>
-                          {dueText(n.dueDate)}
-                        </Typography>
+                        <Typography sx={{ fontWeight: unread ? 600 : 500, fontSize: 14, color: c.ink, lineHeight: 1.35 }}>{title}</Typography>
+                        <Typography sx={{ color: tone === 'late' ? c.redDeep : c.greyLight, fontSize: 12.5, fontWeight: 500, mt: 0.25 }}>{sub}</Typography>
                       </Box>
-                      {unread && <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c.red, flexShrink: 0 }} />}
+                      <Stack alignItems="flex-end" spacing={0.75} sx={{ flexShrink: 0, alignSelf: 'flex-start', pt: 0.25 }}>
+                        <Typography sx={{ color: c.greyLight, fontSize: 11.5, fontWeight: 500 }}>{timeAgo(n.created_at)}</Typography>
+                        {unread ? <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c.red }} /> : <Box sx={{ width: 8, height: 8 }} />}
+                      </Stack>
                       <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
                     </ListRow>
                   </Box>
                 );
               })}
             </AppCard>
+            {hasMore && (
+              <Box ref={sentinelRef} sx={{ display: 'flex', justifyContent: 'center', py: 2.5 }}>
+                {loadingMore && <CircularProgress size={22} sx={{ color: c.red }} />}
+              </Box>
+            )}
           </Fade>
         )}
       </Container>

@@ -7,6 +7,11 @@ type Entry = string | ((vars: Vars) => string);
 type Dict = Record<string, Entry>;
 
 const en: Dict = {
+  'notifications.dueTomorrow': 'Due tomorrow',
+  'notifications.dueToday': 'Due today',
+  'notifications.overdueSince': (v) => `Overdue since ${v.date}`,
+  'notifications.settledTitle': (v) => `Settled with ${v.name}`,
+  'notifications.settledSub': (v) => `${v.amount} cleared`,
   'notifications.youOwe': (v) => `You owe ${v.name} ${v.amount}`,
   'notifications.title': 'Notifications',
   'notifications.emptyTitle': 'You\'re all caught up',
@@ -289,6 +294,11 @@ const en: Dict = {
 };
 
 const hi: Dict = {
+  'notifications.dueTomorrow': 'कल देय',
+  'notifications.dueToday': 'आज देय',
+  'notifications.overdueSince': (v) => `${v.date} से देरी`,
+  'notifications.settledTitle': (v) => `${v.name} से हिसाब पूरा`,
+  'notifications.settledSub': (v) => `${v.amount} चुकता`,
   'notifications.youOwe': (v) => `आपको ${v.name} को ${v.amount} देने हैं`,
   'notifications.title': 'सूचनाएं',
   'notifications.emptyTitle': 'सब कुछ अपडेट है',
@@ -570,6 +580,11 @@ const hi: Dict = {
 };
 
 const gu: Dict = {
+  'notifications.dueTomorrow': 'કાલે બાકી',
+  'notifications.dueToday': 'આજે બાકી',
+  'notifications.overdueSince': (v) => `${v.date} થી મોડું`,
+  'notifications.settledTitle': (v) => `${v.name} સાથે હિસાબ પૂરો`,
+  'notifications.settledSub': (v) => `${v.amount} ચૂકવાયા`,
   'notifications.youOwe': (v) => `તમારે ${v.name} ને ${v.amount} આપવાના છે`,
   'notifications.title': 'સૂચનાઓ',
   'notifications.emptyTitle': 'બધું અપડેટ છે',
@@ -851,6 +866,11 @@ const gu: Dict = {
 };
 
 const hiLatn: Dict = {
+  'notifications.dueTomorrow': 'Kal dena hai',
+  'notifications.dueToday': 'Aaj dena hai',
+  'notifications.overdueSince': (v) => `${v.date} se deri`,
+  'notifications.settledTitle': (v) => `${v.name} se hisaab poora`,
+  'notifications.settledSub': (v) => `${v.amount} chukta`,
   'notifications.youOwe': (v) => `Aapko ${v.name} ko ${v.amount} dene hain`,
   'notifications.title': 'Suchnayein',
   'notifications.emptyTitle': 'Sab kuch update hai',
@@ -1132,6 +1152,11 @@ const hiLatn: Dict = {
 };
 
 const guLatn: Dict = {
+  'notifications.dueTomorrow': 'Kal baaki',
+  'notifications.dueToday': 'Aaje baaki',
+  'notifications.overdueSince': (v) => `${v.date} thi modu`,
+  'notifications.settledTitle': (v) => `${v.name} sathe hisaab pooro`,
+  'notifications.settledSub': (v) => `${v.amount} chukvaya`,
   'notifications.youOwe': (v) => `Tamare ${v.name} ne ${v.amount} aapva na chhe`,
   'notifications.title': 'Suchnao',
   'notifications.emptyTitle': 'Badhu update chhe',

@@ -121,22 +121,20 @@ export interface ApiTransaction {
 
 export type UploadCategory = 'logo' | 'avatar' | 'contact' | 'attachment';
 
-export interface DueBucket {
-  count: number;
-  amount: number;
-}
+export type NotificationType = 'due_tomorrow' | 'due_today' | 'overdue' | 'due_settled';
 
-export interface DueSummary {
-  overdue: DueBucket;
-  today: DueBucket;
-  upcoming: DueBucket;
-}
-
-export interface DueListResponse {
-  summary: DueSummary;
-  overdue: ApiContact[];
-  today: ApiContact[];
-  upcoming: ApiContact[];
+export interface ApiNotification {
+  _id: string;
+  type: NotificationType;
+  data: {
+    contact_id: string;
+    contact_name: string;
+    amount: number;
+    direction: 'receivable' | 'payable';
+    due_date: string;
+  };
+  read_at: string | null;
+  created_at: string;
 }
 
 export interface DashboardStatisticsResponse {

@@ -1,11 +1,12 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Container, IconButton, Stack, Typography } from '@mui/material';
 import { Store, ArrowLeft, Bell } from 'lucide-react';
 import useAuth from 'hooks/useAuth';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
-import useDueNotifications from 'hooks/useDueNotifications';
+import { useDispatch, useSelector } from 'store';
+import { fetchUnreadCount } from 'store/reducers/accountly/notifications';
 import { IconDot } from './kit';
 
 interface AppHeaderProps {
@@ -22,7 +23,12 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
   const t = useT();
 
   const roleLabel = t(`role.${user?.role || 'owner'}`);
-  const { unseenKeys } = useDueNotifications();
+  const dispatch = useDispatch();
+  const unreadCount = useSelector((s) => s.notifications.unreadCount);
+
+  useEffect(() => {
+    if (variant === 'home') dispatch(fetchUnreadCount());
+  }, [dispatch, variant]);
 
   return (
     <Box
@@ -53,7 +59,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
               <IconButton onClick={() => navigate('/notifications')} sx={{ p: 0.75, color: c.ink }} aria-label="notifications">
                 <Box sx={{ position: 'relative', display: 'flex' }}>
                   <Bell size={22} />
-                  {unseenKeys.length > 0 && (
+                  {unreadCount > 0 && (
                     <Box
                       sx={{
                         position: 'absolute',
@@ -73,7 +79,7 @@ const AppHeader = ({ variant = 'screen', title, onBack, right }: AppHeaderProps)
                         boxSizing: 'content-box'
                       }}
                     >
-                      {unseenKeys.length > 9 ? '9+' : unseenKeys.length}
+                      {unreadCount > 9 ? '9+' : unreadCount}
                     </Box>
                   )}
                 </Box>
