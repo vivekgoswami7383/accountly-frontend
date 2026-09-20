@@ -121,18 +121,16 @@ export interface ApiTransaction {
 
 export type UploadCategory = 'logo' | 'avatar' | 'contact' | 'attachment';
 
-export type NotificationType = 'due_tomorrow' | 'due_today' | 'overdue' | 'due_settled';
+export type NotificationTargetKind = 'contact' | 'transaction' | 'none';
 
 export interface ApiNotification {
   _id: string;
-  type: NotificationType;
-  data: {
-    contact_id: string;
-    contact_name: string;
-    amount: number;
-    direction: 'receivable' | 'payable';
-    due_date: string;
-  };
+  type: string;
+  category: string;
+  title: string;
+  body: string;
+  data: Record<string, any>;
+  target: { kind: NotificationTargetKind; id: string | null } | null;
   read_at: string | null;
   created_at: string;
 }

@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
-import { CalendarClock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchNotifications, markAllNotificationsRead } from 'store/reducers/accountly/notifications';
-import { ApiNotification } from 'services/accountly/types';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import { useFormatAmount } from 'utils/accountly/format';
-import { formatDueShort } from 'utils/accountly/due';
+import { describeNotification, notificationPath } from 'utils/accountly/notificationRegistry';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
@@ -53,18 +52,6 @@ const Notifications = () => {
 
   const sentinelRef = useInfiniteScroll(loadMore, hasMore, loading || loadingMore);
 
-  const describe = (n: ApiNotification) => {
-    const amount = fmt(n.data.amount);
-    if (n.type === 'due_settled') {
-      return { title: t('notifications.settledTitle', { name: n.data.contact_name }), sub: t('notifications.settledSub', { amount }), tone: 'ok' as const };
-    }
-    const title = t(n.data.direction === 'receivable' ? 'notifications.owes' : 'notifications.youOwe', { name: n.data.contact_name, amount });
-    if (n.type === 'overdue') {
-      return { title, sub: t('notifications.overdueSince', { date: formatDueShort(n.data.due_date) }), tone: 'late' as const };
-    }
-    return { title, sub: t(n.type === 'due_today' ? 'notifications.dueToday' : 'notifications.dueTomorrow'), tone: 'due' as const };
-  };
-
   return (
     <>
       <AppHeader variant="screen" title={t('notifications.title')} />
@@ -98,7 +85,8 @@ const Notifications = () => {
           <Fade>
             <AppCard sx={{ overflow: 'hidden' }}>
               {items.map((n, i) => {
-                const { title, sub, tone } = describe(n);
+                const { title, sub, tone, icon } = describeNotification(n, { t, fmt });
+                const path = notificationPath(n);
                 const unread = unreadIds.includes(n._id);
                 return (
                   <Box key={n._id}>
@@ -106,25 +94,26 @@ const Notifications = () => {
                     <ListRow
                       onClick={() => {
                         setUnreadIds((ids) => ids.filter((id) => id !== n._id));
-                        navigate(`/contact/${n.data.contact_id}`);
+                        if (path) navigate(path);
                       }}
+                      sx={path ? undefined : { cursor: 'default' }}
                     >
                       <IconDot
                         size={40}
                         bg={tone === 'late' ? c.redSoft : tone === 'ok' ? c.greenSoft : c.chipGrey}
                         fg={tone === 'late' ? c.redDeep : tone === 'ok' ? c.greenDeep : c.slate}
                       >
-                        {tone === 'ok' ? <CheckCircle2 /> : <CalendarClock />}
+                        {icon}
                       </IconDot>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography sx={{ fontWeight: unread ? 600 : 500, fontSize: 14, color: c.ink, lineHeight: 1.35 }}>{title}</Typography>
-                        <Typography sx={{ color: tone === 'late' ? c.redDeep : c.greyLight, fontSize: 12.5, fontWeight: 500, mt: 0.25 }}>{sub}</Typography>
+                        {sub && <Typography sx={{ color: tone === 'late' ? c.redDeep : c.greyLight, fontSize: 12.5, fontWeight: 500, mt: 0.25 }}>{sub}</Typography>}
                       </Box>
                       <Stack alignItems="flex-end" spacing={0.75} sx={{ flexShrink: 0, alignSelf: 'flex-start', pt: 0.25 }}>
                         <Typography sx={{ color: c.greyLight, fontSize: 11.5, fontWeight: 500 }}>{timeAgo(n.created_at)}</Typography>
                         {unread ? <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c.red }} /> : <Box sx={{ width: 8, height: 8 }} />}
                       </Stack>
-                      <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />
+                      {path && <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />}
                     </ListRow>
                   </Box>
                 );
