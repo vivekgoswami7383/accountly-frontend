@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
-import { ChevronRight } from 'lucide-react';
+import { Bell, CalendarClock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchNotifications, markAllNotificationsRead } from 'store/reducers/accountly/notifications';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
-import { useFormatAmount } from 'utils/accountly/format';
-import { describeNotification, notificationPath } from 'utils/accountly/notificationRegistry';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, IconDot, ListRow } from 'components/accountly/kit';
 import { NotificationsEmptyIllustration } from 'components/accountly/EmptyIllustration';
+
+const styleFor = (type: string) => {
+  if (type === 'overdue') return { tone: 'late' as const, icon: <CalendarClock /> };
+  if (type === 'due_settled') return { tone: 'ok' as const, icon: <CheckCircle2 /> };
+  if (type.startsWith('due_')) return { tone: 'due' as const, icon: <CalendarClock /> };
+  return { tone: 'info' as const, icon: <Bell /> };
+};
 
 const timeAgo = (iso: string) => {
   const minutes = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60000));
@@ -29,7 +34,6 @@ const Notifications = () => {
   const dispatch = useDispatch();
   const c = useAccountlyColors();
   const t = useT();
-  const fmt = useFormatAmount();
   const { items, page, hasMore, loading, loadingMore } = useSelector((s) => s.notifications);
   const [unreadIds, setUnreadIds] = useState<string[]>([]);
 
@@ -85,8 +89,7 @@ const Notifications = () => {
           <Fade>
             <AppCard sx={{ overflow: 'hidden' }}>
               {items.map((n, i) => {
-                const { title, sub, tone, icon } = describeNotification(n, { t, fmt });
-                const path = notificationPath(n);
+                const { tone, icon } = styleFor(n.type);
                 const unread = unreadIds.includes(n._id);
                 return (
                   <Box key={n._id}>
@@ -94,9 +97,9 @@ const Notifications = () => {
                     <ListRow
                       onClick={() => {
                         setUnreadIds((ids) => ids.filter((id) => id !== n._id));
-                        if (path) navigate(path);
+                        if (n.link) navigate(n.link);
                       }}
-                      sx={path ? undefined : { cursor: 'default' }}
+                      sx={n.link ? undefined : { cursor: 'default' }}
                     >
                       <IconDot
                         size={40}
@@ -105,15 +108,14 @@ const Notifications = () => {
                       >
                         {icon}
                       </IconDot>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ fontWeight: unread ? 600 : 500, fontSize: 14, color: c.ink, lineHeight: 1.35 }}>{title}</Typography>
-                        {sub && <Typography sx={{ color: tone === 'late' ? c.redDeep : c.greyLight, fontSize: 12.5, fontWeight: 500, mt: 0.25 }}>{sub}</Typography>}
-                      </Box>
+                      <Typography sx={{ flex: 1, minWidth: 0, fontWeight: unread ? 600 : 500, fontSize: 14, color: c.ink, lineHeight: 1.4 }}>
+                        {n.message}
+                      </Typography>
                       <Stack alignItems="flex-end" spacing={0.75} sx={{ flexShrink: 0, alignSelf: 'flex-start', pt: 0.25 }}>
                         <Typography sx={{ color: c.greyLight, fontSize: 11.5, fontWeight: 500 }}>{timeAgo(n.created_at)}</Typography>
                         {unread ? <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c.red }} /> : <Box sx={{ width: 8, height: 8 }} />}
                       </Stack>
-                      {path && <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />}
+                      {n.link && <ChevronRight size={16} color={c.greyIcon} style={{ flexShrink: 0 }} />}
                     </ListRow>
                   </Box>
                 );

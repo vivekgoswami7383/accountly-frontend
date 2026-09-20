@@ -121,16 +121,11 @@ export interface ApiTransaction {
 
 export type UploadCategory = 'logo' | 'avatar' | 'contact' | 'attachment';
 
-export type NotificationTargetKind = 'contact' | 'transaction' | 'none';
-
 export interface ApiNotification {
   _id: string;
   type: string;
-  category: string;
-  title: string;
-  body: string;
-  data: Record<string, any>;
-  target: { kind: NotificationTargetKind; id: string | null } | null;
+  message: string;
+  link: string | null;
   read_at: string | null;
   created_at: string;
 }
