@@ -6,6 +6,7 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, ListRow, IconDot } from 'components/accountly/kit';
+import InstallAppButton from 'components/accountly/InstallAppButton';
 
 const More = () => {
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ const More = () => {
                 </ListRow>
               </Box>
             ))}
+            <InstallAppButton variant="row" />
           </AppCard>
 
           <Button

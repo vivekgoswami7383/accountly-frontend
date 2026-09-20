@@ -22,6 +22,7 @@ import { CountryType } from 'data/countries';
 import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { FormAlert } from 'components/accountly/kit';
+import InstallAppButton from 'components/accountly/InstallAppButton';
 import { checkPhone, readPhoneInput } from 'utils/accountly/phone';
 
 const Login = () => {
@@ -111,6 +112,8 @@ const Login = () => {
                 {t('auth.createAccount')}
               </Link>
             </Typography>
+
+            <InstallAppButton variant="card" />
           </Stack>
         </Container>
       </Box>

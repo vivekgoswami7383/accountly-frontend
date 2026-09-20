@@ -17,23 +17,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="Accountly" />
 
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (rs) {
-          rs.forEach(function (r) {
-            r.unregister();
-          });
-        });
-        if (window.caches && caches.keys) {
-          caches.keys().then(function (keys) {
-            keys.forEach(function (k) {
-              caches.delete(k);
-            });
-          });
-        }
-      }
-    </script>
-
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="Accountly" />
 

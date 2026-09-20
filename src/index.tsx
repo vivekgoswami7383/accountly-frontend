@@ -15,6 +15,8 @@ import App from './App';
 import { store, persister } from 'store';
 import { ConfigProvider } from 'contexts/ConfigContext';
 import reportWebVitals from './reportWebVitals';
+import { registerServiceWorker } from './serviceWorkerRegistration';
+import { initInstallPrompt } from 'utils/accountly/installPrompt';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
@@ -32,3 +34,5 @@ root.render(
 );
 
 reportWebVitals();
+registerServiceWorker();
+initInstallPrompt();

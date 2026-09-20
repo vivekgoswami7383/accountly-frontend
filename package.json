@@ -117,7 +117,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "react-app-rewired build && node scripts/stamp-sw.js",
     "serve": "serve -s build -l ${PORT:-3000}",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"

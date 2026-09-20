@@ -23,6 +23,7 @@ import { createAccountlyTheme, getAccountlyColors, DISPLAY } from 'themes/accoun
 import { useT } from 'i18n/accountly';
 import { MAX_NAME_LENGTH } from 'utils/accountly/limits';
 import { FormAlert } from 'components/accountly/kit';
+import InstallAppButton from 'components/accountly/InstallAppButton';
 import { checkPhone, readPhoneInput } from 'utils/accountly/phone';
 
 const Register = () => {
@@ -139,6 +140,8 @@ const Register = () => {
                 {t('auth.signInLink')}
               </Link>
             </Typography>
+
+            <InstallAppButton variant="card" />
           </Stack>
         </Container>
       </Box>
