@@ -105,7 +105,12 @@ const Notifications = () => {
                 return (
                   <Box key={n._id}>
                     {i > 0 && <Divider sx={{ borderColor: c.line, ml: '68px' }} />}
-                    <ListRow onClick={() => navigate(`/contact/${n.data.contact_id}`)}>
+                    <ListRow
+                      onClick={() => {
+                        unreadIds.current.delete(n._id);
+                        navigate(`/contact/${n.data.contact_id}`);
+                      }}
+                    >
                       <IconDot
                         size={40}
                         bg={tone === 'late' ? c.redSoft : tone === 'ok' ? c.greenSoft : c.chipGrey}

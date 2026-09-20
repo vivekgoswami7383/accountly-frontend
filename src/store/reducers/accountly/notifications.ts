@@ -12,6 +12,7 @@ interface NotificationsState {
   loading: boolean;
   loadingMore: boolean;
   hasLoaded: boolean;
+  readEpoch: number;
   error: string | null;
 }
 
@@ -23,13 +24,15 @@ const initialState: NotificationsState = {
   loading: false,
   loadingMore: false,
   hasLoaded: false,
+  readEpoch: 0,
   error: null
 };
 
-export const fetchUnreadCount = createAsyncThunk('notifications/fetchUnreadCount', async (_, { rejectWithValue }) => {
+export const fetchUnreadCount = createAsyncThunk('notifications/fetchUnreadCount', async (_, { rejectWithValue, getState }) => {
+  const epoch = (getState() as { notifications: NotificationsState }).notifications.readEpoch;
   try {
     const res = await notificationService.getUnreadCount();
-    return res.unread_count;
+    return { count: res.unread_count, epoch };
   } catch (error: any) {
     return rejectWithValue(error?.message || 'Failed to fetch notifications');
   }
@@ -63,7 +66,7 @@ const notificationsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUnreadCount.fulfilled, (state, action) => {
-        state.unreadCount = action.payload;
+        if (action.payload.epoch === state.readEpoch) state.unreadCount = action.payload.count;
       })
       .addCase(fetchNotifications.pending, (state, action) => {
         state.error = null;
@@ -84,7 +87,12 @@ const notificationsSlice = createSlice({
         state.loadingMore = false;
         state.error = action.payload as string;
       })
+      .addCase(markAllNotificationsRead.pending, (state) => {
+        state.readEpoch += 1;
+        state.unreadCount = 0;
+      })
       .addCase(markAllNotificationsRead.fulfilled, (state, action) => {
+        state.readEpoch += 1;
         state.unreadCount = action.payload;
       });
   }

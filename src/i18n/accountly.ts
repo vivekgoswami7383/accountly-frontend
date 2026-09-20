@@ -7,6 +7,7 @@ type Entry = string | ((vars: Vars) => string);
 type Dict = Record<string, Entry>;
 
 const en: Dict = {
+  'due.confirm': 'Set date',
   'notifications.dueTomorrow': 'Due tomorrow',
   'notifications.dueToday': 'Due today',
   'notifications.overdueSince': (v) => `Overdue since ${v.date}`,
@@ -294,6 +295,7 @@ const en: Dict = {
 };
 
 const hi: Dict = {
+  'due.confirm': 'तारीख सेट करें',
   'notifications.dueTomorrow': 'कल देय',
   'notifications.dueToday': 'आज देय',
   'notifications.overdueSince': (v) => `${v.date} से देरी`,
@@ -580,6 +582,7 @@ const hi: Dict = {
 };
 
 const gu: Dict = {
+  'due.confirm': 'તારીખ સેટ કરો',
   'notifications.dueTomorrow': 'કાલે બાકી',
   'notifications.dueToday': 'આજે બાકી',
   'notifications.overdueSince': (v) => `${v.date} થી મોડું`,
@@ -866,6 +869,7 @@ const gu: Dict = {
 };
 
 const hiLatn: Dict = {
+  'due.confirm': 'Tareekh set karo',
   'notifications.dueTomorrow': 'Kal dena hai',
   'notifications.dueToday': 'Aaj dena hai',
   'notifications.overdueSince': (v) => `${v.date} se deri`,
@@ -1152,6 +1156,7 @@ const hiLatn: Dict = {
 };
 
 const guLatn: Dict = {
+  'due.confirm': 'Tarikh set karo',
   'notifications.dueTomorrow': 'Kal baaki',
   'notifications.dueToday': 'Aaje baaki',
   'notifications.overdueSince': (v) => `${v.date} thi modu`,
