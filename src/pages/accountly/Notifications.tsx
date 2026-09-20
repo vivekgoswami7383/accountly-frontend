@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
 import { CalendarClock, CheckCircle2, ChevronRight } from 'lucide-react';
@@ -31,23 +31,21 @@ const Notifications = () => {
   const c = useAccountlyColors();
   const t = useT();
   const fmt = useFormatAmount();
-  const { items, page, hasMore, loading, loadingMore, hasLoaded } = useSelector((s) => s.notifications);
-  const unreadIds = useRef<Set<string>>(new Set());
-  const markedRef = useRef(false);
+  const { items, page, hasMore, loading, loadingMore } = useSelector((s) => s.notifications);
+  const [unreadIds, setUnreadIds] = useState<string[]>([]);
 
   useEffect(() => {
-    dispatch(fetchNotifications({ page: 1 }));
-  }, [dispatch]);
-
-  useEffect(() => {
-    items.forEach((n) => {
-      if (!n.read_at) unreadIds.current.add(n._id);
+    let active = true;
+    dispatch(fetchNotifications({ page: 1 })).then((result) => {
+      if (!active || !fetchNotifications.fulfilled.match(result)) return;
+      const fresh = result.payload.notifications.filter((n) => !n.read_at).map((n) => n._id);
+      setUnreadIds(fresh);
+      if (result.payload.unread_count > 0) dispatch(markAllNotificationsRead());
     });
-    if (hasLoaded && !markedRef.current) {
-      markedRef.current = true;
-      if (items.some((n) => !n.read_at)) dispatch(markAllNotificationsRead());
-    }
-  }, [items, hasLoaded, dispatch]);
+    return () => {
+      active = false;
+    };
+  }, [dispatch]);
 
   const loadMore = () => {
     if (hasMore && !loadingMore) dispatch(fetchNotifications({ page: page + 1 }));
@@ -71,7 +69,7 @@ const Notifications = () => {
     <>
       <AppHeader variant="screen" title={t('notifications.title')} />
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25, pb: 3 }}>
-        {!hasLoaded && loading ? (
+        {loading ? (
           <AppCard sx={{ overflow: 'hidden' }}>
             {[0, 1, 2].map((i) => (
               <Box key={i}>
@@ -101,13 +99,13 @@ const Notifications = () => {
             <AppCard sx={{ overflow: 'hidden' }}>
               {items.map((n, i) => {
                 const { title, sub, tone } = describe(n);
-                const unread = unreadIds.current.has(n._id);
+                const unread = unreadIds.includes(n._id);
                 return (
                   <Box key={n._id}>
                     {i > 0 && <Divider sx={{ borderColor: c.line, ml: '68px' }} />}
                     <ListRow
                       onClick={() => {
-                        unreadIds.current.delete(n._id);
+                        setUnreadIds((ids) => ids.filter((id) => id !== n._id));
                         navigate(`/contact/${n.data.contact_id}`);
                       }}
                     >

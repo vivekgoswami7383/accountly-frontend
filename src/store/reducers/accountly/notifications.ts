@@ -70,8 +70,14 @@ const notificationsSlice = createSlice({
       })
       .addCase(fetchNotifications.pending, (state, action) => {
         state.error = null;
-        if (action.meta.arg.page === 1) state.loading = true;
-        else state.loadingMore = true;
+        if (action.meta.arg.page === 1) {
+          state.loading = true;
+          state.items = [];
+          state.page = 0;
+          state.hasMore = false;
+        } else {
+          state.loadingMore = true;
+        }
       })
       .addCase(fetchNotifications.fulfilled, (state, action) => {
         state.loading = false;
@@ -94,6 +100,10 @@ const notificationsSlice = createSlice({
       .addCase(markAllNotificationsRead.fulfilled, (state, action) => {
         state.readEpoch += 1;
         state.unreadCount = action.payload;
+        const now = new Date().toISOString();
+        state.items.forEach((item) => {
+          if (!item.read_at) item.read_at = now;
+        });
       });
   }
 });
