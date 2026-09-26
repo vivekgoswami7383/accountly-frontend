@@ -246,22 +246,6 @@ const ReminderEditor = () => {
             </AppCard>
           )}
 
-          {reminder?.state === 'done' && reminder.completed_at && (
-            <AppCard sx={{ p: 2 }}>
-              <Stack direction="row" alignItems="center" spacing={1.5}>
-                <IconDot size={40} bg={c.greenSoft} fg={c.greenDeep}>
-                  <CheckCircle2 />
-                </IconDot>
-                <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontWeight: 500, fontSize: 14, color: c.ink }}>
-                    {t('reminders.completed', { when: formatWhen(reminder.completed_at, t) })}
-                  </Typography>
-                  <Typography sx={{ color: c.grey, fontSize: 12.5, mt: 0.25 }}>{t('reminders.completedHint')}</Typography>
-                </Box>
-              </Stack>
-            </AppCard>
-          )}
-
           <AppCard sx={{ px: 2, py: 1.5 }}>
             <TextField
               autoFocus={isNew}
