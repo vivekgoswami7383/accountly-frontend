@@ -345,19 +345,15 @@ const ReminderEditor = () => {
             </Stack>
           </Box>
 
-          {reminder?.state === 'scheduled' && (
+          {reminder?.state === 'scheduled' && reminder.repeat === 'none' && (
             <AppCard sx={{ overflow: 'hidden' }}>
               <ListRow onClick={handleDone} disabled={busy}>
                 <IconDot size={40} bg={c.greenSoft} fg={c.greenDeep}>
                   <CheckCircle2 />
                 </IconDot>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: 14.5, color: c.ink }}>
-                    {reminder.repeat === 'none' ? t('reminders.markDone') : t('reminders.stopRepeating')}
-                  </Typography>
-                  <Typography sx={{ color: c.grey, fontSize: 12.5, mt: 0.25 }}>
-                    {reminder.repeat === 'none' ? t('reminders.markDoneSub') : t('reminders.stopRepeatingSub')}
-                  </Typography>
+                  <Typography sx={{ fontWeight: 600, fontSize: 14.5, color: c.ink }}>{t('reminders.markDone')}</Typography>
+                  <Typography sx={{ color: c.grey, fontSize: 12.5, mt: 0.25 }}>{t('reminders.markDoneSub')}</Typography>
                 </Box>
                 <ChevronRight size={16} color={c.greyIcon} />
               </ListRow>
