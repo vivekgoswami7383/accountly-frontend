@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, ButtonBase, CircularProgress, Container, Divider, IconButton, Skeleton, Stack, Typography } from '@mui/material';
 import { AlarmClock, Check, CheckCircle2, Plus, Repeat } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
@@ -84,7 +84,9 @@ const Reminders = () => {
   const dispatch = useDispatch();
   const c = useAccountlyColors();
   const t = useT();
-  const [view, setView] = useState<ReminderView>('upcoming');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view: ReminderView = searchParams.get('view') === 'past' ? 'past' : 'upcoming';
+  const setView = (next: ReminderView) => setSearchParams(next === 'past' ? { view: next } : {}, { replace: true });
   const list = useSelector((s) => s.reminders[view]);
 
   useEffect(() => {
