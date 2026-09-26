@@ -22,6 +22,8 @@ const AddExpense = Loadable(lazy(() => import('pages/accountly/AddExpense')));
 const ExpenseDetail = Loadable(lazy(() => import('pages/accountly/ExpenseDetail')));
 const Notes = Loadable(lazy(() => import('pages/accountly/Notes')));
 const NoteEditor = Loadable(lazy(() => import('pages/accountly/NoteEditor')));
+const Reminders = Loadable(lazy(() => import('pages/accountly/Reminders')));
+const ReminderEditor = Loadable(lazy(() => import('pages/accountly/ReminderEditor')));
 
 const MainRoutes = {
   path: '/',
@@ -52,7 +54,10 @@ const MainRoutes = {
     { path: 'expense/:id/edit', element: <AddExpense /> },
     { path: 'note', element: <Notes /> },
     { path: 'note/new', element: <NoteEditor /> },
-    { path: 'note/:id', element: <NoteEditor /> }
+    { path: 'note/:id', element: <NoteEditor /> },
+    { path: 'reminder', element: <Reminders /> },
+    { path: 'reminder/new', element: <ReminderEditor /> },
+    { path: 'reminder/:id', element: <ReminderEditor /> }
   ]
 };
 

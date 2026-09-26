@@ -5,8 +5,12 @@ import { Home, Users, ArrowRightLeft, LayoutGrid } from 'lucide-react';
 import { createAccountlyTheme, getAccountlyColors, shadow } from 'themes/accountly';
 import useConfig from 'hooks/useConfig';
 import useAuth from 'hooks/useAuth';
+import { useDispatch } from 'store';
+import { fetchUnreadCount } from 'store/reducers/accountly/notifications';
 import { useT } from 'i18n/accountly';
 import { ThemeMode, I18n } from 'types/config';
+
+const UNREAD_POLL_MS = 60 * 1000;
 
 const AppLayout = () => {
   const location = useLocation();
@@ -24,6 +28,20 @@ const AppLayout = () => {
     if (business?.currency) onChangeCurrency(business.currency);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, business]);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!user) return undefined;
+    const refresh = () => {
+      if (document.visibilityState === 'visible') dispatch(fetchUnreadCount());
+    };
+    const timer = setInterval(refresh, UNREAD_POLL_MS);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [dispatch, user]);
+
   const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
   const theme = useMemo(() => createAccountlyTheme(accountlyMode), [accountlyMode]);
   const c = getAccountlyColors(accountlyMode);

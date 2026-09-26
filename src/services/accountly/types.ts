@@ -216,3 +216,32 @@ export interface BusinessReport {
   daily: ReportDailyPoint[];
   topContacts: ReportTopContact[];
 }
+
+export const REMINDER_REPEATS = ['none', 'daily', 'weekly', 'monthly'] as const;
+export type ReminderRepeat = (typeof REMINDER_REPEATS)[number];
+export type ReminderState = 'scheduled' | 'fired' | 'done';
+export type ReminderView = 'upcoming' | 'past';
+export const REMINDER_SNOOZE_MINUTES = [10, 60, 1440] as const;
+
+export interface ApiReminder {
+  _id: string;
+  title: string;
+  notes: string;
+  starts_at: string;
+  remind_at: string;
+  timezone: string;
+  repeat: ReminderRepeat;
+  state: ReminderState;
+  last_fired_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReminderRequest {
+  title: string;
+  notes: string;
+  remind_at: string;
+  timezone: string;
+  repeat: ReminderRepeat;
+}

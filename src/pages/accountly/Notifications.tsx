@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Container, Divider, Skeleton, Stack, Typography } from '@mui/material';
-import { Bell, CalendarClock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { AlarmClock, Bell, CalendarClock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchNotifications, markAllNotificationsRead } from 'store/reducers/accountly/notifications';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
@@ -15,6 +15,7 @@ const styleFor = (type: string) => {
   if (type === 'overdue') return { tone: 'late' as const, icon: <CalendarClock /> };
   if (type === 'due_settled') return { tone: 'ok' as const, icon: <CheckCircle2 /> };
   if (type.startsWith('due_')) return { tone: 'due' as const, icon: <CalendarClock /> };
+  if (type === 'reminder') return { tone: 'late' as const, icon: <AlarmClock /> };
   return { tone: 'info' as const, icon: <Bell /> };
 };
 

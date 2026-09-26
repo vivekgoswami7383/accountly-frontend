@@ -17,6 +17,7 @@ import expenses from './accountly/expenses';
 import notes from './accountly/notes';
 import reports from './accountly/reports';
 import notifications from './accountly/notifications';
+import reminders from './accountly/reminders';
 import { RESET_ACCOUNTLY_STATE } from './accountly/resetAction';
 
 export { RESET_ACCOUNTLY_STATE };
@@ -33,6 +34,7 @@ const appReducers = combineReducers({
   notes,
   reports,
   notifications,
+  reminders,
   cart: persistReducer(
     {
       key: 'cart',
@@ -56,7 +58,8 @@ const reducers = (state: ReturnType<typeof appReducers> | undefined, action: { t
       expenses: undefined,
       notes: undefined,
       reports: undefined,
-      notifications: undefined
+      notifications: undefined,
+      reminders: undefined
     } as any;
   }
   return appReducers(state, action);
