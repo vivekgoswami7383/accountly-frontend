@@ -9,6 +9,7 @@ import axios from 'utils/axios';
 import businessService from 'services/accountly/businessService';
 import { KeyedObject } from 'types/root';
 import { AuthProps, JWTContextType } from 'types/auth';
+import { forgetPushOnLogout } from 'utils/accountly/push';
 
 const initialState: AuthProps = {
   isLoggedIn: false,
@@ -120,6 +121,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
   };
 
   const logout = () => {
+    forgetPushOnLogout();
     setSession(null);
     reduxDispatch({ type: RESET_ACCOUNTLY_STATE });
     dispatch({ type: LOGOUT });

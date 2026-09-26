@@ -101,3 +101,40 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(staleWhileRevalidate(request, SHELL_CACHE));
 });
+
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch (error) {
+    payload = { title: event.data ? event.data.text() : '' };
+  }
+
+  const title = payload.title || 'Accountly';
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: payload.body || undefined,
+      tag: payload.tag || undefined,
+      renotify: Boolean(payload.tag),
+      requireInteraction: true,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      data: { url: payload.url || '/notifications' }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || '/', self.location.origin).href;
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (clients) => {
+      const client = clients.find((item) => new URL(item.url).origin === self.location.origin);
+      if (!client) return self.clients.openWindow(target);
+      await client.focus();
+      client.postMessage({ type: 'navigate', url: target });
+      return undefined;
+    })
+  );
+});

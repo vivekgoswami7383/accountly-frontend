@@ -8,6 +8,8 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, FormAlert } from 'components/accountly/kit';
+import { usePushStatus } from 'components/accountly/PushPrompt';
+import { disablePush, enablePush } from 'utils/accountly/push';
 
 const languages: { value: I18n; label: string }[] = [
   { value: 'en', label: 'English' },
@@ -23,6 +25,24 @@ const Settings = () => {
   const c = useAccountlyColors();
   const t = useT();
   const [error, setError] = useState<string | null>(null);
+  const [pushStatus, setPushStatus] = usePushStatus();
+  const [pushBusy, setPushBusy] = useState(false);
+
+  const handlePushToggle = async (on: boolean) => {
+    setPushBusy(true);
+    setError(null);
+    try {
+      if (on) setPushStatus(await enablePush());
+      else {
+        await disablePush();
+        setPushStatus('off');
+      }
+    } catch {
+      setError(t('push.failed'));
+    } finally {
+      setPushBusy(false);
+    }
+  };
 
   const handleThemeToggle = async (dark: boolean) => {
     const next = dark ? ThemeMode.DARK : ThemeMode.LIGHT;
@@ -77,6 +97,22 @@ const Settings = () => {
               <Switch checked={mode === ThemeMode.DARK} onChange={(e) => handleThemeToggle(e.target.checked)} />
             </Stack>
             <Divider sx={{ borderColor: c.line }} />
+            {pushStatus && (
+              <>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} sx={{ py: 1 }}>
+                  <Box>
+                    <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('push.title')}</Typography>
+                    <Typography sx={{ color: c.grey, fontSize: 12.5 }}>{t(`push.${pushStatus}Body`)}</Typography>
+                  </Box>
+                  <Switch
+                    checked={pushStatus === 'on'}
+                    disabled={pushBusy || (pushStatus !== 'on' && pushStatus !== 'off')}
+                    onChange={(e) => handlePushToggle(e.target.checked)}
+                  />
+                </Stack>
+                <Divider sx={{ borderColor: c.line }} />
+              </>
+            )}
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 1 }}>
               <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('settings.language')}</Typography>
               <FormControl size="small">

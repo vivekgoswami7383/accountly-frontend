@@ -7,6 +7,7 @@ import useConfig from 'hooks/useConfig';
 import useAuth from 'hooks/useAuth';
 import { useDispatch } from 'store';
 import { fetchUnreadCount } from 'store/reducers/accountly/notifications';
+import { syncPushSubscription } from 'utils/accountly/push';
 import { useT } from 'i18n/accountly';
 import { ThemeMode, I18n } from 'types/config';
 
@@ -41,6 +42,19 @@ const AppLayout = () => {
       document.removeEventListener('visibilitychange', refresh);
     };
   }, [dispatch, user]);
+
+  useEffect(() => {
+    if (!user || !('serviceWorker' in navigator)) return undefined;
+    syncPushSubscription();
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type !== 'navigate' || typeof event.data.url !== 'string') return;
+      const url = new URL(event.data.url, window.location.origin);
+      if (url.origin === window.location.origin) navigate(`${url.pathname}${url.search}`);
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
   const theme = useMemo(() => createAccountlyTheme(accountlyMode), [accountlyMode]);
