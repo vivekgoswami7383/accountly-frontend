@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { useT } from 'i18n/accountly';
+import { hasTimeLeftOn } from 'utils/accountly/reminders';
 
 const ReminderDatePicker = ({
   open,
@@ -28,7 +29,12 @@ const ReminderDatePicker = ({
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogContent sx={{ px: 1, pb: 0 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DateCalendar value={day} onChange={(next) => next && setDay(next)} disablePast />
+          <DateCalendar
+            value={day}
+            onChange={(next) => next && setDay(next)}
+            disablePast
+            shouldDisableDate={(date) => !hasTimeLeftOn(date)}
+          />
         </LocalizationProvider>
       </DialogContent>
       <DialogActions sx={{ px: 2.5, pb: 2 }}>

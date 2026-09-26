@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -31,8 +31,20 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import ReminderDatePicker from 'components/accountly/ReminderDatePicker';
+import ReminderTimePicker from 'components/accountly/ReminderTimePicker';
 import { AppCard, BottomActionBar, FOOTER_SPACE, FormAlert, IconDot, ListRow, SectionHeader } from 'components/accountly/kit';
-import { dayLabel, defaultReminderTime, deviceTimezone, formatWhen, toTimeInputValue, withTime } from 'utils/accountly/reminders';
+import {
+  dayLabel,
+  dayOffset,
+  defaultReminderTime,
+  deviceTimezone,
+  earliestMinuteOn,
+  formatWhen,
+  fromMinutes,
+  toMinutes,
+  toTimeInputValue,
+  withTime
+} from 'utils/accountly/reminders';
 import { formatTime } from 'utils/accountly/format';
 
 const RECENTLY_FIRED_MS = 12 * 60 * 60 * 1000;
@@ -82,7 +94,7 @@ const ReminderEditor = () => {
   const [repeat, setRepeat] = useState<ReminderRepeat>('none');
   const [timeTouched, setTimeTouched] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const timeInputRef = useRef<HTMLInputElement | null>(null);
+  const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,22 +128,12 @@ const ReminderEditor = () => {
     setError(null);
   };
 
-  const openTimePicker = () => {
-    const input = timeInputRef.current as (HTMLInputElement & { showPicker?: () => void }) | null;
-    if (!input) return;
-    try {
-      if (input.showPicker) input.showPicker();
-      else input.focus();
-    } catch {
-      input.focus();
-    }
-  };
-
   useEffect(() => {
     const timer = setInterval(() => setClock(Date.now()), 15000);
     return () => clearInterval(timer);
   }, []);
 
+  const timeDay = dayOffset(remindAt) < 0 ? new Date() : remindAt;
   const sendsTime = isNew || timeTouched;
   const timeOk = !sendsTime || remindAt.getTime() > clock;
 
@@ -156,8 +158,7 @@ const ReminderEditor = () => {
     }
     if (sendsTime && remindAt.getTime() <= Date.now()) {
       setClock(Date.now());
-      setError(t('reminders.timePassed'));
-      openTimePicker();
+      setTimePickerOpen(true);
       return;
     }
     const data: Partial<ReminderRequest> = { title: title.trim(), notes: notes.trim(), repeat, timezone: deviceTimezone() };
@@ -291,47 +292,17 @@ const ReminderEditor = () => {
                 <ChevronRight size={16} color={c.greyIcon} />
               </ListRow>
               <Divider sx={{ borderColor: c.line, ml: '68px' }} />
-              <Box sx={{ position: 'relative' }}>
-                <ListRow onClick={openTimePicker} tabIndex={-1}>
-                  <IconDot size={40} bg={c.chipGrey} fg={c.slate}>
-                    <Clock />
-                  </IconDot>
-                  <Typography sx={{ flex: 1, fontWeight: 500, fontSize: 14.5, color: c.ink }}>{t('reminders.time')}</Typography>
-                  <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: timeOk ? c.grey : c.redDeep }}>
-                    {formatTime(remindAt.toISOString())}
-                  </Typography>
-                  <ChevronRight size={16} color={c.greyIcon} />
-                </ListRow>
-                <Box
-                  component="input"
-                  type="time"
-                  ref={timeInputRef}
-                  aria-label={t('reminders.time')}
-                  value={toTimeInputValue(remindAt)}
-                  onClick={openTimePicker}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.value) pickTime(withTime(remindAt, e.target.value));
-                  }}
-                  sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    opacity: 0,
-                    border: 0,
-                    p: 0,
-                    m: 0,
-                    cursor: 'pointer',
-                    fontSize: 16
-                  }}
-                />
-              </Box>
+              <ListRow onClick={() => setTimePickerOpen(true)}>
+                <IconDot size={40} bg={c.chipGrey} fg={c.slate}>
+                  <Clock />
+                </IconDot>
+                <Typography sx={{ flex: 1, fontWeight: 500, fontSize: 14.5, color: c.ink }}>{t('reminders.time')}</Typography>
+                <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: timeOk ? c.grey : c.redDeep }}>
+                  {formatTime(remindAt.toISOString())}
+                </Typography>
+                <ChevronRight size={16} color={c.greyIcon} />
+              </ListRow>
             </AppCard>
-            {!timeOk && (
-              <Typography sx={{ color: c.redDeep, fontSize: 12.5, fontWeight: 500, mt: 0.75, px: 0.5 }}>
-                {t('reminders.timeInPast')}
-              </Typography>
-            )}
           </Box>
 
           <Box>
@@ -373,8 +344,20 @@ const ReminderEditor = () => {
         value={remindAt}
         onClose={() => setDatePickerOpen(false)}
         onConfirm={(day) => {
-          pickTime(withTime(day, toTimeInputValue(remindAt)));
+          const time = Math.max(toMinutes(toTimeInputValue(remindAt)), earliestMinuteOn(day));
+          pickTime(withTime(day, fromMinutes(time)));
           setDatePickerOpen(false);
+        }}
+      />
+
+      <ReminderTimePicker
+        open={timePickerOpen}
+        day={timeDay}
+        value={toTimeInputValue(remindAt)}
+        onClose={() => setTimePickerOpen(false)}
+        onConfirm={(time) => {
+          pickTime(withTime(timeDay, time));
+          setTimePickerOpen(false);
         }}
       />
 
