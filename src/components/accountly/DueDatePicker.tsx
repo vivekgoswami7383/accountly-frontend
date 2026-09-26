@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DISPLAY } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import { toDateInputValue } from 'utils/accountly/due';
 
@@ -29,8 +28,7 @@ const DueDatePicker = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ fontFamily: DISPLAY, fontSize: '1.05rem', pb: 0 }}>{t('due.setDate')}</DialogTitle>
-      <DialogContent sx={{ px: 1, display: 'flex', justifyContent: 'center' }}>
+      <DialogContent sx={{ px: 1, pb: 0, display: 'flex', justifyContent: 'center' }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateCalendar value={draft} onChange={(next) => setDraft(next)} disablePast />
         </LocalizationProvider>
