@@ -70,13 +70,3 @@ export const earliestMinuteOn = (day: Date, now = new Date()) => {
 };
 
 export const hasTimeLeftOn = (day: Date, now = new Date()) => earliestMinuteOn(day, now) < MINUTES_PER_DAY;
-
-const daysUntil = (weekday: number, now: Date) => (weekday - now.getDay() + 7) % 7 || 7;
-
-export const datePresets = (now = new Date()) =>
-  [
-    { key: 'today', day: now },
-    { key: 'tomorrow', day: new Date(now.getTime() + DAY_MS) },
-    { key: 'nextWeekend', day: new Date(now.getTime() + daysUntil(6, now) * DAY_MS) },
-    { key: 'nextWeek', day: new Date(now.getTime() + daysUntil(1, now) * DAY_MS) }
-  ].filter((preset) => hasTimeLeftOn(preset.day, now));
