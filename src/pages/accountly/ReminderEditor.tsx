@@ -84,6 +84,8 @@ const ReminderEditor = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clock, setClock] = useState(() => Date.now());
+  const titleInputRef = useRef<HTMLTextAreaElement | null>(null);
   const loadedRef = useRef(isNew);
 
   useEffect(() => {
@@ -109,11 +111,16 @@ const ReminderEditor = () => {
   const pickTime = (at: Date) => {
     setRemindAt(at);
     setTimeTouched(true);
+    setError(null);
   };
 
+  useEffect(() => {
+    const timer = setInterval(() => setClock(Date.now()), 15000);
+    return () => clearInterval(timer);
+  }, []);
+
   const sendsTime = isNew || timeTouched;
-  const timeOk = !sendsTime || remindAt.getTime() > Date.now();
-  const canSave = title.trim().length > 0 && timeOk && !busy;
+  const timeOk = !sendsTime || remindAt.getTime() > clock;
 
   const run = async (action: () => Promise<{ type: string; payload?: unknown }>, fallback: string) => {
     setBusy(true);
@@ -128,7 +135,18 @@ const ReminderEditor = () => {
   };
 
   const handleSave = async () => {
-    if (!canSave) return;
+    if (busy) return;
+    if (!title.trim()) {
+      setError(t('reminders.needTitle'));
+      titleInputRef.current?.focus();
+      return;
+    }
+    if (sendsTime && remindAt.getTime() <= Date.now()) {
+      setClock(Date.now());
+      setError(t('reminders.timePassed'));
+      setPickerOpen(true);
+      return;
+    }
     const data: Partial<ReminderRequest> = { title: title.trim(), notes: notes.trim(), repeat, timezone: deviceTimezone() };
     if (sendsTime) data.remind_at = remindAt.toISOString();
     const ok = await run(() => dispatch(saveReminder({ id, data })), t('reminders.failedSave'));
@@ -239,7 +257,11 @@ const ReminderEditor = () => {
               variant="standard"
               placeholder={t('reminders.titlePlaceholder')}
               value={title}
-              onChange={(e) => setTitle(e.target.value.replace(/\n/g, ' ').slice(0, MAX_TITLE))}
+              inputRef={titleInputRef}
+              onChange={(e) => {
+                setTitle(e.target.value.replace(/\n/g, ' ').slice(0, MAX_TITLE));
+                if (error === t('reminders.needTitle')) setError(null);
+              }}
               InputProps={{
                 disableUnderline: true,
                 sx: { fontSize: 18, lineHeight: 1.4, fontWeight: 600, color: c.ink, fontFamily: DISPLAY }
@@ -305,14 +327,14 @@ const ReminderEditor = () => {
       </Container>
 
       <BottomActionBar>
-        <Button fullWidth variant="contained" size="large" disabled={!canSave} onClick={handleSave}>
+        <Button fullWidth variant="contained" size="large" disabled={busy} onClick={handleSave}>
           {busy ? t('common.saving') : t('reminders.save')}
         </Button>
       </BottomActionBar>
 
       <ReminderTimePicker
         open={pickerOpen}
-        value={remindAt.getTime() > Date.now() ? remindAt : defaultReminderTime()}
+        value={remindAt}
         onClose={() => setPickerOpen(false)}
         onConfirm={(at) => {
           pickTime(at);
