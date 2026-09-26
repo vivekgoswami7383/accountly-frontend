@@ -44,8 +44,11 @@ const AppLayout = () => {
   }, [dispatch, user]);
 
   useEffect(() => {
-    if (!user || !('serviceWorker' in navigator)) return undefined;
-    syncPushSubscription();
+    if (user) syncPushSubscription();
+  }, [user]);
+
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return undefined;
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type !== 'navigate' || typeof event.data.url !== 'string') return;
       const url = new URL(event.data.url, window.location.origin);
@@ -53,8 +56,7 @@ const AppLayout = () => {
     };
     navigator.serviceWorker.addEventListener('message', onMessage);
     return () => navigator.serviceWorker.removeEventListener('message', onMessage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [navigate]);
 
   const accountlyMode = mode === ThemeMode.DARK ? 'dark' : 'light';
   const theme = useMemo(() => createAccountlyTheme(accountlyMode), [accountlyMode]);
