@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Box, Button, ButtonBase, Dialog, DialogActions, DialogContent, Stack } from '@mui/material';
+import { Box, ButtonBase, Stack } from '@mui/material';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
-import { useT } from 'i18n/accountly';
 import { earliestMinuteOn, fromMinutes, toMinutes } from 'utils/accountly/reminders';
+import PickerDialog from './PickerDialog';
 
 const ITEM_HEIGHT = 44;
 const VISIBLE_ITEMS = 5;
@@ -93,7 +93,6 @@ const ReminderTimePicker = ({
   onClose: () => void;
   onConfirm: (time: string) => void;
 }) => {
-  const t = useT();
   const [minutes, setMinutes] = useState(() => toMinutes(value));
   const earliest = earliestMinuteOn(day);
 
@@ -110,41 +109,31 @@ const ReminderTimePicker = ({
   const choose = (next: number) => setMinutes(Math.max(next, earliest));
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogContent sx={{ px: 2, pt: 2.5, pb: 1 }}>
-        <Stack direction="row" spacing={1}>
-          <Column
-            items={HOURS}
-            selected={hour}
-            format={(item) => String(item)}
-            isDisabled={(item) => hour24(item, period) * 60 + 59 < earliest}
-            onSelect={(item) => choose(hour24(item, period) * 60 + minute)}
-          />
-          <Column
-            items={MINUTES}
-            selected={minute}
-            format={(item) => String(item).padStart(2, '0')}
-            isDisabled={(item) => h24 * 60 + item < earliest}
-            onSelect={(item) => choose(h24 * 60 + item)}
-          />
-          <Column
-            items={PERIODS}
-            selected={period}
-            format={(item) => item}
-            isDisabled={(item) => item === 'AM' && 11 * 60 + 59 < earliest}
-            onSelect={(item) => choose(hour24(hour, item) * 60 + minute)}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions sx={{ px: 2.5, pb: 2 }}>
-        <Button onClick={onClose} variant="outlined">
-          {t('common.cancel')}
-        </Button>
-        <Button variant="contained" onClick={() => onConfirm(fromMinutes(minutes))}>
-          {t('reminders.setTime')}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <PickerDialog open={open} onClose={onClose}>
+      <Stack direction="row" spacing={1} sx={{ width: '100%', px: 1 }}>
+        <Column
+          items={HOURS}
+          selected={hour}
+          format={(item) => String(item)}
+          isDisabled={(item) => hour24(item, period) * 60 + 59 < earliest}
+          onSelect={(item) => choose(hour24(item, period) * 60 + minute)}
+        />
+        <Column
+          items={MINUTES}
+          selected={minute}
+          format={(item) => String(item).padStart(2, '0')}
+          isDisabled={(item) => h24 * 60 + item < earliest}
+          onSelect={(item) => onConfirm(fromMinutes(Math.max(h24 * 60 + item, earliest)))}
+        />
+        <Column
+          items={PERIODS}
+          selected={period}
+          format={(item) => item}
+          isDisabled={(item) => item === 'AM' && 11 * 60 + 59 < earliest}
+          onSelect={(item) => choose(hour24(hour, item) * 60 + minute)}
+        />
+      </Stack>
+    </PickerDialog>
   );
 };
 
