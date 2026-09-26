@@ -222,6 +222,7 @@ export type ReminderRepeat = (typeof REMINDER_REPEATS)[number];
 export type ReminderState = 'scheduled' | 'fired' | 'done';
 export type ReminderView = 'upcoming' | 'past';
 export const REMINDER_SNOOZE_MINUTES = [10, 60, 1440] as const;
+export const REMINDER_EARLY_MINUTES = [5, 15, 30, 60, 1440] as const;
 
 export interface ApiReminder {
   _id: string;
@@ -231,6 +232,7 @@ export interface ApiReminder {
   remind_at: string;
   timezone: string;
   repeat: ReminderRepeat;
+  early_minutes: number | null;
   state: ReminderState;
   last_fired_at: string | null;
   completed_at: string | null;
@@ -244,4 +246,5 @@ export interface ReminderRequest {
   remind_at: string;
   timezone: string;
   repeat: ReminderRepeat;
+  early_minutes: number | null;
 }

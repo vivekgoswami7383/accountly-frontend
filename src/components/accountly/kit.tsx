@@ -110,11 +110,23 @@ export const IconDot = ({
   </Box>
 );
 
-export const SectionHeader = ({ title, action, onAction, right }: { title: string; action?: string; onAction?: () => void; right?: ReactNode }) => {
+export const SectionHeader = ({
+  title,
+  action,
+  onAction,
+  right
+}: {
+  title: string;
+  action?: string;
+  onAction?: () => void;
+  right?: ReactNode;
+}) => {
   const c = useAccountlyColors();
   return (
     <Stack direction="row" alignItems="center" sx={{ px: 0.25, mb: 1.25 }}>
-      <Typography sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 500, fontSize: 18, color: c.ink, letterSpacing: '-0.01em' }}>{title}</Typography>
+      <Typography sx={{ flex: 1, fontFamily: DISPLAY, fontWeight: 500, fontSize: 18, color: c.ink, letterSpacing: '-0.01em' }}>
+        {title}
+      </Typography>
       {right}
       {action && (
         <ButtonBase onClick={onAction} sx={{ borderRadius: 1.5, px: 0.5, py: 0.25, color: c.slate }}>
@@ -127,7 +139,11 @@ export const SectionHeader = ({ title, action, onAction, right }: { title: strin
 };
 
 export const Fade = ({ children, delay = 0, skipEnter = false }: { children: ReactNode; delay?: number; skipEnter?: boolean }) => (
-  <motion.div initial={skipEnter ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}>
+  <motion.div
+    initial={skipEnter ? false : { opacity: 0, y: 14 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
+  >
     {children}
   </motion.div>
 );
@@ -152,6 +168,33 @@ export const FormAlert = ({ message }: { message?: string | null }) => {
     >
       <AlertCircle size={17} style={{ flexShrink: 0, marginTop: 1 }} />
       <Typography sx={{ fontSize: 13, fontWeight: 500, lineHeight: 1.4 }}>{message}</Typography>
+    </Box>
+  );
+};
+
+export const Pill = ({ active, onClick, children }: { active?: boolean; onClick: () => void; children: ReactNode }) => {
+  const c = useAccountlyColors();
+  return (
+    <Box
+      component="button"
+      type="button"
+      onClick={onClick}
+      sx={{
+        flexShrink: 0,
+        border: active ? 'none' : `1.5px solid ${c.border}`,
+        bgcolor: active ? c.red : c.surface,
+        color: active ? '#fff' : c.ink,
+        fontWeight: 500,
+        fontSize: 13,
+        px: 1.75,
+        py: 0.75,
+        borderRadius: '999px',
+        cursor: 'pointer',
+        fontFamily: DISPLAY,
+        whiteSpace: 'nowrap'
+      }}
+    >
+      {children}
     </Box>
   );
 };

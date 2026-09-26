@@ -1,7 +1,10 @@
+import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { hasTimeLeftOn } from 'utils/accountly/reminders';
+import { useT } from 'i18n/accountly';
+import { datePresets, hasTimeLeftOn } from 'utils/accountly/reminders';
+import { Pill } from './kit';
 import PickerDialog from './PickerDialog';
 
 const ReminderDatePicker = ({
@@ -14,19 +17,32 @@ const ReminderDatePicker = ({
   value: Date;
   onClose: () => void;
   onConfirm: (day: Date) => void;
-}) => (
-  <PickerDialog open={open} onClose={onClose}>
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DateCalendar
-        value={value}
-        onChange={(next, selection) => {
-          if (next && selection === 'finish') onConfirm(next);
-        }}
-        disablePast
-        shouldDisableDate={(date) => !hasTimeLeftOn(date)}
-      />
-    </LocalizationProvider>
-  </PickerDialog>
-);
+}) => {
+  const t = useT();
+
+  return (
+    <PickerDialog open={open} onClose={onClose}>
+      <Stack sx={{ width: '100%' }}>
+        <Stack direction="row" sx={{ gap: 1, flexWrap: 'wrap', px: 2 }}>
+          {datePresets().map((preset) => (
+            <Pill key={preset.key} onClick={() => onConfirm(preset.day)}>
+              {t(`reminders.preset.${preset.key}`)}
+            </Pill>
+          ))}
+        </Stack>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateCalendar
+            value={value}
+            onChange={(next, selection) => {
+              if (next && selection === 'finish') onConfirm(next);
+            }}
+            disablePast
+            shouldDisableDate={(date) => !hasTimeLeftOn(date)}
+          />
+        </LocalizationProvider>
+      </Stack>
+    </PickerDialog>
+  );
+};
 
 export default ReminderDatePicker;

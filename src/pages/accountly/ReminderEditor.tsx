@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -26,12 +26,18 @@ import {
   setSelectedReminder,
   snoozeReminder
 } from 'store/reducers/accountly/reminders';
-import { REMINDER_REPEATS, REMINDER_SNOOZE_MINUTES, ReminderRepeat, ReminderRequest } from 'services/accountly/types';
+import {
+  REMINDER_EARLY_MINUTES,
+  REMINDER_REPEATS,
+  REMINDER_SNOOZE_MINUTES,
+  ReminderRepeat,
+  ReminderRequest
+} from 'services/accountly/types';
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import ReminderDatePicker from 'components/accountly/ReminderDatePicker';
-import { AppCard, BottomActionBar, FOOTER_SPACE, FormAlert, IconDot, ListRow, SectionHeader } from 'components/accountly/kit';
+import { AppCard, BottomActionBar, FOOTER_SPACE, FormAlert, IconDot, ListRow, Pill, SectionHeader } from 'components/accountly/kit';
 import {
   dayLabel,
   dayOffset,
@@ -49,33 +55,6 @@ import { formatTime } from 'utils/accountly/format';
 const RECENTLY_FIRED_MS = 12 * 60 * 60 * 1000;
 const MAX_TITLE = 200;
 
-const Pill = ({ active, onClick, children }: { active?: boolean; onClick: () => void; children: ReactNode }) => {
-  const c = useAccountlyColors();
-  return (
-    <Box
-      component="button"
-      type="button"
-      onClick={onClick}
-      sx={{
-        flexShrink: 0,
-        border: active ? 'none' : `1.5px solid ${c.border}`,
-        bgcolor: active ? c.red : c.surface,
-        color: active ? '#fff' : c.ink,
-        fontWeight: 500,
-        fontSize: 13,
-        px: 1.75,
-        py: 0.75,
-        borderRadius: '999px',
-        cursor: 'pointer',
-        fontFamily: DISPLAY,
-        whiteSpace: 'nowrap'
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
-
 const ReminderEditor = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -91,6 +70,7 @@ const ReminderEditor = () => {
   const [notes, setNotes] = useState('');
   const [remindAt, setRemindAt] = useState<Date>(() => defaultReminderTime());
   const [repeat, setRepeat] = useState<ReminderRepeat>('none');
+  const [earlyMinutes, setEarlyMinutes] = useState<number | null>(null);
   const [timeTouched, setTimeTouched] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const timeInputRef = useRef<HTMLInputElement | null>(null);
@@ -117,6 +97,7 @@ const ReminderEditor = () => {
     setNotes(reminder.notes || '');
     setRemindAt(new Date(reminder.remind_at));
     setRepeat(reminder.repeat);
+    setEarlyMinutes(reminder.early_minutes ?? null);
     setTimeTouched(false);
     loadedRef.current = true;
   }, [reminder]);
@@ -179,7 +160,13 @@ const ReminderEditor = () => {
       openTimePicker();
       return;
     }
-    const data: Partial<ReminderRequest> = { title: title.trim(), notes: notes.trim(), repeat, timezone: deviceTimezone() };
+    const data: Partial<ReminderRequest> = {
+      title: title.trim(),
+      notes: notes.trim(),
+      repeat,
+      early_minutes: earlyMinutes,
+      timezone: deviceTimezone()
+    };
     if (sendsTime) data.remind_at = remindAt.toISOString();
     const ok = await run(() => dispatch(saveReminder({ id, data })), t('reminders.failedSave'));
     if (!ok) return;
@@ -356,6 +343,17 @@ const ReminderEditor = () => {
               {REMINDER_REPEATS.map((option) => (
                 <Pill key={option} active={repeat === option} onClick={() => setRepeat(option)}>
                   {t(`reminders.repeat.${option}`)}
+                </Pill>
+              ))}
+            </Stack>
+          </Box>
+
+          <Box>
+            <SectionHeader title={t('reminders.early')} />
+            <Stack direction="row" sx={{ gap: 1, flexWrap: 'wrap' }}>
+              {[null, ...REMINDER_EARLY_MINUTES].map((option) => (
+                <Pill key={option ?? 'none'} active={earlyMinutes === option} onClick={() => setEarlyMinutes(option)}>
+                  {t(`reminders.early.${option ?? 'none'}`)}
                 </Pill>
               ))}
             </Stack>
