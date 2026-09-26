@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -16,7 +16,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { AlarmClock, CheckCircle2, ChevronRight, Clock, Trash2, TriangleAlert } from 'lucide-react';
+import { AlarmClock, CalendarDays, CheckCircle2, ChevronRight, Clock, Trash2, TriangleAlert } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import {
   deleteReminder,
@@ -30,9 +30,10 @@ import { REMINDER_REPEATS, REMINDER_SNOOZE_MINUTES, ReminderRepeat, ReminderRequ
 import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
-import ReminderTimePicker from 'components/accountly/ReminderTimePicker';
+import ReminderDatePicker from 'components/accountly/ReminderDatePicker';
 import { AppCard, BottomActionBar, FOOTER_SPACE, FormAlert, IconDot, ListRow, SectionHeader } from 'components/accountly/kit';
-import { defaultReminderTime, deviceTimezone, formatWhen, quickTimes } from 'utils/accountly/reminders';
+import { dayLabel, defaultReminderTime, deviceTimezone, formatWhen, toTimeInputValue, withTime } from 'utils/accountly/reminders';
+import { formatTime } from 'utils/accountly/format';
 
 const RECENTLY_FIRED_MS = 12 * 60 * 60 * 1000;
 const MAX_TITLE = 200;
@@ -80,7 +81,8 @@ const ReminderEditor = () => {
   const [remindAt, setRemindAt] = useState<Date>(() => defaultReminderTime());
   const [repeat, setRepeat] = useState<ReminderRepeat>('none');
   const [timeTouched, setTimeTouched] = useState(false);
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const timeInputRef = useRef<HTMLInputElement | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,6 +116,17 @@ const ReminderEditor = () => {
     setError(null);
   };
 
+  const openTimePicker = () => {
+    const input = timeInputRef.current as (HTMLInputElement & { showPicker?: () => void }) | null;
+    if (!input) return;
+    try {
+      if (input.showPicker) input.showPicker();
+      else input.focus();
+    } catch {
+      input.focus();
+    }
+  };
+
   useEffect(() => {
     const timer = setInterval(() => setClock(Date.now()), 15000);
     return () => clearInterval(timer);
@@ -144,7 +157,7 @@ const ReminderEditor = () => {
     if (sendsTime && remindAt.getTime() <= Date.now()) {
       setClock(Date.now());
       setError(t('reminders.timePassed'));
-      setPickerOpen(true);
+      openTimePicker();
       return;
     }
     const data: Partial<ReminderRequest> = { title: title.trim(), notes: notes.trim(), repeat, timezone: deviceTimezone() };
@@ -282,23 +295,53 @@ const ReminderEditor = () => {
 
           <Box>
             <SectionHeader title={t('reminders.when')} />
-            <Stack direction="row" sx={{ gap: 1, flexWrap: 'wrap', mb: 1.25 }}>
-              {quickTimes().map((option) => (
-                <Pill key={option.key} onClick={() => pickTime(option.at)}>
-                  {t(`reminders.quick.${option.key}`)}
-                </Pill>
-              ))}
-            </Stack>
             <AppCard sx={{ overflow: 'hidden' }}>
-              <ListRow onClick={() => setPickerOpen(true)}>
+              <ListRow onClick={() => setDatePickerOpen(true)}>
                 <IconDot size={40} bg={c.chipGrey} fg={c.slate}>
-                  <Clock />
+                  <CalendarDays />
                 </IconDot>
-                <Typography sx={{ flex: 1, fontWeight: 500, fontSize: 14.5, color: timeOk ? c.ink : c.redDeep }}>
-                  {formatWhen(remindAt.toISOString(), t)}
+                <Typography sx={{ flex: 1, fontWeight: 500, fontSize: 14.5, color: c.ink }}>{t('reminders.date')}</Typography>
+                <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: timeOk ? c.grey : c.redDeep }}>
+                  {dayLabel(remindAt, t)}
                 </Typography>
                 <ChevronRight size={16} color={c.greyIcon} />
               </ListRow>
+              <Divider sx={{ borderColor: c.line, ml: '68px' }} />
+              <Box sx={{ position: 'relative' }}>
+                <ListRow onClick={openTimePicker} tabIndex={-1}>
+                  <IconDot size={40} bg={c.chipGrey} fg={c.slate}>
+                    <Clock />
+                  </IconDot>
+                  <Typography sx={{ flex: 1, fontWeight: 500, fontSize: 14.5, color: c.ink }}>{t('reminders.time')}</Typography>
+                  <Typography sx={{ fontWeight: 500, fontSize: 14.5, color: timeOk ? c.grey : c.redDeep }}>
+                    {formatTime(remindAt.toISOString())}
+                  </Typography>
+                  <ChevronRight size={16} color={c.greyIcon} />
+                </ListRow>
+                <Box
+                  component="input"
+                  type="time"
+                  ref={timeInputRef}
+                  aria-label={t('reminders.time')}
+                  value={toTimeInputValue(remindAt)}
+                  onClick={openTimePicker}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    if (e.target.value) pickTime(withTime(remindAt, e.target.value));
+                  }}
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0,
+                    border: 0,
+                    p: 0,
+                    m: 0,
+                    cursor: 'pointer',
+                    fontSize: 16
+                  }}
+                />
+              </Box>
             </AppCard>
             {!timeOk && (
               <Typography sx={{ color: c.redDeep, fontSize: 12.5, fontWeight: 500, mt: 0.75, px: 0.5 }}>
@@ -332,13 +375,13 @@ const ReminderEditor = () => {
         </Button>
       </BottomActionBar>
 
-      <ReminderTimePicker
-        open={pickerOpen}
+      <ReminderDatePicker
+        open={datePickerOpen}
         value={remindAt}
-        onClose={() => setPickerOpen(false)}
-        onConfirm={(at) => {
-          pickTime(at);
-          setPickerOpen(false);
+        onClose={() => setDatePickerOpen(false)}
+        onConfirm={(day) => {
+          pickTime(withTime(day, toTimeInputValue(remindAt)));
+          setDatePickerOpen(false);
         }}
       />
 

@@ -25,18 +25,10 @@ export const groupFor = (iso: string, now = new Date()): ReminderGroup => {
   return 'later';
 };
 
-export const quickTimes = (now = new Date()) => {
-  const inAnHour = new Date(Math.ceil((now.getTime() + 60 * 60000) / 60000) * 60000);
-  const evening = atTime(now, 20);
-  const tomorrow = atTime(new Date(now.getTime() + DAY_MS), 9);
-  return [
-    { key: 'inAnHour', at: inAnHour },
-    ...(evening.getTime() - now.getTime() > 30 * 60000 ? [{ key: 'thisEvening', at: evening }] : []),
-    { key: 'tomorrowMorning', at: tomorrow }
-  ];
-};
+const FIVE_MINUTES_MS = 5 * 60000;
 
-export const defaultReminderTime = (now = new Date()) => quickTimes(now)[0].at;
+export const defaultReminderTime = (now = new Date()) =>
+  new Date(Math.ceil((now.getTime() + 60 * 60000) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS);
 
 export const dayLabel = (date: Date, t: (key: string) => string, now = new Date()) => {
   const offset = dayOffset(date, now);
