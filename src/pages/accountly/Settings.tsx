@@ -8,7 +8,7 @@ import { DISPLAY, useAccountlyColors } from 'themes/accountly';
 import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, FormAlert } from 'components/accountly/kit';
-import { usePushStatus } from 'components/accountly/PushPrompt';
+import usePushStatus from 'hooks/usePushStatus';
 import { disablePush, enablePush } from 'utils/accountly/push';
 
 const languages: { value: I18n; label: string }[] = [
@@ -97,22 +97,6 @@ const Settings = () => {
               <Switch checked={mode === ThemeMode.DARK} onChange={(e) => handleThemeToggle(e.target.checked)} />
             </Stack>
             <Divider sx={{ borderColor: c.line }} />
-            {pushStatus && (
-              <>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} sx={{ py: 1 }}>
-                  <Box>
-                    <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('push.title')}</Typography>
-                    <Typography sx={{ color: c.grey, fontSize: 12.5 }}>{t(`push.${pushStatus}Body`)}</Typography>
-                  </Box>
-                  <Switch
-                    checked={pushStatus === 'on'}
-                    disabled={pushBusy || (pushStatus !== 'on' && pushStatus !== 'off')}
-                    onChange={(e) => handlePushToggle(e.target.checked)}
-                  />
-                </Stack>
-                <Divider sx={{ borderColor: c.line }} />
-              </>
-            )}
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 1 }}>
               <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('settings.language')}</Typography>
               <FormControl size="small">
@@ -149,6 +133,22 @@ const Settings = () => {
             </Stack>
           </Stack>
         </AppCard>
+        {pushStatus && (
+          <AppCard sx={{ p: 3, mt: 2 }}>
+            <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 15, mb: 2 }}>{t('notifications.title')}</Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} sx={{ py: 1 }}>
+              <Box>
+                <Typography sx={{ fontWeight: 500, fontSize: 14 }}>{t('push.title')}</Typography>
+                <Typography sx={{ color: c.grey, fontSize: 12.5 }}>{t(`push.${pushStatus}Body`)}</Typography>
+              </Box>
+              <Switch
+                checked={pushStatus === 'on'}
+                disabled={pushBusy || (pushStatus !== 'on' && pushStatus !== 'off')}
+                onChange={(e) => handlePushToggle(e.target.checked)}
+              />
+            </Stack>
+          </AppCard>
+        )}
       </Container>
     </>
   );

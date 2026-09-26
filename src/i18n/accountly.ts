@@ -294,7 +294,6 @@ const en: Dict = {
   'push.installBody': 'On iPhone, add Accountly to your Home Screen to get reminder alerts.',
   'push.deniedBody': 'Notifications are blocked. Allow them for this site in your browser settings.',
   'push.unsupportedBody': "This browser can't show notifications.",
-  'push.turnOn': 'Turn on',
   'push.failed': 'Could not turn on notifications. Please try again.',
 
   'profile.title': 'Profile',
@@ -650,7 +649,6 @@ const hi: Dict = {
   'push.installBody': 'iPhone पर रिमाइंडर अलर्ट के लिए Accountly को Home Screen पर जोड़ें।',
   'push.deniedBody': 'नोटिफिकेशन ब्लॉक हैं। ब्राउज़र सेटिंग्स में इस साइट के लिए इन्हें चालू करें।',
   'push.unsupportedBody': 'यह ब्राउज़र नोटिफिकेशन नहीं दिखा सकता।',
-  'push.turnOn': 'चालू करें',
   'push.failed': 'नोटिफिकेशन चालू नहीं हो सके। फिर से कोशिश करें।',
 
   'profile.title': 'प्रोफ़ाइल',
@@ -1006,7 +1004,6 @@ const gu: Dict = {
   'push.installBody': 'iPhone પર રિમાઇન્ડર એલર્ટ માટે Accountly ને Home Screen પર ઉમેરો.',
   'push.deniedBody': 'નોટિફિકેશન બ્લોક છે. બ્રાઉઝર સેટિંગ્સમાં આ સાઇટ માટે ચાલુ કરો.',
   'push.unsupportedBody': 'આ બ્રાઉઝર નોટિફિકેશન બતાવી શકતું નથી.',
-  'push.turnOn': 'ચાલુ કરો',
   'push.failed': 'નોટિફિકેશન ચાલુ ન થઈ શક્યા. ફરી પ્રયાસ કરો.',
 
   'profile.title': 'પ્રોફાઇલ',
@@ -1362,7 +1359,6 @@ const hiLatn: Dict = {
   'push.installBody': 'iPhone pe reminder alerts ke liye Accountly ko Home Screen pe add karo.',
   'push.deniedBody': 'Notifications block hain. Browser settings me is site ke liye allow karo.',
   'push.unsupportedBody': 'Ye browser notifications nahi dikha sakta.',
-  'push.turnOn': 'On karo',
   'push.failed': 'Notifications on nahi ho paye. Fir se try karo.',
 
   'profile.title': 'Profile',
@@ -1718,7 +1714,6 @@ const guLatn: Dict = {
   'push.installBody': 'iPhone par reminder alerts mate Accountly ne Home Screen par umero.',
   'push.deniedBody': 'Notifications block chhe. Browser settings ma aa site mate allow karo.',
   'push.unsupportedBody': 'Aa browser notifications batavi shaktu nathi.',
-  'push.turnOn': 'Chalu karo',
   'push.failed': 'Notifications chalu na thai shakya. Fari try karo.',
 
   'profile.title': 'Profile',

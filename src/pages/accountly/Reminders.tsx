@@ -11,7 +11,6 @@ import { useT } from 'i18n/accountly';
 import AppHeader from 'components/accountly/AppHeader';
 import { AppCard, Fade, IconDot, ListRow } from 'components/accountly/kit';
 import { RemindersEmptyIllustration } from 'components/accountly/EmptyIllustration';
-import PushPrompt from 'components/accountly/PushPrompt';
 import { ReminderGroup, formatWhen, groupFor } from 'utils/accountly/reminders';
 
 const GROUPS: ReminderGroup[] = ['today', 'tomorrow', 'later'];
@@ -160,8 +159,6 @@ const Reminders = () => {
               </ButtonBase>
             ))}
           </Stack>
-
-          {view === 'upcoming' && <PushPrompt />}
 
           {list.loading && list.items.length === 0 ? (
             <AppCard sx={{ overflow: 'hidden' }}>
