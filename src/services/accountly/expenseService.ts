@@ -1,5 +1,5 @@
 import axios from 'utils/axios';
-import { CreateExpenseRequest, ExpenseFilter } from './types';
+import { CreateExpenseRequest, ExpenseFilter, ExpenseSummaryParams } from './types';
 
 const unwrap = (res: any) => res?.data?.data ?? res?.data;
 
@@ -36,7 +36,7 @@ export const expenseService = {
     return unwrap(res);
   },
 
-  async getExpenseSummary() {
+  async getExpenseSummary(params?: ExpenseSummaryParams) {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekStart = new Date(todayStart);
@@ -46,7 +46,12 @@ export const expenseService = {
       params: {
         today_start: todayStart.toISOString(),
         week_start: weekStart.toISOString(),
-        month_start: monthStart.toISOString()
+        month_start: monthStart.toISOString(),
+        ...(params?.category && params.category !== 'all' ? { category: params.category } : {}),
+        ...(params?.rangeStart ? { range_start: params.rangeStart.toISOString() } : {}),
+        ...(params?.rangeEnd ? { range_end: params.rangeEnd.toISOString() } : {}),
+        ...(params?.compareStart ? { compare_start: params.compareStart.toISOString() } : {}),
+        ...(params?.compareEnd ? { compare_end: params.compareEnd.toISOString() } : {})
       }
     });
     return unwrap(res);

@@ -1,6 +1,6 @@
 import { ExpenseCategory } from 'services/accountly/types';
 
-export type DatePreset = 'today' | 'yesterday' | 'week' | 'month' | 'all' | 'custom';
+export type DatePreset = 'today' | 'yesterday' | 'week' | 'month' | 'lastMonth' | 'all' | 'custom';
 export type TypeFilter = 'all' | 'debit' | 'credit';
 
 export interface AppliedFilters {
@@ -71,6 +71,11 @@ export const getDateRangeForPreset = (
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
       return { start: startOfDay(start), end: endOfDay(now) };
     }
+    case 'lastMonth': {
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      return { start: startOfDay(start), end: endOfDay(end) };
+    }
     case 'custom': {
       if (!customStart || !customEnd) return null;
       return { start: startOfDay(new Date(customStart)), end: endOfDay(new Date(customEnd)) };
@@ -78,5 +83,41 @@ export const getDateRangeForPreset = (
     case 'all':
     default:
       return null;
+  }
+};
+
+export type ComparisonPeriod = 'yesterday' | 'dayBefore' | 'lastWeek' | 'lastMonth' | 'monthBefore' | 'previousDays';
+
+export const getComparisonRange = (
+  preset: DatePreset,
+  range: { start: Date; end: Date }
+): { start: Date; end: Date; period: ComparisonPeriod; days: number } => {
+  const shiftDays = (d: Date, days: number) => {
+    const x = new Date(d);
+    x.setDate(x.getDate() - days);
+    return x;
+  };
+  const days = Math.round((startOfDay(range.end).getTime() - startOfDay(range.start).getTime()) / 86400000) + 1;
+
+  switch (preset) {
+    case 'today':
+      return { start: shiftDays(range.start, 1), end: shiftDays(range.end, 1), period: 'yesterday', days };
+    case 'yesterday':
+      return { start: shiftDays(range.start, 1), end: shiftDays(range.end, 1), period: 'dayBefore', days };
+    case 'week':
+      return { start: shiftDays(range.start, 7), end: shiftDays(range.end, 7), period: 'lastWeek', days };
+    case 'month': {
+      const start = new Date(range.start.getFullYear(), range.start.getMonth() - 1, 1);
+      const lastDay = new Date(range.start.getFullYear(), range.start.getMonth(), 0).getDate();
+      const end = endOfDay(new Date(start.getFullYear(), start.getMonth(), Math.min(range.end.getDate(), lastDay)));
+      return { start, end, period: 'lastMonth', days };
+    }
+    case 'lastMonth': {
+      const start = new Date(range.start.getFullYear(), range.start.getMonth() - 1, 1);
+      const end = endOfDay(new Date(range.start.getFullYear(), range.start.getMonth(), 0));
+      return { start, end, period: 'monthBefore', days };
+    }
+    default:
+      return { start: shiftDays(range.start, days), end: shiftDays(range.end, days), period: 'previousDays', days };
   }
 };

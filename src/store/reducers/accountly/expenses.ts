@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import expenseService from 'services/accountly/expenseService';
-import { CreateExpenseRequest, Expense, ExpenseFilter, ExpenseSummary } from 'services/accountly/types';
+import { CreateExpenseRequest, Expense, ExpenseFilter, ExpenseSummary, ExpenseSummaryParams } from 'services/accountly/types';
 
 interface ExpenseState {
   expenses: Expense[];
@@ -106,14 +106,16 @@ export const deleteExpenseById = createAsyncThunk(
 
 export const fetchExpenseSummary = createAsyncThunk(
   'expenses/fetchExpenseSummary',
-  async (_, { rejectWithValue }) => {
+  async (params: ExpenseSummaryParams | undefined, { rejectWithValue }) => {
     try {
-      const data = await expenseService.getExpenseSummary();
+      const data = await expenseService.getExpenseSummary(params);
       const summary: ExpenseSummary = {
         todayTotal: data?.today_total || 0,
         weekTotal: data?.week_total || 0,
         monthTotal: data?.month_total || 0,
         monthCount: data?.month_count || 0,
+        rangeTotal: data?.range_total || 0,
+        compareTotal: data?.compare_total || 0,
         categoryTotals: Array.isArray(data?.category_totals) ? data.category_totals : []
       };
       return summary;

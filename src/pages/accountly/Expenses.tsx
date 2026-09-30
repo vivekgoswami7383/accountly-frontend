@@ -14,7 +14,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { Search, SlidersHorizontal, X, Calendar, ListFilter, Plus } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Calendar, Plus, ArrowUp, ArrowDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'store';
 import { fetchExpenses, fetchExpenseSummary } from 'store/reducers/accountly/expenses';
 import { useFormatAmount, formatDateTime, formatDate } from 'utils/accountly/format';
@@ -23,6 +23,7 @@ import {
   ExpenseAppliedFilters,
   ExpenseCategoryFilter,
   DEFAULT_EXPENSE_FILTERS,
+  getComparisonRange,
   getDateRangeForPreset
 } from 'utils/accountly/dateFilters';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_LIST, expenseCategoryLabelKey } from 'utils/accountly/expenseCategories';
@@ -133,6 +134,81 @@ const StatCell = ({ label, amount, loading, fmt, c }: { label: string; amount: n
   </Box>
 );
 
+const RangeSummary = ({
+  label,
+  total,
+  previous,
+  previousLabel,
+  loading,
+  fmt,
+  t,
+  c
+}: {
+  label: string;
+  total: number;
+  previous: number;
+  previousLabel: string;
+  loading: boolean;
+  fmt: (v: number) => string;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  c: AccountlyColors;
+}) => {
+  const diff = total - previous;
+  const percent = previous > 0 ? Math.round((Math.abs(diff) / previous) * 100) : null;
+  const up = diff > 0;
+  const tone = diff === 0 ? c.grey : up ? c.redDeep : c.greenDeep;
+  const toneBg = diff === 0 ? c.chipGrey : up ? c.redSoft : c.greenSoft;
+  const sentence =
+    diff === 0
+      ? t('expenses.sameAs', { period: previousLabel })
+      : t(up ? 'expenses.moreThan' : 'expenses.lessThan', { amount: fmt(Math.abs(diff)), period: previousLabel });
+
+  return (
+    <Box sx={{ px: 2, py: 1.75 }}>
+      <Typography sx={{ fontSize: 11.5, color: c.grey, fontWeight: 500 }} noWrap>
+        {label}
+      </Typography>
+      {loading ? (
+        <>
+          <Skeleton variant="text" width={120} height={36} />
+          <Skeleton variant="text" width={180} height={20} />
+        </>
+      ) : (
+        <>
+          <Typography sx={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 26, color: c.redDeep, lineHeight: 1.3 }} noWrap>
+            {fmt(total)}
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mt: 0.5 }}>
+            {percent !== null && diff !== 0 && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.25,
+                  px: 0.75,
+                  py: 0.125,
+                  borderRadius: '999px',
+                  bgcolor: toneBg,
+                  color: tone,
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                  flexShrink: 0
+                }}
+              >
+                {up ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+                {percent}%
+              </Box>
+            )}
+            <Typography sx={{ fontSize: 12.5, color: c.grey, fontWeight: 500 }} noWrap>
+              {sentence}
+            </Typography>
+          </Stack>
+        </>
+      )}
+    </Box>
+  );
+};
+
 interface ExpenseDayGroup {
   key: string;
   label: string;
@@ -189,9 +265,27 @@ const Expenses = () => {
     dispatch(fetchExpenses({ filter: buildFilter(appliedFilters), page: 1 }));
   }, [dispatch, appliedFilters]);
 
+  const summaryRange = useMemo(
+    () => getDateRangeForPreset(appliedFilters.datePreset, appliedFilters.customStart, appliedFilters.customEnd),
+    [appliedFilters.datePreset, appliedFilters.customStart, appliedFilters.customEnd]
+  );
+
+  const comparison = useMemo(
+    () => (summaryRange ? getComparisonRange(appliedFilters.datePreset, summaryRange) : null),
+    [appliedFilters.datePreset, summaryRange]
+  );
+
   useEffect(() => {
-    dispatch(fetchExpenseSummary());
-  }, [dispatch]);
+    dispatch(
+      fetchExpenseSummary({
+        category: appliedFilters.category,
+        rangeStart: summaryRange?.start,
+        rangeEnd: summaryRange?.end,
+        compareStart: comparison?.start,
+        compareEnd: comparison?.end
+      })
+    );
+  }, [dispatch, appliedFilters.category, summaryRange, comparison]);
 
   const loadMore = () => {
     if (hasMore && !loadingMore) dispatch(fetchExpenses({ filter: buildFilter(appliedFilters), page: page + 1, append: true }));
@@ -217,17 +311,14 @@ const Expenses = () => {
     { value: 'yesterday', label: t('transactions.filterYesterday') },
     { value: 'week', label: t('transactions.filterThisWeek') },
     { value: 'month', label: t('transactions.filterThisMonth') },
-    { value: 'all', label: t('transactions.filterAllTime') },
+    { value: 'lastMonth', label: t('transactions.filterLastMonth') },
     { value: 'custom', label: t('transactions.filterCustomRange') }
   ];
 
-  const categoryOptions: { value: ExpenseCategoryFilter; label: string; icon?: ReactNode }[] = [
-    { value: 'all', label: t('expenses.filterAllCategories'), icon: <ListFilter size={14} /> },
-    ...EXPENSE_CATEGORY_LIST.map((cat) => {
-      const Icon = EXPENSE_CATEGORY_ICONS[cat];
-      return { value: cat, label: t(expenseCategoryLabelKey(cat)), icon: <Icon size={14} /> };
-    })
-  ];
+  const categoryOptions: { value: ExpenseCategoryFilter; label: string; icon?: ReactNode }[] = EXPENSE_CATEGORY_LIST.map((cat) => {
+    const Icon = EXPENSE_CATEGORY_ICONS[cat];
+    return { value: cat, label: t(expenseCategoryLabelKey(cat)), icon: <Icon size={14} /> };
+  });
 
   const dateChipLabel = dateOptions.find((o) => o.value === appliedFilters.datePreset)?.label || '';
   const categoryChipLabel = categoryOptions.find((o) => o.value === appliedFilters.category)?.label || '';
@@ -274,11 +365,30 @@ const Expenses = () => {
       <Container maxWidth="sm" sx={{ px: 2.25, pt: 2.25 }}>
         <Stack spacing={1.5}>
           <AppCard sx={{ p: 0, overflow: 'hidden' }}>
-            <Stack direction="row" divider={<Divider orientation="vertical" flexItem sx={{ borderColor: c.line }} />}>
-              <StatCell label={t('transactions.filterToday')} amount={summary?.todayTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
-              <StatCell label={t('transactions.filterThisWeek')} amount={summary?.weekTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
-              <StatCell label={t('transactions.filterThisMonth')} amount={summary?.monthTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
-            </Stack>
+            {comparison ? (
+              <RangeSummary
+                label={[t('expenses.totalSpent'), dateChipLabel, appliedFilters.category !== 'all' ? categoryChipLabel : '']
+                  .filter(Boolean)
+                  .join(' · ')}
+                total={summary?.rangeTotal || 0}
+                previous={summary?.compareTotal || 0}
+                previousLabel={
+                  comparison.period === 'previousDays'
+                    ? t('expenses.cmpPreviousDays', { days: comparison.days })
+                    : t(`expenses.cmp${comparison.period[0].toUpperCase()}${comparison.period.slice(1)}`)
+                }
+                loading={summaryLoading}
+                fmt={fmt}
+                t={t}
+                c={c}
+              />
+            ) : (
+              <Stack direction="row" divider={<Divider orientation="vertical" flexItem sx={{ borderColor: c.line }} />}>
+                <StatCell label={t('transactions.filterToday')} amount={summary?.todayTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
+                <StatCell label={t('transactions.filterThisWeek')} amount={summary?.weekTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
+                <StatCell label={t('transactions.filterThisMonth')} amount={summary?.monthTotal || 0} loading={summaryLoading} fmt={fmt} c={c} />
+              </Stack>
+            )}
           </AppCard>
 
           <Stack direction="row" spacing={1}>
@@ -437,7 +547,7 @@ const Expenses = () => {
                 label={opt.label}
                 icon={<Calendar size={14} />}
                 active={draftFilters.datePreset === opt.value}
-                onClick={() => setDraftFilters((f) => ({ ...f, datePreset: opt.value }))}
+                onClick={() => setDraftFilters((f) => ({ ...f, datePreset: f.datePreset === opt.value ? 'all' : opt.value }))}
               />
             ))}
           </Stack>
@@ -537,7 +647,7 @@ const Expenses = () => {
                 label={opt.label}
                 icon={opt.icon}
                 active={draftFilters.category === opt.value}
-                onClick={() => setDraftFilters((f) => ({ ...f, category: opt.value }))}
+                onClick={() => setDraftFilters((f) => ({ ...f, category: f.category === opt.value ? 'all' : opt.value }))}
               />
             ))}
           </Stack>

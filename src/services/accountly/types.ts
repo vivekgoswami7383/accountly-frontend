@@ -171,7 +171,17 @@ export interface ExpenseSummary {
   weekTotal: number;
   monthTotal: number;
   monthCount: number;
+  rangeTotal: number;
+  compareTotal: number;
   categoryTotals: ExpenseCategoryTotal[];
+}
+
+export interface ExpenseSummaryParams {
+  category?: string;
+  rangeStart?: Date;
+  rangeEnd?: Date;
+  compareStart?: Date;
+  compareEnd?: Date;
 }
 
 export interface Note {
